@@ -1,6 +1,6 @@
 const _CONF = require('../config');
 
-var proxy = require('redbird')({port: _CONF.ports.proxy, bunyan: false, letsencrypt: {
+var proxy = require('redbird')({port: _CONF.ports.proxy, letsencrypt: {
     path: __dirname + "/certs",
     port: 9999
 }, ssl: {
@@ -46,22 +46,22 @@ const confirmAuth = (host, url, req) => {
         return null;
     } 
 
-    return "https://127.0.0.1:" + _CONF.ports.unauthed;
+    return "http://127.0.0.1:" + _CONF.ports.unauthed;
 
     // // return null;
     // return mainApp == "auth" ? null : {url: "http://127.0.0.1/auth/verify"};
 }
 
-confirmAuth.priority = 200;
-proxy.addResolver(confirmAuth);
+// confirmAuth.priority = 200;
+// proxy.addResolver(confirmAuth);
 
-proxy.register("auth.home.kentonvizdos.com", "http://127.0.0.1:" + _CONF.ports.auth);
+proxy.register("auth.home.kentonvizdos.com", "127.0.0.1:" + _CONF.ports.auth);
 
-proxy.register("home.kentonvizdos.com", "https://127.0.0.1:" + _CONF.ports.dashboard, {
+proxy.register("home.kentonvizdos.com", "127.0.0.1:" + _CONF.ports.dashboard, {
     ssl: {
       letsencrypt: {
         email: 'kvizdos@gmail.com', // Domain owner/admin email
-        production: false, // WARNING: Only use this flag when the proxy is verified to work correctly to avoid being banned!
+        production: true, // WARNING: Only use this flag when the proxy is verified to work correctly to avoid being banned!
       }
     }
   });
@@ -75,7 +75,7 @@ const registerSaved = () => {
 
             for(p of result) {
                 console.log(`Loaded ${p.name} (${p.shortName}) on port ${p.port}`);
-                proxy.register(_CONF.createURL(p.shortName, true), "http://127.0.0.1:" + p.port);
+                proxy.register(_CONF.createURL(p.shortName, true), "127.0.0.1:" + p.port);
 
             }
         });
@@ -93,13 +93,6 @@ console.log("Proxy Server Started")
 
 module.exports = {
     add: (sub, port) => {
-        proxy.register(_CONF.createURL(sub, true), "http://127.0.0.1:" + port, {
-            ssl: {
-              letsencrypt: {
-                email: 'kvizdos@gmail.com', // Domain owner/admin email
-                production: false, // WARNING: Only use this flag when the proxy is verified to work correctly to avoid being banned!
-              }
-            }
-          });
+        proxy.register(_CONF.createURL(sub, true), "127.0.0.1:" + port);
     }
 }
