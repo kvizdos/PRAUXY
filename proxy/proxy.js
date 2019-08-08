@@ -61,6 +61,7 @@ const registerSaved = () => {
             if (err) throw err;
 
             for(p of result) {
+                console.log(`Loaded ${p.name} (${p.shortName}) on port ${p.port}`);
                 proxy.register(_CONF.createURL(p.shortName, true), "http://localhost:" + p.port);
 
             }
