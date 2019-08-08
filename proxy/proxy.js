@@ -1,6 +1,12 @@
 const _CONF = require('../config');
 
-var proxy = require('redbird')({port: _CONF.ports.proxy, bunyan: false});
+var proxy = require('redbird')({port: _CONF.ports.proxy, bunyan: false, letsencrypt: {
+    path: __dirname + "/certs",
+    port: 9999
+}, ssl: {
+    http2: true,
+    port: 443
+}});
 var http = require('http');
 
 const authenticate = require('../auth/confirmAuth');
@@ -51,7 +57,14 @@ proxy.addResolver(confirmAuth);
 
 proxy.register("auth.home.kentonvizdos.com", "http://127.0.0.1:" + _CONF.ports.auth);
 
-proxy.register("home.kentonvizdos.com", "http://127.0.0.1:" + _CONF.ports.dashboard);
+proxy.register("home.kentonvizdos.com", "https://127.0.0.1:" + _CONF.ports.dashboard, {
+    ssl: {
+      letsencrypt: {
+        email: 'kvizdos@gmail.com', // Domain owner/admin email
+        production: false, // WARNING: Only use this flag when the proxy is verified to work correctly to avoid being banned!
+      }
+    }
+  });
 
 const registerSaved = () => {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
@@ -80,6 +93,13 @@ console.log("Proxy Server Started")
 
 module.exports = {
     add: (sub, port) => {
-        proxy.register(_CONF.createURL(sub, true), "http://127.0.0.1:" + port);
+        proxy.register(_CONF.createURL(sub, true), "http://127.0.0.1:" + port, {
+            ssl: {
+              letsencrypt: {
+                email: 'kvizdos@gmail.com', // Domain owner/admin email
+                production: false, // WARNING: Only use this flag when the proxy is verified to work correctly to avoid being banned!
+              }
+            }
+          });
     }
 }

@@ -13,7 +13,8 @@ HOME Router allows for easy proxying of anything and allows you to put a strong 
 3. Change the baseURL in config.js to your URL (include the first subdomain)
 4. Change the baseURL in `.\dashboard\frontend\assets\main.js` to your URL (include the first subdomain)
 5. Change the logo if ya want!
-6. Run `node .\dashboard\dashboard.js`
+6. Run `sudo node .\dashboard\dashboard.js`
+    - NOTE: Usually you must run as sudo because it is binding to port 80!
 7. Done!
 
 Really, it's THAT easy! The default login (will soon be) the username admin and the password ilovehomerouter. You will need to immediately reset this and connect to your MFA of choice.
