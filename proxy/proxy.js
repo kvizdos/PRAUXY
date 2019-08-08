@@ -46,7 +46,7 @@ const confirmAuth = (host, url, req) => {
         return null;
     } 
 
-    return "http://127.0.0.1:" + _CONF.ports.unauthed;
+    return "https://127.0.0.1:" + _CONF.ports.unauthed;
 
     // // return null;
     // return mainApp == "auth" ? null : {url: "http://127.0.0.1/auth/verify"};
