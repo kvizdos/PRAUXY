@@ -17,6 +17,7 @@ const QRCode = require("qrcode");
 let tempToken;
 
 let tokenCache = [];
+const _CONF = require('../config');
 
 // Use req.query to read values!!
 app.use(bodyParser.json());
@@ -28,10 +29,10 @@ app.use('/assets', express.static("./auth/frontend/static"));
 app.get("/", (req, res) => {
 
     if(req.cookies.kvToken !== undefined) {
-        res.redirect("http://home.kentonvizdos.com")
+        res.redirect(_CONF.createURL())
+    } else {
+        res.sendFile("./auth/frontend/index.html", {root: "./"})
     }
-
-    res.sendFile("./auth/frontend/index.html", {root: "./"})
 })
 
 app.get("/verify/*", (req, res) => {
@@ -40,11 +41,9 @@ app.get("/verify/*", (req, res) => {
     const verified = tokenCache.filter(c => c == req.cookies.kvToken).length > 0;
 
     if(verified) {
-        console.log("Redirecting to area")
         res.redirect(redirectTo);
     } else {
-        console.log("Redirecting to auth")
-        res.redirect("auth.home.kentonvizdos.com");
+        res.redirect(_CONF.createURL("auth"));
     }
 
     // res.json({redirectTo: redirectTo});
@@ -153,4 +152,4 @@ app.post("/register", (req, res) => {
 
 // app.get('*', (req, res) => res.redirect("/auth"))
 
-app.listen(420, () => console.log('Authentication Server Started'))
+app.listen(_CONF.ports.auth, () => console.log('Authentication Server Started'))

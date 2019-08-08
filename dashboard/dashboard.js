@@ -10,6 +10,9 @@ const MongoClient = require('mongodb').MongoClient;
 const url = "mongodb://localhost:27017/";
 
 const _PM = require('../proxy/proxy');
+const _AUTH = require('../auth/auth');
+
+const _CONF = require('../config');
 
 // Use req.query to read values!!
 app.use(bodyParser.json());
@@ -34,19 +37,6 @@ app.get("/", (req, res) => {
 app.get("/new", (req, res) => {
     res.sendFile("./dashboard/frontend/new.html", {root: "./"})
 })
-
-/*
-
-MongoDB Schema:
-{
-    name: "Visual Studio Code",
-    short: "vsc",
-    image: "vsc.png",
-    port: 8443,
-    requiresAuthentication: true
-}
-
-*/
 
 app.get('/api/all', (req, res) => {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
@@ -80,11 +70,11 @@ app.post('/api/new', upload.single('icon'), (req, res) => {
 
             _PM.add(shortName, port);
 
-            res.redirect("http://home.kentonvizdos.com")
+            res.redirect(_CONF.createURL());
             db.close();
         });
     });
     
 })
 
-app.listen(8081, () => console.log('Dashboard Server Started'))
+app.listen(_CONF.ports.dashboard, () => console.log('Dashboard Server Started'))

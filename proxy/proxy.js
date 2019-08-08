@@ -1,4 +1,6 @@
-var proxy = require('redbird')({port: 80, bunyan: false});
+const _CONF = require('../config');
+
+var proxy = require('redbird')({port: _CONF.ports.proxy, bunyan: false});
 var http = require('http');
 
 const authenticate = require('../auth/confirmAuth');
@@ -9,17 +11,12 @@ const url = "mongodb://localhost:27017/";
 var urls = require('url');
 
 http.createServer(function (req, res) {
-    console.log(req.url)
     var goTo = (req.url.slice(1, -1) || "");
-
-    console.log("GO TO: " + goTo);
-
     res.writeHead(302, {
-        'Location': 'http://auth.home.kentonvizdos.com' + (goTo !== "" ? "?go=" + goTo : "")
-        //add other headers here...
+        'Location': _CONF.createURL("auth") + (goTo !== "" ? "?go=" + goTo : "")
       });
     res.end();
-}).listen(421);
+}).listen(_CONF.ports.unauthed, () => console.log("Unauth Redirect Server Started"));
 
 function parseCookies (request) {
     var list = {},
@@ -38,12 +35,12 @@ const confirmAuth = (host, url, req) => {
 
     const cookies = parseCookies(req);
 
-    if(cookies.kvToken !== undefined || mainApp == "auth") {
+    if(cookies.kvToken !== undefined || mainApp == "unauthed" || mainApp == "auth") {
+
         return null;
-    } else {
-        console.log("HERERERERE - " + (mainApp !== "dash" ? "?go=" + mainApp : ""))
-        return "http://localhost:421/" + (mainApp !== "dash" ? mainApp : "");
-    }
+    } 
+
+    return "http://localhost:" + _CONF.ports.unauthed;
 
     // // return null;
     // return mainApp == "auth" ? null : {url: "http://localhost/auth/verify"};
@@ -52,13 +49,10 @@ const confirmAuth = (host, url, req) => {
 confirmAuth.priority = 200;
 proxy.addResolver(confirmAuth);
 
-proxy.register("auth.home.kentonvizdos.com", "http://localhost:420");
-proxy.register("home.kentonvizdos.com", "http://localhost:8081");
+proxy.register("auth.home.kentonvizdos.com", "http://localhost:" + _CONF.ports.auth);
 
-// proxy.register("localhost/auth/login", "http://localhost:420/auth/login");
+proxy.register("home.kentonvizdos.com", "http://localhost:" + _CONF.ports.dashboard);
 
-// proxy.register("code.home.kentonvizdos.com", "http://portabeast:8443");
-// proxy.register("guac.home.kentonvizdos.com", "http://portabeast:8080/guacamole");
 const registerSaved = () => {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
         if (err) throw err;
@@ -67,7 +61,7 @@ const registerSaved = () => {
             if (err) throw err;
 
             for(p of result) {
-                proxy.register(p.shortName + ".home.kentonvizdos.com", "http://portabeast:" + p.port);
+                proxy.register(_CONF.createURL(p.shortName, true), "http://localhost:" + p.port);
 
             }
         });
@@ -76,6 +70,8 @@ const registerSaved = () => {
 
 registerSaved();
 
+console.log("Proxy Server Started")
+
 // module.exports.add = function(sub, port) {
 //     proxy.register(sub + ".home.kentonvizdos.com", "http://portabeast:" + port);
 
@@ -83,6 +79,6 @@ registerSaved();
 
 module.exports = {
     add: (sub, port) => {
-        proxy.register(sub + ".home.kentonvizdos.com", "http://portabeast:" + port);
+        proxy.register(_CONF.createURL(sub, true), "http://localhost:" + port);
     }
 }
