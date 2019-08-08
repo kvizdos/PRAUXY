@@ -17,7 +17,7 @@ body, html {
 #appContainer {
     width: 100%;
     display: inline-grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: auto auto;
     grid-gap: 25px;
 }
 
@@ -45,5 +45,11 @@ body, html {
 
 a {
     text-decoration: none;
-    color: black;
+    color: rgb(82, 82, 82);
+}
+
+@media only screen and (min-width: 768px) {
+    #appContainer {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
 }

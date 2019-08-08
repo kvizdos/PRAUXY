@@ -1,17 +1,28 @@
+const baseURL = "home.kentonvizdos.com";
+const proto = "http://";
+
 const retrieveApps = () => {
-    $.get("http://home.kentonvizdos.com/api/all", (resp) => {
-        for(app of resp) {
-            $("#appContainer").prepend(`
-            <a href="http://${app.shortName}.home.kentonvizdos.com">
-                <div class="app">
-                    ${app.isImage ? '<img src="assets/apps/' + app.image + '">' : app.name}
-                </div>
-            </a>
-            `)
-        }
+    $.get(`${proto}${baseURL}/api/all`, (resp) => {
+        localStorage.setItem("applications", JSON.stringify(resp));
+        renderApps(resp);
     })
 }
 
+const renderApps = (apps, first = false) => {
+    if(!first) $(".customApp").remove();
+
+    for(app of apps) {
+        $("#appContainer").prepend(`
+        <a class="customApp" href="${proto}${app.shortName}.${baseURL}">
+            <div class="app">
+                ${app.isImage ? '<img src="assets/apps/' + app.image + '">' : app.name}
+            </div>
+        </a>
+        `)
+    }
+}
+
 window.onload = function() {
+    if(localStorage.getItem("applications") != null) renderApps(JSON.parse(localStorage.getItem("applications")), true)
     retrieveApps();
 }

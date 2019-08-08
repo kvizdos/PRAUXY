@@ -19,7 +19,7 @@ body, html {
     background-color: rgb(226, 226, 226);
     padding: 10px;
     border-radius: 10px;
-    width: 23vw;
+    width: 75vw;
     padding: 20px;
 }
 
@@ -47,4 +47,10 @@ body, html {
 h1 {
     padding: 0;
     margin: 0;
+}
+
+@media only screen and (min-width: 768px) {
+    #middle {
+        width: 23vw;
+    }
 }
