@@ -6,7 +6,7 @@ var http = require('http');
 const authenticate = require('../auth/confirmAuth');
 
 const MongoClient = require('mongodb').MongoClient;
-const url = "mongodb://localhost:27017/";
+const url = "mongodb://127.0.0.1:27017/";
 
 var urls = require('url');
 
@@ -40,18 +40,18 @@ const confirmAuth = (host, url, req) => {
         return null;
     } 
 
-    return "http://localhost:" + _CONF.ports.unauthed;
+    return "http://127.0.0.1:" + _CONF.ports.unauthed;
 
     // // return null;
-    // return mainApp == "auth" ? null : {url: "http://localhost/auth/verify"};
+    // return mainApp == "auth" ? null : {url: "http://127.0.0.1/auth/verify"};
 }
 
 confirmAuth.priority = 200;
 proxy.addResolver(confirmAuth);
 
-proxy.register("auth.home.kentonvizdos.com", "http://localhost:" + _CONF.ports.auth);
+proxy.register("auth.home.kentonvizdos.com", "http://127.0.0.1:" + _CONF.ports.auth);
 
-proxy.register("home.kentonvizdos.com", "http://localhost:" + _CONF.ports.dashboard);
+proxy.register("home.kentonvizdos.com", "http://127.0.0.1:" + _CONF.ports.dashboard);
 
 const registerSaved = () => {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
@@ -62,7 +62,7 @@ const registerSaved = () => {
 
             for(p of result) {
                 console.log(`Loaded ${p.name} (${p.shortName}) on port ${p.port}`);
-                proxy.register(_CONF.createURL(p.shortName, true), "http://localhost:" + p.port);
+                proxy.register(_CONF.createURL(p.shortName, true), "http://127.0.0.1:" + p.port);
 
             }
         });
@@ -80,6 +80,6 @@ console.log("Proxy Server Started")
 
 module.exports = {
     add: (sub, port) => {
-        proxy.register(_CONF.createURL(sub, true), "http://localhost:" + port);
+        proxy.register(_CONF.createURL(sub, true), "http://127.0.0.1:" + port);
     }
 }
