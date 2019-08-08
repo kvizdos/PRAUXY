@@ -1,0 +1,33 @@
+{
+  "name": "home-router",
+  "version": "1.0.0",
+  "description": "A NodeJS reverse proxy with full authentication that has support for MFA applications such as Google Authenticator.",
+  "main": "dashboard/dashboard.js",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "cookie-parser": "^1.4.4",
+    "express": "^4.17.1",
+    "http-proxy": "^1.17.0",
+    "mongodb": "^3.3.0-beta2",
+    "multer": "^1.4.2",
+    "qrcode": "^1.4.1",
+    "redbird": "^0.9.1",
+    "request": "^2.88.0",
+    "speakeasy": "^2.0.0",
+    "url": "^0.11.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kvizdos/Nodester.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kvizdos/Nodester/issues"
+  },
+  "homepage": "https://github.com/kvizdos/Nodester#readme"
+}
