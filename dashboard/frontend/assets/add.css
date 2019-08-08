@@ -1,0 +1,41 @@
+#middle {
+    display: flex;
+    justify-content: center;
+}
+
+#create {
+    background-color: rgb(226, 226, 226);
+    padding: 25px;
+    border-radius: 10px;
+    font-size: 16pt;
+}
+
+#create p {
+    margin: 0;
+    margin-top: 15px;
+}
+
+input {
+    margin-top: 10px;
+    padding: 5px;
+    border: 0;
+    font-size: 14pt;
+    border-radius: 5px;
+    width: 100%;
+
+}
+
+input[type="checkbox"] {
+    padding: 0;
+    margin: 0;
+    width: auto;
+
+} 
+input[type="submit"] {
+    margin-top: 0;
+    font-size: 16pt;
+    background-color: rgb(36, 212, 36);
+    border-radius: 5px;
+    border: 0;
+    color: white;
+} 

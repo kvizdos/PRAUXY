@@ -1,0 +1,49 @@
+body, html {
+    padding: 0;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+
+}
+
+#header {
+    text-align: center;
+}
+
+#content {
+    width: calc(100% - 50px);
+    padding: 25px;
+}
+
+#appContainer {
+    width: 100%;
+    display: inline-grid;
+    grid-template-columns: auto auto auto;
+    grid-gap: 25px;
+}
+
+.app {
+    background-color: rgb(226, 226, 226);
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    font-size: 18pt;
+    transition: .25s;
+    border-radius: 5px;
+    height: 125px;
+}
+
+.app img {
+    margin: 10px;
+    width: 100px;
+}
+
+.app:hover {
+    transition: .25s;
+    box-shadow: 0 0 10px 4px rgb(170, 170, 170);
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}

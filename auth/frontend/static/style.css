@@ -1,0 +1,50 @@
+body, html {
+    padding: 0;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+
+}
+
+#container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+#middle {
+    text-align: center;
+    background-color: rgb(226, 226, 226);
+    padding: 10px;
+    border-radius: 10px;
+    width: 23vw;
+    padding: 20px;
+}
+
+#middle input {
+    font-size: 16pt;
+    margin-top: 15px;
+    background-color: white;
+    border-radius: 5px;
+    width: calc(85% - 10px);
+    border: 1px solid rgb(184, 184, 184);
+    padding: 5px;
+}
+
+#secondStep {
+    display: none;
+}
+
+#login {
+    background-color: rgb(25, 204, 25) !important;
+    color: white;
+    font-size: 18pt !important;
+    border: 0 !important;
+}
+
+h1 {
+    padding: 0;
+    margin: 0;
+}
