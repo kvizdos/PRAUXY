@@ -1,11 +1,11 @@
 const _CONF = require('../config');
 
-var proxy = require('redbird')({port: _CONF.ports.proxy, letsencrypt: {
-    path: __dirname + "/certs",
-    port: 9999
-}, ssl: {
+var proxy = require('redbird')({port: _CONF.ports.proxy, secure: true, ssl: {
     http2: true,
     port: 443
+}, letsencrypt: {
+    path: __dirname + "/certs",
+    port: 9999
 }});
 var http = require('http');
 
