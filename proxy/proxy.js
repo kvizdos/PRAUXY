@@ -47,9 +47,6 @@ const confirmAuth = (host, url, req) => {
     } 
 
     return "http://127.0.0.1:" + _CONF.ports.unauthed;
-
-    // // return null;
-    // return mainApp == "auth" ? null : {url: "http://127.0.0.1/auth/verify"};
 }
 
 confirmAuth.priority = 200;
@@ -57,14 +54,7 @@ proxy.addResolver(confirmAuth);
 
 proxy.register("auth.home.kentonvizdos.com", "127.0.0.1:" + _CONF.ports.auth);
 
-proxy.register("home.kentonvizdos.com", "127.0.0.1:" + _CONF.ports.dashboard, {
-    ssl: {
-      letsencrypt: {
-        email: 'kvizdos@gmail.com', // Domain owner/admin email
-        production: false, // WARNING: Only use this flag when the proxy is verified to work correctly to avoid being banned!
-      }
-    }
-  });
+proxy.register("home.kentonvizdos.com", "127.0.0.1:" + _CONF.ports.dashboard);
 
 const registerSaved = () => {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
