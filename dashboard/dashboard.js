@@ -34,6 +34,10 @@ app.get("/", (req, res) => {
     res.sendFile("./dashboard/frontend/index.html", {root: "./"})
 })
 
+app.get("/.well-known/acme-challenge", (req, res) => {
+    console.log("EUIORHWOGHRSGHFDOIGNDFOGHNJDFOGJDFIOGJDFIOGJDFOIGJDFOIGJFDOIGDOIGJOI")
+})
+
 app.get("/new", (req, res) => {
     res.sendFile("./dashboard/frontend/new.html", {root: "./"})
 })
@@ -57,7 +61,7 @@ app.post('/api/new', upload.single('icon'), (req, res) => {
     const requiresAuthentication = req.body.ra;
     const image = req.file.originalname;
 
-    const newApp = {name: name, image: image, shortName: shortName, isImage: isImage, port: port, requiresAuthentication: requiresAuthentication};
+    const newApp = {name: name, image: image, shortName: shortName, isImage: isImage, accessAt: port, requiresAuthentication: requiresAuthentication};
     var file = __dirname + '/frontend/assets/apps/' + req.file.originalname;
 
     fs.renameSync(req.file.path, file);

@@ -5,7 +5,7 @@ var proxy = require('redbird')({port: _CONF.ports.proxy, secure: true, ssl: {
     port: 443
 }, letsencrypt: {
     path: __dirname + "/certs",
-    port: 9999
+    port: 9999    
 }});
 var http = require('http');
 
@@ -52,8 +52,8 @@ const confirmAuth = (host, url, req) => {
     // return mainApp == "auth" ? null : {url: "http://127.0.0.1/auth/verify"};
 }
 
-// confirmAuth.priority = 200;
-// proxy.addResolver(confirmAuth);
+confirmAuth.priority = 200;
+proxy.addResolver(confirmAuth);
 
 proxy.register("auth.home.kentonvizdos.com", "127.0.0.1:" + _CONF.ports.auth);
 
@@ -61,7 +61,7 @@ proxy.register("home.kentonvizdos.com", "127.0.0.1:" + _CONF.ports.dashboard, {
     ssl: {
       letsencrypt: {
         email: 'kvizdos@gmail.com', // Domain owner/admin email
-        production: true, // WARNING: Only use this flag when the proxy is verified to work correctly to avoid being banned!
+        production: false, // WARNING: Only use this flag when the proxy is verified to work correctly to avoid being banned!
       }
     }
   });
