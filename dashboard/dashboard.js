@@ -61,7 +61,7 @@ app.post('/api/new', upload.single('icon'), (req, res) => {
     const requiresAuthentication = req.body.ra;
     const image = req.file.originalname;
 
-    const newApp = {name: name, image: image, shortName: shortName, isImage: isImage, accessAt: port, requiresAuthentication: requiresAuthentication};
+    const newApp = {name: name, image: image, shortName: shortName, isImage: isImage, port: port, requiresAuthentication: requiresAuthentication};
     var file = __dirname + '/frontend/assets/apps/' + req.file.originalname;
 
     fs.renameSync(req.file.path, file);
