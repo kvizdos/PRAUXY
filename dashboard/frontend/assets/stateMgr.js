@@ -10,10 +10,17 @@ class StateManager {
 
         const goTo = this.pages.filter(p => p.path == window.location.pathname)[0];
 
-        this.currentState = history.state || {
-            page: goTo.page || "Dashboard",
-            path: goTo.path || "/dash"
-        };
+        if(goTo.path !== undefined) {
+            this.currentState = history.state || {
+                page: goTo.page,
+                path: goTo.path
+            };
+        } else {
+            this.currentState = history.state || {
+                page: "Dashboard",
+                path: "/dash"
+            }
+        }
 
         this.setPage(this.currentState.page)
     }
