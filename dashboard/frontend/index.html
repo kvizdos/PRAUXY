@@ -9,10 +9,11 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> 
-    <script src="/assets/main.js"></script>
     <script src="/assets/interactions.js"></script>
+    <script src="/assets/stateMgr.js"></script>
+    <script src="/assets/main.js"></script>
 
-    <title>Dashboard</title>
+    <title>Loading</title>
 </head>
 <body>
     <!-- <div id="header">
@@ -24,15 +25,16 @@
     <div id="content">
         <header id="mobileHeader">
             <i class="material-icons" onclick="showMenu()">menu</i>
-            <p>DASHBOARD</p>
+            <p id="pageTitle">DASHBOARD</p>
         </header>
         <nav id="navbar">
             <div id="links">
-                <a href="#">Dashboard</a>
-                <a href="#">Add an app</a>
-                <a href="#">Users</a>
-                <a href="#">Stats</a>
-
+                <i class="material-icons" onclick="hideMenu()" id="closeMenu">close</i>
+                
+                <p href="#" onclick="_SM.setPage('Dashboard')">Dashboard</p>
+                <p href="#" onclick="_SM.setPage('Add an app')">Add an app</p>
+                <p href="#">Users</p>
+                <p href="#">Stats</p>
             </div>
             <div id="sessionInfo">
                 <span id="loggedInAs">{{username}}</span>
@@ -40,12 +42,40 @@
                 <button id="logout">Logout</button>
             </div>
         </nav>
-        <div id="appContainer">
+        <div id="appContainer" class="page">
             <a class="defaultApp" href="http://home.kentonvizdos.com/new">
                 <div class="app">
                     <h1>+</h1>
                 </div>
             </a>
+        </div>
+
+        
+        <div id="addApp" class="page">
+            <div id="create">
+                <form id="createNewApplication" enctype="multipart/form-data" action="/api/new" method="post">
+                    <p>Application Name</p>
+                    <input type="text" name="name" id="name" placeholder="Visual Studio Code" required>
+
+                    <p>Application Subdomain</p>
+                    <input type="text" name="short" id="short" placeholder="code" required>
+
+                    <p>What port is this app running on?</p>
+                    <input type="text" name="port" id="port" placeholder="8080/an_optional_path" required>
+
+                    <p>Would you like to set an image?</p>
+                    <input name="icon" id="icon" type="file" accept="image/*">
+
+                    <hr>
+
+                    <p>Options</p>
+                    <input checked name="ra" type="checkbox" id="requireAuthentication"> Require Authentication<br>
+
+                    <br>
+
+                    <input type="submit" value="Add">
+                </form>
+            </div>
         </div>
     </div>
 </body>

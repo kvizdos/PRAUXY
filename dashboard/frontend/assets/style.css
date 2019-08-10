@@ -11,7 +11,7 @@ body, html {
 
 #content {
     display: grid;
-    grid-template-areas: "mobileHeader" "apps";
+    grid-template-areas: "mobileHeader" "contentArea";
     grid-template-rows: 50px;
     width: 100vw;
 }
@@ -56,11 +56,19 @@ body, html {
     font-size: 16pt;
 
     justify-content: space-between;
+
+    transition: .3s transform ease-in-out;
 }
 
 #navbar #links {
     display: flex;
     flex-direction: column;
+}
+
+#navbar #links #closeMenu {
+    position: absolute;
+    right: 30px;
+    font-size: 21pt;
 }
 
 #navbar #sessionInfo {
@@ -75,26 +83,29 @@ body, html {
     width: 100%;
     border: 0;
     font-size: 14pt;
-    background-color: rgb(221, 45, 32);
+    background-color: rgb(245, 43, 29);
     color: white;
     padding: 10px;
     margin-top: 10px;
 }
 
-#navbar a {
-    color: rgb(0, 109, 172);
+#navbar p {
+    color: rgb(0, 162, 255);
+    margin: 0;
+    padding: 0;
     padding-bottom: 10px;
+    cursor: pointer;
 }
 
 
 .active {
-    transition: .3s ease-in-out;
     transform: translateX(0) !important;
 }
 
 #appContainer {
+    display: flex;
     padding: 25px;
-    grid-area: apps;
+    grid-area: contentArea;
     display: inline-grid;
     grid-template-columns: auto auto;
     grid-gap: 25px;
@@ -127,13 +138,67 @@ a {
     color: rgb(82, 82, 82);
 }
 
+#addApp {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0;
+    padding: 25px;
+    padding-top: 15px;
+    grid-area: contentArea;
+}
+
+#addApp input[type="text"] {
+    padding: 5px;
+    font-size: 12pt;
+    margin-top: 5px;
+    width: 75%;
+    border-radius: 5px;
+    border: 1px solid rgb(0, 162, 255);
+}
+
+#addApp input[type="checkbox"] {
+    margin: 10px;
+    padding: 0;
+}
+
+#addApp input[type="submit"] {
+    padding: 5px;
+    background-color: rgb(0, 162, 255);
+    border: 0;
+    border-radius: 10px;
+    color: white;
+    font-size: 14pt;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+#addApp hr {
+    width: 75%;
+    margin: 0;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    border: 1px solid rgb(0, 162, 255);
+}
+
+#addApp p {
+    color: rgb(0, 162, 255);
+    font-weight: 600;
+    padding: 0;
+    margin: 0;
+    margin-top: 5px;
+}
+
+.hidePage {
+    display: none !important;
+}
+
 @media only screen and (min-width: 768px) {
     #mobileHeader {
         display: none;
     }
 
     #content {
-        grid-template-areas: "navbar apps";
+        grid-template-areas: "navbar contentArea";
         grid-template-columns: 15vw 1fr;
         grid-gap: 20px;
     }
@@ -142,12 +207,17 @@ a {
         display: flex;
         flex-direction: column;
         width: 15vw;
-        background-color: rgb(0, 109, 172);
+        border: 0;
         transform: translateX(0) !important;
         box-shadow: none;
+        background-color: rgb(0, 162, 255);
     }
 
-    #navbar a {
+    #navbar #links #closeMenu {
+        display: none;
+    }
+
+    #navbar p {
         color: white;
     }
 

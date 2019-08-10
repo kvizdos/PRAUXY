@@ -22,7 +22,11 @@ const renderApps = (apps, first = false) => {
     }
 }
 
+let _SM;
+
 window.onload = function() {
+    _SM = new StateManager();
+    _SM.setListeners()
     if(localStorage.getItem("applications") != null) renderApps(JSON.parse(localStorage.getItem("applications")), true)
     retrieveApps();
 }

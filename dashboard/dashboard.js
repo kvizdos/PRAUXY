@@ -30,10 +30,6 @@ var upload = multer({ storage })
 
 app.use('/assets', express.static("./dashboard/frontend/assets"));
 
-app.get("/", (req, res) => {
-    res.sendFile("./dashboard/frontend/index.html", {root: "./"})
-})
-
 app.get("/.well-known/acme-challenge", (req, res) => {
     console.log("EUIORHWOGHRSGHFDOIGNDFOGHNJDFOGJDFIOGJDFIOGJDFOIGJDFOIGJFDOIGDOIGJOI")
 })
@@ -80,5 +76,11 @@ app.post('/api/new', upload.single('icon'), (req, res) => {
     });
     
 })
+
+
+app.get("/*", (req, res) => {
+    res.sendFile("./dashboard/frontend/index.html", {root: "./"})
+})
+
 
 app.listen(_CONF.ports.dashboard, () => console.log('Dashboard Server Started'))
