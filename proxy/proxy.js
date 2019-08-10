@@ -38,6 +38,12 @@ function parseCookies (request) {
 }
 
 const confirmAuth = (host, url, req) => {
+    if(req.headers.host == undefined) {
+        return new Promise((resolve, reject) => {
+            resolve(false);
+        })
+    }
+
     const mainApp = req.headers.host.split(".")[0]
 
     const cookies = parseCookies(req);
