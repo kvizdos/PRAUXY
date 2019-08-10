@@ -51,8 +51,6 @@ body, html {
     display: flex;
     flex-direction: column;
 
-    padding: 10px;
-
     font-size: 16pt;
 
     justify-content: space-between;
@@ -67,7 +65,8 @@ body, html {
 
 #navbar #links #closeMenu {
     position: absolute;
-    right: 30px;
+    right: 20px;
+    top: 10px;
     font-size: 21pt;
 }
 
@@ -92,9 +91,19 @@ body, html {
 #navbar p {
     color: rgb(0, 162, 255);
     margin: 0;
-    padding: 0;
-    padding-bottom: 10px;
+    padding: 10px;
     cursor: pointer;
+    transition: .2s;
+}
+
+#navbar p.navActive {
+    background-color: rgb(18, 148, 223);
+    border-bottom: 1px solid white;
+    color: white;
+}
+
+#navbar p:hover {
+    background-color: rgb(47, 179, 255)
 }
 
 
@@ -199,7 +208,7 @@ a {
 
     #content {
         grid-template-areas: "navbar contentArea";
-        grid-template-columns: 15vw 1fr;
+        grid-template-columns: 14vw 1fr;
         grid-gap: 20px;
     }
 

@@ -15,16 +15,19 @@ class StateManager {
             path: goTo.path || "/dash"
         };
 
-        this.setPage(this.currentState.page, this.currentState.path)
+        this.setPage(this.currentState.page)
     }
 
-    setPage = (page) => {
+    setPage = (page, el) => {
         // if(page == this.currentState.page) return;
 
         const goTo = this.pages.filter(p => p.page == page)[0];
 
         this.currentState.page = goTo.page;
         this.currentState.path = goTo.path;
+
+        $('.navActive').removeClass('navActive')
+        $(el).addClass('navActive')
 
         $(".page").addClass('hidePage');
         $("#" + goTo.id).removeClass('hidePage')
