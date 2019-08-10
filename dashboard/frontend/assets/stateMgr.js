@@ -10,7 +10,7 @@ class StateManager {
 
         const goTo = this.pages.filter(p => p.path == window.location.pathname)[0];
 
-        if(goTo.path !== undefined) {
+        if(goTo !== undefined) {
             this.currentState = history.state || {
                 page: goTo.page,
                 path: goTo.path
