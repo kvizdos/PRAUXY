@@ -19,6 +19,8 @@ let tempToken;
 let tokenCache = [];
 const _CONF = require('../config');
 
+const authenticate = require('./confirmAuth');
+
 // Use req.query to read values!!
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -28,23 +30,34 @@ app.use('/assets', express.static("./auth/frontend/static"));
 
 app.get("/", (req, res) => {
 
-    if(req.cookies.kvToken !== undefined) {
-        res.redirect(_CONF.createURL())
-    } else {
-        res.sendFile("./auth/frontend/index.html", {root: "./"})
-    }
+    authenticate(req.cookies.kvToken).then(authed => {
+        if(authed) {
+            res.redirect(_CONF.createURL())
+        } else {
+            res.sendFile("./auth/frontend/index.html", {root: "./"})
+        }
+    })
 })
 
 app.get("/verify/*", (req, res) => {
     let redirectTo = "/" + req.url.split("/").splice(3).join("/");
 
-    const verified = tokenCache.filter(c => c == req.cookies.kvToken).length > 0;
+    // const verified = tokenCache.filter(c => c == req.cookies.kvToken).length > 0;
 
-    if(verified) {
-        res.redirect(redirectTo);
-    } else {
-        res.redirect(_CONF.createURL("auth"));
-    }
+    // if(verified) {
+    //     res.redirect(redirectTo);
+    // } else {
+    //     res.redirect(_CONF.createURL("auth"));
+    // }
+
+    authenticate(req.cookies.kvToken).then(authed => {
+        console.log(authed);
+        if(authed) {
+            res.redirect(redirectTo);
+        } else {
+            res.redirect(_CONF.createURL("auth"));
+        }
+    })
 
     // res.json({redirectTo: redirectTo});
 })

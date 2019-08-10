@@ -39,7 +39,7 @@ const confirmMFA = () => {
         mfa: mfa
     }, (res) => {
         if(res.authenticated) {
-            setcookie("kvToken", res.token, 365);
+            setcookie("kvToken", res.token + ":" + username, 365);
             var url = new URL(window.location.href);
             var redir = url.searchParams.get("go");
 

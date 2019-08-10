@@ -6,20 +6,40 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> 
     <script src="/assets/main.js"></script>
+    <script src="/assets/interactions.js"></script>
 
     <title>Dashboard</title>
 </head>
 <body>
-    <div id="header">
+    <!-- <div id="header">
         <div id="headerContent">
             <img src="/assets/logo.gif">
             <h1>DASHBOARD</h1>
         </div>
-    </div>
+    </div> -->
     <div id="content">
+        <header id="mobileHeader">
+            <i class="material-icons" onclick="showMenu()">menu</i>
+            <p>DASHBOARD</p>
+        </header>
+        <nav id="navbar">
+            <div id="links">
+                <a href="#">Dashboard</a>
+                <a href="#">Add an app</a>
+                <a href="#">Users</a>
+                <a href="#">Stats</a>
+
+            </div>
+            <div id="sessionInfo">
+                <span id="loggedInAs">{{username}}</span>
+                <br>
+                <button id="logout">Logout</button>
+            </div>
+        </nav>
         <div id="appContainer">
             <a class="defaultApp" href="http://home.kentonvizdos.com/new">
                 <div class="app">

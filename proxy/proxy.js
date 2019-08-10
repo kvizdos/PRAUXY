@@ -1,6 +1,6 @@
 const _CONF = require('../config');
 
-var proxy = require('redbird')({port: _CONF.ports.proxy, secure: true, ssl: {
+var proxy = require('redbird')({port: _CONF.ports.proxy, bunyan: false, secure: true, ssl: {
     http2: true,
     port: 443
 }, letsencrypt: {
@@ -17,6 +17,7 @@ const url = "mongodb://127.0.0.1:27017/";
 var urls = require('url');
 
 http.createServer(function (req, res) {
+    console.log('herer')
     var goTo = (req.url.slice(1, -1) || "");
     res.writeHead(302, {
         'Location': _CONF.createURL("auth") + (goTo !== "" ? "?go=" + goTo : "")
@@ -41,18 +42,29 @@ const confirmAuth = (host, url, req) => {
 
     const cookies = parseCookies(req);
 
-    if(cookies.kvToken !== undefined || mainApp == "unauthed" || mainApp == "auth") {
-
+    if(mainApp == "unauthed" || mainApp == "auth") {
         return null;
-    } 
+    } else {
+        return new Promise((resolve, reject) => { 
+            if(mainApp == "unauthed" || mainApp == "auth") {resolve(true)} else {
 
-    return "http://127.0.0.1:" + _CONF.ports.unauthed;
+                authenticate(cookies.kvToken).then(authed => {
+                    if(authed) {
+                        resolve(null);
+                    } else {
+                        resolve("http://127.0.0.1:" + _CONF.ports.unauthed);
+                    }
+                })
+            }
+        });
+    }
 }
 
 confirmAuth.priority = 200;
 proxy.addResolver(confirmAuth);
 
 proxy.register("auth.home.kentonvizdos.com", "127.0.0.1:" + _CONF.ports.auth);
+proxy.register("unauth.home.kentonvizdos.com", "127.0.0.1:" + _CONF.ports.unauthed);
 
 proxy.register("home.kentonvizdos.com", "127.0.0.1:" + _CONF.ports.dashboard);
 
