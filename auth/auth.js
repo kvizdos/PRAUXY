@@ -19,7 +19,8 @@ let tempToken;
 let tokenCache = [];
 const _CONF = require('../config');
 
-const authenticate = require('./confirmAuth');
+const _REDIS = new (require('../db/redis'))();
+const _AUTH = new (require('./confirmAuth'))(_REDIS);
 
 // Use req.query to read values!!
 app.use(bodyParser.json());
@@ -30,7 +31,7 @@ app.use('/assets', express.static("./auth/frontend/static"));
 
 app.get("/", (req, res) => {
 
-    authenticate(req.cookies.kvToken).then(authed => {
+    _AUTH.authenticate(req.cookies.kvToken).then(authed => {
         if(authed) {
             res.redirect(_CONF.createURL())
         } else {

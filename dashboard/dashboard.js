@@ -9,8 +9,11 @@ var fs = require("fs");
 const MongoClient = require('mongodb').MongoClient;
 const url = "mongodb://localhost:27017/";
 
+const _REDIS = new (require('../db/redis'))();
+const _AUTH = new (require('../auth/confirmAuth'))(_REDIS);
+
 const _PM = require('../proxy/proxy');
-const _AUTH = require('../auth/auth');
+const _AUTHMODULE = require('../auth/auth');
 
 const _CONF = require('../config');
 
@@ -54,7 +57,7 @@ app.post('/api/new', upload.single('icon'), (req, res) => {
     const shortName = req.body.short;
     const isImage = req.file ? true : false;
     const port = req.body.port;
-    const requiresAuthentication = req.body.ra;
+    const requiresAuthentication = req.body.ra !== undefined && req.body.ra == "on" ? true : false;
     const image = req.file.originalname;
 
     const newApp = {name: name, image: image, shortName: shortName, isImage: isImage, port: port, requiresAuthentication: requiresAuthentication};
@@ -68,7 +71,9 @@ app.post('/api/new', upload.single('icon'), (req, res) => {
         dbo.collection("applications").insertOne(newApp, function(err, result) {
             if (err) throw err;
 
-            _PM.add(shortName, port);
+            console.log(requiresAuthentication)
+
+            _PM.add(shortName, port, requiresAuthentication);
 
             res.redirect(_CONF.createURL());
             db.close();
