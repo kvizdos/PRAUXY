@@ -12,12 +12,12 @@ HOME Router allows for easy proxying of anything and allows you to put a strong 
 ### Docker Setup
 2. Pull my Docker container
     - `docker pull kentonv/homerouter`
-3. (semi-optional) Start a Redis docker container, or, you can set the environment variable to your current Redis server 
-    - `docker run -p 6379:6379 --name homerouter-redis -d redis redis-server --appendonly yes`
-3. (semi-optional) Start a Mongo docker container, or, you can set the environment variable to your current Mongo server 
-    - `docker run -d -p 27017:27017 --name homerouter-mongo -v ~/data:/data/db mongo`
+3. (semi-optional) Start a Redis docker container 
+    - `docker run --net=host --name homerouter-redis -d redis redis-server --appendonly yes`
+3. (semi-optional) Start a Mongo docker container 
+    - `docker run -d --net=host --name homerouter-mongo -v ~/data:/data/db mongo`
 5. Start 'er up!
-    - `docker run -d --privileged --name homerouter --link homerouter-mongo --link homerouter-redis -p 80:80 kentonv/homerouter` (the environment variables listed below work here too)
+    - `docker run -d --net=host --privileged --name homerouter -e URL={YOUR BASE URL HERE} kentonv/homerouter` (the environment variables listed below work here too)
     - **NOTE: --privileged is REQUIRED if you are running on Port 80!**
 6. Done!
 ### Developer // Not sure how production-ready Docker Compose is Setup
@@ -26,13 +26,11 @@ HOME Router allows for easy proxying of anything and allows you to put a strong 
 4. Done!
 ### Manual Setup
 2. Clone/Download Repo
-3. Make sure MongoDB is running
-4. Change the baseURL in config.js to your URL (include the first subdomain)
-5. Change the baseURL in `.\dashboard\frontend\assets\main.js` to your URL (include the first subdomain)
-6. Change the logo if ya want!
-7. Run `sudo node .\dashboard\dashboard.js MONGO={mongo host (default homerouter-mongo)} REDIS={redis host (default homerouter-redis)}`
+3. Make sure MongoDB and Redis is running
+4. Change the logo if ya want!
+5. Run `sudo node .\dashboard\dashboard.js URL={YOUR BASE URL HERE}`
     - NOTE: Usually you must run as sudo because it is binding to port 80!
-8. Done!
+6. Done!
 
 Really, it's THAT easy! The default login is username admin and password admin. You should immediately reset this and connect to your MFA of choice.
 
