@@ -6,16 +6,27 @@ var bodyParser = require('body-parser')
 var multer  = require('multer');
 var fs = require("fs");
 
+const _MongoConfig = require('../db/mongo');
 const MongoClient = require('mongodb').MongoClient;
-const url = "mongodb://localhost:27017/";
+// const url = "mongodb://127.0.0.1:27017/";
+const url = _MongoConfig.url;
+
+console.log("Dashboard Starting (loading Redis)")
 
 const _REDIS = new (require('../db/redis'))();
+
+console.log("Dashboard Starting (Redis loaded)")
+
 const _AUTH = new (require('../auth/confirmAuth'))(_REDIS);
+
+console.log("Dashboard Starting (Auth loaded)")
 
 const _PM = require('../proxy/proxy');
 const _AUTHMODULE = require('../auth/auth');
 
 const _CONF = require('../config');
+
+console.log("Dashboard Starting (Everything lOaded)")
 
 // Use req.query to read values!!
 app.use(bodyParser.json());
@@ -87,5 +98,14 @@ app.get("/*", (req, res) => {
     res.sendFile("./dashboard/frontend/index.html", {root: "./"})
 })
 
+console.log("Trying to publish to :" + _CONF.ports.dashboard)
 
-app.listen(_CONF.ports.dashboard, () => console.log('Dashboard Server Started'))
+
+try {
+app.listen(_CONF.ports.dashboard, (err) =>{ 
+    if(err) throw err;
+    console.log('Dashboard Server Started')
+})
+} catch(err) {
+    console.log(err)
+}

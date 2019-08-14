@@ -2,7 +2,21 @@ const redis = require('redis')
 
 class RedisManager {
     constructor() {
-        this.client = redis.createClient();
+        try {
+            // this.client = new redis({host:})
+        this.client = redis.createClient({host: 'redis'});
+        } catch(err) {
+            console.log(err);
+        }
+        this.client.on("error", function (err) {
+            console.log("Error " + err);
+        });
+
+        this.client.on("connect", () => {
+            console.log("Connected to Redis")
+        })
+
+
     }
 
     set(key, val) {

@@ -8,14 +8,21 @@ var proxy = require('redbird')({port: _CONF.ports.proxy, bunyan: false, secure: 
     port: 9999    
 }});
 
-const _REDIS = new (require('../db/redis'))();
-const _AUTH = new (require('../auth/confirmAuth'))(_REDIS);
+let _REDIS;
+let _AUTH;
 
+try {
+    _REDIS = new (require('../db/redis'))();
+    _AUTH = new (require('../auth/confirmAuth'))(_REDIS);
+} catch (err) {
+    console.log(err);
+}
 var http = require('http');
 
-
+const _MongoConfig = require('../db/mongo');
 const MongoClient = require('mongodb').MongoClient;
-const url = "mongodb://127.0.0.1:27017/";
+// const url = "mongodb://127.0.0.1:27017/";
+const url = _MongoConfig.url;
 
 var urls = require('url');
 
@@ -115,7 +122,7 @@ console.log(`Proxy Server Started (Redis ${_AUTH.id})`)
 module.exports = {
     
     add: (sub, port, requireAuthentication) => {
-        _REDIS.set(`APP:${p.shortName}`, JSON.stringify({requiresAuth: requireAuthentication}));
+        _REDIS.set(`APP:${sub}`, JSON.stringify({requiresAuth: requireAuthentication}));
         proxy.register(_CONF.createURL(sub, true), "127.0.0.1:" + port);
     }
 }

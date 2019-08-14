@@ -1,0 +1,30 @@
+version: '3.3'
+services:
+  mongo:
+    container_name: homerouter-mongo
+    image: 'mongo:4'
+    ports:
+      - 27017:27017
+  redis:
+    container_name: homerouter-redis
+    image: 'redis:5'
+    command: redis-server
+    ports:
+      - 6376:6379
+  homerouter:
+    privileged: true
+    container_name: homerouter
+    restart: on-failure
+    build: .
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 80:80
+    links:
+      - redis
+      - mongo
+    depends_on: 
+      - redis
+      - mongo
+    command: npm start
