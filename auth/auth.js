@@ -84,11 +84,15 @@ app.post("/login", (req, res) => {
                 bcrypt.compare(password, result['password'], (err, verify) => {
 
                     if(verify) {
+
                         const newToken = bcrypt.genSaltSync(saltRounds);
                         tempToken = newToken;            
 
-                        res.json({authenticated: true});
-
+                        if(result.loggedIn) {
+                            res.json({authenticated: true, showMFA: false});
+                        } else {
+                            res.json({authenticated: true, showMFA: true, qr: result.qr})
+                        }
                         dbo.collection("users").updateOne({username: username}, {$set: {token: newToken}}, (err, res) => {
                             if(err) console.log(err);
 
@@ -118,7 +122,6 @@ app.post("/login/mfa", (req, res) => {
         var dbo = db.db("homerouter");
         dbo.collection("users").findOne({username: username}, (err, result) => {
 
-            console.log(username + ": " + result['tfa'])
             const secret = result['tfa'];
             const verified = speakeasy.totp.verify({
                 secret: secret,
@@ -131,6 +134,12 @@ app.post("/login/mfa", (req, res) => {
                 tokenCache.push(token);
                 tempToken = "";
                 res.json({authenticated: true, token: token});
+
+                dbo.collection("users").updateOne({username: username}, {$set: {loggedIn: true, lastLogin: + (new Date)}}, (err, res) => {
+                    if(err) console.log(err);
+                    db.close();
+                });
+
             } else {
                 res.json({authenticated: false});
             }
@@ -152,21 +161,53 @@ app.post("/register", (req, res) => {
         const token = bcrypt.genSaltSync(saltRounds);
         const hash = bcrypt.hashSync(password, saltRounds);
 
-        const secret = speakeasy.generateSecret({length: 20, name: "HOME Router"});
+        const secret = speakeasy.generateSecret({length: 20, name: `HOME Router (${username})`});
+        
+        
 
-        dbo.collection("users").insertOne({username: username, password: hash, token: token, tfa: secret.base32}, function(err, result) {
-            if (err) throw err;
+        QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
 
-            QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
-                res.write(`<html><img src="${image_data}" /></html>`);
-                res.end();
-            })
+            dbo.collection("users").insertOne({username: username, password: hash, token: token, tfa: secret.base32, loggedIn: false, qr: image_data}, function(err, result) {
+                if (err) throw err;
 
-            db.close();
-        });
+                res.json({status: "complete"});
+
+                db.close();
+            });
+        })
+
     });    
 })
 
+MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("homerouter");
+
+    dbo.collection("users").find({}).toArray((err, result) => {
+        if(err) throw err;
+
+        if(result.length == 0) {
+            console.log("Creating base Admin user");
+            const token = bcrypt.genSaltSync(saltRounds);
+            const hash = bcrypt.hashSync("admin", saltRounds);
+
+            const secret = speakeasy.generateSecret({length: 20, name: `HOME Router (admin)`});
+
+            QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
+                dbo.collection("users").insertOne({username: "admin", password: hash, token: token, tfa: secret.base32, loggedIn: false, qr: image_data}, function(err, result) {
+                    if (err) throw err;
+
+                    console.log("Admin registered (admin/admin)");
+
+                    db.close();
+                });
+
+            })
+
+        }
+    });
+
+});
 // app.get('*', (req, res) => res.redirect("/auth"))
 
 app.listen(_CONF.ports.auth, () => console.log('Authentication Server Started'))

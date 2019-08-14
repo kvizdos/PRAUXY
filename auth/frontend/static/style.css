@@ -33,7 +33,7 @@ body, html {
     padding: 5px;
 }
 
-#secondStep {
+#secondStep, #mfaStep {
     display: none;
 }
 

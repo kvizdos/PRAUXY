@@ -4,7 +4,7 @@ class RedisManager {
     constructor() {
         try {
             // this.client = new redis({host:})
-        this.client = redis.createClient({host: 'redis'});
+        this.client = redis.createClient({host: process.env.REDIS || 'homerouter-redis'});
         } catch(err) {
             console.log(err);
         }

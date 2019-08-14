@@ -9,12 +9,24 @@ const login = () => {
         password: password
     }, (res) => {
         if(res.authenticated) {
-            $("#firstStep").hide();
-            $("#secondStep").show();
+            console.log(res);
+            if(!res.showMFA) {
+                $("#firstStep").hide();
+                $("#secondStep").show();
+            } else {
+                $("#firstStep").hide();
+                $('#mfaQR').attr('src', res.qr);
+                $("#mfaStep").show();
+            }
         } else {
             alert("Incorrect Username / Password");
         }
     })
+}
+
+const addedMFA = () => {
+    $('#mfaStep').hide()
+    $("#secondStep").show();
 }
 
 function setcookie(name, value, days)

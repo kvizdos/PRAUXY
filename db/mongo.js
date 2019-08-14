@@ -1,3 +1,3 @@
 module.exports = {
-    'url': 'mongodb://homerouter-mongo:27017'
+    'url': `mongodb://${process.env.MONGO || "homerouter-mongo"}:27017`
 }

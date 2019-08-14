@@ -27,6 +27,13 @@
                 <h2>Please enter your 2FA code</h2>
                 <input id="mfa" placeholder="6-digit code" />
                 <input id="mfaContinue" type="submit" value="Submit" onclick="confirmMFA()">
+                <p>Was it your first time logging in? Did you not save your MFA code? If so, do reload to get the QR code back.</p>
+            </div>
+
+            <div id="mfaStep">
+                <h2>Welcome! You must add me to your MFA platform of choice.</h2>
+                <img id="mfaQR">
+                <input id="mfaAddedBtn" type="submit" value="Continue" onclick="addedMFA()">
             </div>
         </div>
     </div>
