@@ -17,7 +17,8 @@ HOME Router allows for easy proxying of anything and allows you to put a strong 
 3. (semi-optional) Start a Mongo docker container, or, you can set the environment variable to your current Mongo server 
     - `docker run -d -p 27017:27017 --name homerouter-mongo -v ~/data:/data/db mongo`
 5. Start 'er up!
-    - `docker run -d kentonv/homerouter` (the environment variables listed below work here too)
+    - `docker run -d --privileged --name homerouter --link homerouter-mongo --link homerouter-redis -p 80:80 kentonv/homerouter` (the environment variables listed below work here too)
+    - **NOTE: --privileged is REQUIRED if you are running on Port 80!**
 6. Done!
 ### Developer // Not sure how production-ready Docker Compose is Setup
 2. Clone/Download Repo
@@ -40,6 +41,7 @@ Really, it's THAT easy! The default login is username admin and password admin. 
 2. AUTHPORT (8082) - This is to access the Authorization server
 3. DEAUTHEDPORT (8083) - This automatically redirects to Authorization server but is a required server.
 4. PORT (80) - This is the main port for the entire proxy server (what redirects you to everywhere)
+5. PROXYLOGS (false) - Set this to true to have a ton of BUNYAN logs from the Proxy (usually for development / debug only!)
 
 ## Use Cases
 Personally, I use HOME Router on my home network to allow me to access Guacamole, VSCode, and developmental servers while remaining safe and secure. I really like knowing that even if a piece of premade software doesn't already have an authentication system that I can trust HOME Router to handle it for me, while being able to use MFA! It's also pretty nice how it works across applications, so it's all Single Sign On and then cookie-based from there. 

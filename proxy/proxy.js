@@ -1,6 +1,6 @@
 const _CONF = require('../config');
 
-var proxy = require('redbird')({port: _CONF.ports.proxy, bunyan: false, secure: true, ssl: {
+var proxy = require('redbird')({port: _CONF.ports.proxy, bunyan: process.env.PROXYLOGS || false, secure: true, ssl: {
     http2: true,
     port: 443
 }, letsencrypt: {
