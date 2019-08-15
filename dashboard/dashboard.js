@@ -70,8 +70,9 @@ app.post('/api/new', upload.single('icon'), (req, res) => {
     const port = req.body.port;
     const requiresAuthentication = req.body.ra !== undefined && req.body.ra == "on" ? true : false;
     const image = req.file.originalname;
+    const customURL = req.body.customurl;
 
-    const newApp = {name: name, image: image, shortName: shortName, isImage: isImage, port: port, requiresAuthentication: requiresAuthentication};
+    const newApp = {name: name, image: image, shortName: shortName, isImage: isImage, port: port, requiresAuthentication: requiresAuthentication, customURL: customURL == "" ? "BASE" : customURL};
     var file = __dirname + '/frontend/assets/apps/' + req.file.originalname;
 
     fs.renameSync(req.file.path, file);
@@ -82,9 +83,7 @@ app.post('/api/new', upload.single('icon'), (req, res) => {
         dbo.collection("applications").insertOne(newApp, function(err, result) {
             if (err) throw err;
 
-            console.log(requiresAuthentication)
-
-            _PM.add(shortName, port, requiresAuthentication);
+            _PM.add(shortName, port, requiresAuthentication, customURL);
 
             res.redirect(_CONF.createURL());
             db.close();

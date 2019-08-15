@@ -58,7 +58,16 @@ const confirmAuth = (host, url, req) => {
         })
     }
 
-    const mainApp = req.headers.host.split(".")[0]
+    console.log(req.headers.host);
+
+    const base = escape(_CONF.baseURL);
+    const regex = new RegExp(base, 'g' );
+
+    let mainApp = req.headers.host;
+
+    if(req.headers.host.match(regex)) mainApp = req.headers.host.split(".")[0];
+
+    console.log(mainApp);
 
     const cookies = parseCookies(req);
 
@@ -70,10 +79,14 @@ const confirmAuth = (host, url, req) => {
         return new Promise((resolve, reject) => { 
             if(mainApp == "unauthed" || mainApp == "auth") {resolve(true)} else {
 
+                console.log("MA: " + mainApp);
+
                 _AUTH.authenticate(cookies.kvToken, mainApp).then(authed => {
+                    console.log("AUTH: " + authed)
                     if(authed) {
                         resolve(null);
                     } else {
+                        console.log("Redirecting to AUTH")
                         resolve("http://127.0.0.1:" + _CONF.ports.unauthed);
                     }
 
@@ -101,10 +114,15 @@ const registerSaved = () => {
             if (err) throw err;
 
             for(p of result) {
-                console.log(`Loaded ${p.name} (${p.shortName}) on port ${p.port} (requires authentication: ${p.requiresAuthentication})`);
-                _REDIS.set(`APP:${p.shortName}`, JSON.stringify({requiresAuth: p.requiresAuthentication}));
-                proxy.register(_CONF.createURL(p.shortName, true), "127.0.0.1:" + p.port);
-
+                if(p.customURL == undefined || p.customURL == "") {
+                    console.log(`Loaded ${p.name} (${p.shortName}) on port ${p.port} (requires authentication: ${p.requiresAuthentication})`);
+                    _REDIS.set(`APP:${p.shortName}`, JSON.stringify({requiresAuth: p.requiresAuthentication}));
+                    proxy.register(_CONF.createURL(p.shortName, true), "127.0.0.1:" + p.port);
+                } else {
+                    console.log(`Loaded ${p.name} (${p.shortName}) on port ${p.port} (customURL: ${p.customURL}, requires authentication: ${p.requiresAuthentication})`);
+                    _REDIS.set(`APP:${p.customURL}`, JSON.stringify({requiresAuth: p.requiresAuthentication}));
+                    proxy.register(p.customURL, "127.0.0.1:" + p.port);
+                }
             }
         });
     });
@@ -121,8 +139,13 @@ console.log(`Proxy Server Started (Redis ${_AUTH.id})`)
 
 module.exports = {
     
-    add: (sub, port, requireAuthentication) => {
-        _REDIS.set(`APP:${sub}`, JSON.stringify({requiresAuth: requireAuthentication}));
-        proxy.register(_CONF.createURL(sub, true), "127.0.0.1:" + port);
+    add: (sub, port, requireAuthentication, customURL = "") => {
+        if(customURL == "") {
+            _REDIS.set(`APP:${sub}`, JSON.stringify({requiresAuth: requireAuthentication}));
+            proxy.register(_CONF.createURL(sub, true), "127.0.0.1:" + port);
+        } else {
+            _REDIS.set(`APP:${sub}`, JSON.stringify({requiresAuth: requireAuthentication}));
+            proxy.register(customURL, "127.0.0.1:" + port);
+        }
     }
 }

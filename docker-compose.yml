@@ -2,18 +2,24 @@ version: '3.4'
 services:
   mongo:
     container_name: homerouter-mongo
-    network_mode: "host"
     image: 'mongo:4'
+    build:
+      context: .
+      network: host
   redis:
     container_name: homerouter-redis
     image: 'redis:5'
     command: redis-server
-    network_mode: "host"
+    build:
+      context: .
+      network: host
   homerouter:
     privileged: true
     container_name: homerouter
     restart: on-failure
-    build: .
+    build:
+      context: .
+      network: host
     volumes:
       - ./:/usr/src/app
       - /usr/src/app/node_modules
@@ -21,4 +27,3 @@ services:
       - redis
       - mongo
     command: npm start
-    network_mode: "host"

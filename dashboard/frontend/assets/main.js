@@ -4,6 +4,7 @@ const proto = "http://";
 const retrieveApps = () => {
     $.get(`${proto}${baseURL}/api/all`, (resp) => {
         localStorage.setItem("applications", JSON.stringify(resp));
+        console.log(resp);
         renderApps(resp);
     })
 }
@@ -13,7 +14,7 @@ const renderApps = (apps, first = false) => {
 
     for(app of apps) {
         $("#appContainer").prepend(`
-        <a class="customApp" href="${proto}${app.shortName}.${baseURL}">
+        <a class="customApp" href="${app.customURL == "" || app.customURL == undefined ? proto + app.shortName + "." + baseURL : proto + app.customURL} ">
             <div class="app">
                 ${app.isImage ? '<img src="assets/apps/' + app.image + '">' : app.name}
             </div>
