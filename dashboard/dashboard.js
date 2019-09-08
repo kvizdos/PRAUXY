@@ -63,6 +63,10 @@ app.get('/api/all', (req, res) => {
     });
 })
 
+app.get('/api/users/all', (req, res) => {
+    
+})
+
 app.post('/api/new', upload.single('icon'), (req, res) => {
     const name = req.body.name;
     const shortName = req.body.short;

@@ -1,12 +1,18 @@
 const _CONF = require('../config');
 
-var proxy = require('redbird')({port: _CONF.ports.proxy, bunyan: process.env.PROXYLOGS || false, secure: true, ssl: {
-    http2: true,
-    port: 443
-}, letsencrypt: {
-    path: __dirname + "/certs",
-    port: 9999    
-}});
+var proxy = require('redbird')({port: _CONF.ports.proxy, // http port is needed for LetsEncrypt challenge during request / renewal. Also enables automatic http->https redirection for registered https routes. 
+    letsencrypt: {
+        path: __dirname + '/../certs',
+        port: 9999
+    },
+    ssl: {
+        port: 443,
+        http2: true
+    },
+    bunyan: false,
+    xfwd: false});
+//, bunyan: process.env.PROXYLOGS || false
+console.log(process.env.NODE_ENV);
 
 let _REDIS;
 let _AUTH;
@@ -102,10 +108,20 @@ const confirmAuth = (host, url, req) => {
 confirmAuth.priority = 200;
 proxy.addResolver(confirmAuth);
 
-proxy.register("auth.home.kentonvizdos.com", "127.0.0.1:" + _CONF.ports.auth);
-proxy.register("unauth.home.kentonvizdos.com", "127.0.0.1:" + _CONF.ports.unauthed);
-proxy.register("home.kentonvizdos.com", "127.0.0.1:" + _CONF.ports.dashboard);
+proxy.register(_CONF.createURL('auth', true), "127.0.0.1:" + _CONF.ports.auth, {
+    ssl: {
+      letsencrypt: {
+        email: 'kvizdos@gmail.com', // Domain owner/admin email
+        production: true, // WARNING: Only use this flag when the proxy is verified to work correctly to avoid being banned!
+      }
+    }
+});
 
+proxy.register(_CONF.createURL('unauth', true), "127.0.0.1:" + _CONF.ports.unauthed, {ssl: true});
+
+proxy.register(_CONF.createURL('', true), "127.0.0.1:" + _CONF.ports.dashboard, {
+    ssl: true
+});
 const registerSaved = () => {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
         if (err) throw err;

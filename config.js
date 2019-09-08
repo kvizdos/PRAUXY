@@ -8,6 +8,7 @@ const config = function() {
     this.baseURL = process.env.URL || "home.kentonvizdos.com",
     this.protocol = "http",
     this.createURL = (app = "", noProto = false) => {
+        console.log(process.env.URL);
         return `${!noProto ? this.protocol + "://" : ""}${app != "" ? app + "." : ""}${this.baseURL}`
     }
 }

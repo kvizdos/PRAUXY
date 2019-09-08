@@ -1,0 +1,6 @@
+{
+    "env": {
+        "NODE_ENV": "dev",
+        "URL": "devhome.kentonvizdos.com"
+    }
+}
