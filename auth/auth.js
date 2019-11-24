@@ -2,7 +2,7 @@
 const express = require('express')
 const app = express()
 
-const _MongoConfig = require('../db/mongo');
+const _MongoConfig = require('../helpers/mongo');
 const MongoClient = require('mongodb').MongoClient;
 // const url = "mongodb://127.0.0.1:27017/";
 const url = _MongoConfig.url;
@@ -22,8 +22,10 @@ let tempToken;
 let tokenCache = [];
 const _CONF = require('../config');
 
-const _REDIS = new (require('../db/redis'))();
+const _REDIS = new (require('../helpers/redis'))();
 const _AUTH = new (require('./confirmAuth'))(_REDIS);
+
+const _LOGGER = require('../helpers/logging');
 
 // Use req.query to read values!!
 app.use(bodyParser.json());
@@ -55,7 +57,6 @@ app.get("/verify/*", (req, res) => {
     // }
 
     authenticate(req.cookies.kvToken).then(authed => {
-        console.log(authed);
         if(authed) {
             res.redirect(redirectTo);
         } else {
@@ -86,15 +87,15 @@ app.post("/login", (req, res) => {
                     if(verify) {
 
                         const newToken = bcrypt.genSaltSync(saltRounds);
-                        tempToken = newToken;            
-
+                        _REDIS.set(`AUTHTOKEN:${username}`, newToken, 60);
+                        
                         if(result.loggedIn) {
                             res.json({authenticated: true, showMFA: false});
                         } else {
                             res.json({authenticated: true, showMFA: true, qr: result.qr})
                         }
                         dbo.collection("users").updateOne({username: username}, {$set: {token: newToken}}, (err, res) => {
-                            if(err) console.log(err);
+                            if(err) if(err) _LOGGER.warn(err, "Authorization");
 
                             db.close();
 
@@ -129,20 +130,29 @@ app.post("/login/mfa", (req, res) => {
                 token: mfa
             })
 
-            if(verified) {
-                const token = tempToken;
-                tokenCache.push(token);
-                tempToken = "";
-                res.json({authenticated: true, token: token});
+            _REDIS.get(`AUTHTOKEN:${username}`).then(token => {
+                if(token == null) {
+                    _LOGGER.error(`Someone attempted to login directly through TFA (${req.headers['x-forwarded-for'] || req.connection.remoteAddress})`, "Authorization")
+                    res.json({authenticated: false})
+                    return;
+                }
 
-                dbo.collection("users").updateOne({username: username}, {$set: {loggedIn: true, lastLogin: + (new Date)}}, (err, res) => {
-                    if(err) console.log(err);
-                    db.close();
-                });
+                if(verified) {
+                    _REDIS.set(`AUTHTOKEN:${username}`, "", 1);
+                    tokenCache.push(token);
 
-            } else {
-                res.json({authenticated: false});
-            }
+                    res.json({authenticated: true, token: token});
+
+                    dbo.collection("users").updateOne({username: username}, {$set: {loggedIn: true, lastLogin: + (new Date)}}, (err, res) => {
+                        if(err) _LOGGER.warn(err, "Authorization");
+                        db.close();
+                    });
+
+                } else {
+                    _LOGGER.warn(`Incorrect TFA code used for ${username} (${mfa})`)
+                    res.json({authenticated: false});
+                }
+            })
 
             db.close();
         });
@@ -159,7 +169,6 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
         if(err) throw err;
 
         if(result.length == 0) {
-            console.log("Creating base Admin user");
             const token = bcrypt.genSaltSync(saltRounds);
             const hash = bcrypt.hashSync("admin", saltRounds);
 
@@ -169,7 +178,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
                 dbo.collection("users").insertOne({username: "admin", password: hash, token: token, tfa: secret.base32, loggedIn: false, qr: image_data}, function(err, result) {
                     if (err) throw err;
 
-                    console.log("Admin registered (admin/admin)");
+                    _LOGGER.log("Admin registered (admin/admin)", "user");
 
                     db.close();
                 });
@@ -182,4 +191,4 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
 });
 // app.get('*', (req, res) => res.redirect("/auth"))
 
-app.listen(_CONF.ports.auth, () => console.log('Authentication Server Started'))
+app.listen(_CONF.ports.auth, () => _LOGGER.log(`Started on ${_CONF.ports.auth}`, "Authorization"))

@@ -9,7 +9,6 @@ const login = () => {
         password: password
     }, (res) => {
         if(res.authenticated) {
-            console.log(res);
             if(!res.showMFA) {
                 $("#firstStep").hide();
                 $("#secondStep").show();

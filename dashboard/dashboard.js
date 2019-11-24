@@ -6,27 +6,19 @@ var bodyParser = require('body-parser')
 var multer  = require('multer');
 var fs = require("fs");
 
-const _MongoConfig = require('../db/mongo');
+const _MongoConfig = require('../helpers/mongo');
 const MongoClient = require('mongodb').MongoClient;
 // const url = "mongodb://127.0.0.1:27017/";
 const url = _MongoConfig.url;
 
-console.log("Dashboard Starting (loading Redis)")
+const _LOGGER = require('../helpers/logging');
 
-const _REDIS = new (require('../db/redis'))();
-
-console.log("Dashboard Starting (Redis loaded)")
-
+const _REDIS = new (require('../helpers/redis'))();
 const _AUTH = new (require('../auth/confirmAuth'))(_REDIS);
-
-console.log("Dashboard Starting (Auth loaded)")
-
 const _PM = require('../proxy/proxy');
 const _AUTHMODULE = require('../auth/auth');
 
 const _CONF = require('../config');
-
-console.log("Dashboard Starting (Everything lOaded)")
 
 // Use req.query to read values!!
 app.use(bodyParser.json());
@@ -43,10 +35,6 @@ const storage = multer.diskStorage({ // notice you are calling the multer.diskSt
 var upload = multer({ storage })
 
 app.use('/assets', express.static("./dashboard/frontend/assets"));
-
-app.get("/.well-known/acme-challenge", (req, res) => {
-    console.log("EUIORHWOGHRSGHFDOIGNDFOGHNJDFOGJDFIOGJDFIOGJDFOIGJDFOIGJFDOIGDOIGJOI")
-})
 
 app.get("/new", (req, res) => {
     res.sendFile("./dashboard/frontend/new.html", {root: "./"})
@@ -112,6 +100,8 @@ app.post("/api/users/register", (req, res) => {
             dbo.collection("users").insertOne({username: username, password: hash, token: token, tfa: secret.base32, loggedIn: false, qr: image_data, group: group}, function(err, result) {
                 if (err) throw err;
 
+                _LOGGER.log(`User ${username} created (${group})`)
+
                 res.json({status: "complete"});
 
                 db.close();
@@ -138,14 +128,11 @@ app.get("/*", (req, res) => {
     res.sendFile("./dashboard/frontend/index.html", {root: "./"})
 })
 
-console.log("Trying to publish to :" + _CONF.ports.dashboard)
-
-
 try {
-app.listen(_CONF.ports.dashboard, (err) =>{ 
-    if(err) throw err;
-    console.log('Dashboard Server Started')
-})
+    app.listen(_CONF.ports.dashboard, (err) =>{ 
+        if(err) throw err;
+        _LOGGER.log(`Started`, "Dashboard")
+    })
 } catch(err) {
-    console.log(err)
+    _LOGGER.error(err, "Dashboard");
 }

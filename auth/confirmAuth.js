@@ -1,7 +1,7 @@
 let cachedTokens = [];
-
-
-const _MongoConfig = require('../db/mongo');
+const _LOGGER = require('../helpers/logging');
+const _DATE = require('../helpers/date');
+const _MongoConfig = require('../helpers/mongo');
 const MongoClient = require('mongodb').MongoClient;
 // const url = "mongodb://127.0.0.1:27017/";
 const url = _MongoConfig.url;
@@ -40,6 +40,8 @@ class Authenticator {
                                     if(err) throw err;
                                     if(u != null) {
                                         _this._REDIS.set(`${user}:${token}`, true);
+
+                                        _LOGGER.log(`${user} logged in (${_DATE.pretty()})`, "Authorization")
 
                                         resolve(true)
                                     }

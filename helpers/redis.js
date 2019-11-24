@@ -1,4 +1,5 @@
 const redis = require('redis')
+const _LOGGER = require('./logging')
 
 class RedisManager {
     constructor() {
@@ -6,21 +7,25 @@ class RedisManager {
             // this.client = new redis({host:})
         this.client = redis.createClient();
         } catch(err) {
-            console.log(err);
+            _LOGGER.error(err, "Redis");
         }
         this.client.on("error", function (err) {
-            console.log("Error " + err);
+            _LOGGER.error(err, "Redis");
         });
 
         this.client.on("connect", () => {
-            console.log("Connected to Redis")
+            _LOGGER.log("Connection Created", "Redis")
         })
 
 
     }
 
-    set(key, val) {
-        this.client.set(key, val);
+    set(key, val, expireTime = -1) {
+        if(expireTime == -1) {
+            this.client.set(key, val);
+        } else {
+            this.client.set(key, val, 'EX', expireTime)
+        }
     }
 
     get(key) {

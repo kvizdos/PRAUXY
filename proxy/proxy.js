@@ -1,4 +1,5 @@
 const _CONF = require('../config');
+const _LOGGER = require('../helpers/logging');
 
 var proxy = require('redbird')({port: _CONF.ports.proxy, 
     bunyan: false
@@ -12,20 +13,19 @@ var proxy = require('redbird')({port: _CONF.ports.proxy,
 	}
 */
 //, bunyan: process.env.PROXYLOGS || false
-console.log(process.env.NODE_ENV);
 
 let _REDIS;
 let _AUTH;
 
 try {
-    _REDIS = new (require('../db/redis'))();
+    _REDIS = new (require('../helpers/redis'))();
     _AUTH = new (require('../auth/confirmAuth'))(_REDIS);
 } catch (err) {
-    console.log(err);
+    _LOGGER.error(err, "Proxy");
 }
 var http = require('http');
 
-const _MongoConfig = require('../db/mongo');
+const _MongoConfig = require('../helpers/mongo');
 const MongoClient = require('mongodb').MongoClient;
 // const url = "mongodb://127.0.0.1:27017/";
 const url = _MongoConfig.url;
@@ -38,12 +38,12 @@ http.createServer(function (req, res) {
         'Location': _CONF.createURL("auth") + (goTo !== "" ? "?go=" + goTo : "")
       });
     res.end();
-}).listen(_CONF.ports.unauthed, () => console.log("Unauth Redirect Server Started"));
+}).listen(_CONF.ports.unauthed, () => _LOGGER.log("Started", "Unauth Server"));
 
 http.createServer((req, res) => {
     res.write("DONE");
     res.end();
-}).listen(_CONF.ports.pageNotFound, () => console.log("404 Page Started"));
+}).listen(_CONF.ports.pageNotFound, () => _LOGGER.log("Started", "404 Server"));
 
 
 function parseCookies (request) {
@@ -65,16 +65,12 @@ const confirmAuth = (host, url, req) => {
         })
     }
 
-    console.log(req.headers.host);
-
     const base = escape(_CONF.baseURL);
     const regex = new RegExp(base, 'g' );
 
     let mainApp = req.headers.host;
 
     if(req.headers.host.match(regex)) mainApp = req.headers.host.split(".")[0];
-
-    console.log(mainApp);
 
     const cookies = parseCookies(req);
 
@@ -86,20 +82,13 @@ const confirmAuth = (host, url, req) => {
         return new Promise((resolve, reject) => { 
             if(mainApp == "unauthed" || mainApp == "auth") {resolve(true)} else {
 
-                console.log("MA: " + mainApp);
-
                 _AUTH.authenticate(cookies.kvToken, mainApp).then(authed => {
-                    console.log("AUTH: " + authed)
                     if(authed) {
                         resolve(null);
                     } else {
-                        console.log("Redirecting to AUTH")
+                        _LOGGER.warn(`Unauthorized User attempted to access ${mainApp.toUpperCase() + " service" || "a service"}`, "Authorization");
                         resolve("http://127.0.0.1:" + _CONF.ports.unauthed);
                     }
-
-                    const t2 = new Date();
-                    // in case I want to log this eventually
-                    let authTime = (t2 - t1) / 1000
                 })
             }
         });
@@ -125,11 +114,11 @@ const registerSaved = () => {
 
             for(p of result) {
                 if(p.customURL == undefined || p.customURL == "") {
-                    console.log(`Loaded ${p.name} (${p.shortName}) on port ${p.port} (requires authentication: ${p.requiresAuthentication})`);
+                    _LOGGER.log(`Started on port ${p.port} (requires authentication: ${p.requiresAuthentication})`, p.name + " (" + p.shortName + ")");
                     _REDIS.set(`APP:${p.shortName}`, JSON.stringify({requiresAuth: p.requiresAuthentication}));
                     proxy.register(_CONF.createURL(p.shortName, true), "127.0.0.1:" + p.port);
                 } else {
-                    console.log(`Loaded ${p.name} (${p.shortName}) on port ${p.port} (customURL: ${p.customURL}, requires authentication: ${p.requiresAuthentication})`);
+                    _LOGGER.log(`Started (${p.shortName}) on port ${p.port} (customURL: ${p.customURL}, requires authentication: ${p.requiresAuthentication})`, p.name + " (" + p.shortName + ")");
                     _REDIS.set(`APP:${p.customURL}`, JSON.stringify({requiresAuth: p.requiresAuthentication}));
                     proxy.register(p.customURL, "127.0.0.1:" + p.port);
                 }
@@ -143,7 +132,7 @@ registerSaved();
 
 //proxy.register('*', "127.0.0.1:" + _CONF.ports.pageNotFound);
 
-console.log(`Proxy Server Started (Redis ${_AUTH.id})`)
+_LOGGER.log(`Started (Redis ${_AUTH.id})`, "Proxy")
 
 // module.exports.add = function(sub, port) {
 //     proxy.register(sub + ".home.kentonvizdos.com", "http://portabeast:" + port);
