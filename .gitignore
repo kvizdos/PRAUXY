@@ -3,3 +3,5 @@ node_modules
 proxy/certs/*
 !proxy/certs/.gitkeep
 certs/*
+tmp/*
+dashboard/frontend/assets/apps/*
