@@ -189,6 +189,5 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     });
 
 });
-// app.get('*', (req, res) => res.redirect("/auth"))
 
 app.listen(_CONF.ports.auth, () => _LOGGER.log(`Started on ${_CONF.ports.auth}`, "Authorization"))

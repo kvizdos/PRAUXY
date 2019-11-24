@@ -30,10 +30,12 @@ const MongoClient = require('mongodb').MongoClient;
 // const url = "mongodb://127.0.0.1:27017/";
 const url = _MongoConfig.url;
 
-var urls = require('url');
+let registered = [];
 
 http.createServer(function (req, res) {
     var goTo = (req.url.slice(1, -1) || "");
+    if(goTo = "das") goTo = "";
+    
     res.writeHead(302, {
         'Location': _CONF.createURL("auth") + (goTo !== "" ? "?go=" + goTo : "")
       });
@@ -44,6 +46,8 @@ http.createServer((req, res) => {
     res.write("DONE");
     res.end();
 }).listen(_CONF.ports.pageNotFound, () => _LOGGER.log("Started", "404 Server"));
+
+
 
 
 function parseCookies (request) {
@@ -97,6 +101,7 @@ const confirmAuth = (host, url, req) => {
 
 
 confirmAuth.priority = 200;
+
 proxy.addResolver(confirmAuth);
 
 proxy.register(_CONF.createURL('auth', true), "127.0.0.1:" + _CONF.ports.auth);
@@ -104,6 +109,10 @@ proxy.register(_CONF.createURL('auth', true), "127.0.0.1:" + _CONF.ports.auth);
 proxy.register(_CONF.createURL('unauth', true), "127.0.0.1:" + _CONF.ports.unauthed);
 
 proxy.register(_CONF.createURL('', true), "127.0.0.1:" + _CONF.ports.dashboard);
+
+proxy.register("127.0.0.1", "127.0.0.1:" + _CONF.ports.dashboard);
+
+registered.push(...["auth", "unauthed", "home"]);
 
 const registerSaved = () => {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
@@ -117,6 +126,7 @@ const registerSaved = () => {
                     _LOGGER.log(`Started on port ${p.port} (requires authentication: ${p.requiresAuthentication})`, p.name + " (" + p.shortName + ")");
                     _REDIS.set(`APP:${p.shortName}`, JSON.stringify({requiresAuth: p.requiresAuthentication}));
                     proxy.register(_CONF.createURL(p.shortName, true), "127.0.0.1:" + p.port);
+                    registered.push(p.shortName)
                 } else {
                     _LOGGER.log(`Started (${p.shortName}) on port ${p.port} (customURL: ${p.customURL}, requires authentication: ${p.requiresAuthentication})`, p.name + " (" + p.shortName + ")");
                     _REDIS.set(`APP:${p.customURL}`, JSON.stringify({requiresAuth: p.requiresAuthentication}));
