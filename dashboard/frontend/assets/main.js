@@ -1,11 +1,10 @@
 const baseURL = "home.kentonvizdos.com";
 const proto = "http://";
 
-const retrieveApps = () => {
-    $.get(`${proto}${baseURL}/api/all`, (resp) => {
-        localStorage.setItem("applications", JSON.stringify(resp));
-        console.log(resp);
-        renderApps(resp);
+const getAndCache = (url, lsItem, cb = () => {}) => {
+    $.get(url, (resp) => {
+        localStorage.setItem(lsItem, JSON.stringify(resp));
+        cb(resp);
     })
 }
 
@@ -23,11 +22,23 @@ const renderApps = (apps, first = false) => {
     }
 }
 
+const renderUsers = (users) => {
+    for(const {username, lastLogin} of users) {
+        $('tbody#users').append(`
+            <tr>
+                <td>${username}</td>
+                <td>${(new Date(lastLogin)).toString()}</td>
+            </tr>
+        `)
+    }
+}
+
 let _SM;
 
 window.onload = function() {
     _SM = new StateManager();
     _SM.setListeners()
     if(localStorage.getItem("applications") != null) renderApps(JSON.parse(localStorage.getItem("applications")), true)
-    retrieveApps();
+    getAndCache(`${proto}${baseURL}/api/all`, "applications", renderApps);
+    getAndCache(`${proto}${baseURL}/api/users/all`, "users", renderUsers);
 }

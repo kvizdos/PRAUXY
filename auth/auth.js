@@ -151,34 +151,6 @@ app.post("/login/mfa", (req, res) => {
 
 })
 
-app.post("/register", (req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
-
-    MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-        if (err) throw err;
-        var dbo = db.db("homerouter");
-        const token = bcrypt.genSaltSync(saltRounds);
-        const hash = bcrypt.hashSync(password, saltRounds);
-
-        const secret = speakeasy.generateSecret({length: 20, name: `HOME Router (${username})`});
-        
-        
-
-        QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
-
-            dbo.collection("users").insertOne({username: username, password: hash, token: token, tfa: secret.base32, loggedIn: false, qr: image_data}, function(err, result) {
-                if (err) throw err;
-
-                res.json({status: "complete"});
-
-                db.close();
-            });
-        })
-
-    });    
-})
-
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     if (err) throw err;
     var dbo = db.db("homerouter");

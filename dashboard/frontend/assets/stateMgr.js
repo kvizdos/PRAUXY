@@ -2,7 +2,8 @@ class StateManager {
 
     pages = [
         {page: "Dashboard", path: "/dash", id: "appContainer"},
-        {page: "Add an app", path: "/add", id: "addApp"}
+        {page: "Add an app", path: "/add", id: "addApp"},
+        {page: "Users", path: "/users", id: "userList"}
     ]
 
     constructor() {
@@ -22,7 +23,11 @@ class StateManager {
             }
         }
 
-        this.setPage(this.currentState.page)
+        this.setPage(this.currentState.page, this.getNavItem(this.currentState.page));
+    }
+
+    getNavItem = (page) => {
+        return $("#links").children().toArray().find(el => el.innerText == page);
     }
 
     setPage = (page, el) => {

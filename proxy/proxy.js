@@ -1,8 +1,16 @@
 const _CONF = require('../config');
 
 var proxy = require('redbird')({port: _CONF.ports.proxy, 
-    bunyan: false,
-    xfwd: false});
+    bunyan: false
+});
+
+/*const sslParams = {
+		letsencrypt: {
+			email: "kvizdos+letsencrypt@gmail.com",
+			production: false
+		}
+	}
+*/
 //, bunyan: process.env.PROXYLOGS || false
 console.log(process.env.NODE_ENV);
 
@@ -35,7 +43,8 @@ http.createServer(function (req, res) {
 http.createServer((req, res) => {
     res.write("DONE");
     res.end();
-}).listen(8084)
+}).listen(_CONF.ports.pageNotFound, () => console.log("404 Page Started"));
+
 
 function parseCookies (request) {
     var list = {},
@@ -97,6 +106,7 @@ const confirmAuth = (host, url, req) => {
     }
 }
 
+
 confirmAuth.priority = 200;
 proxy.addResolver(confirmAuth);
 
@@ -105,6 +115,7 @@ proxy.register(_CONF.createURL('auth', true), "127.0.0.1:" + _CONF.ports.auth);
 proxy.register(_CONF.createURL('unauth', true), "127.0.0.1:" + _CONF.ports.unauthed);
 
 proxy.register(_CONF.createURL('', true), "127.0.0.1:" + _CONF.ports.dashboard);
+
 const registerSaved = () => {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
         if (err) throw err;
@@ -128,6 +139,9 @@ const registerSaved = () => {
 }
 
 registerSaved();
+
+
+//proxy.register('*', "127.0.0.1:" + _CONF.ports.pageNotFound);
 
 console.log(`Proxy Server Started (Redis ${_AUTH.id})`)
 

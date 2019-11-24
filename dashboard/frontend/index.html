@@ -33,7 +33,7 @@
                 
                 <p href="#" onclick="_SM.setPage('Dashboard', this)">Dashboard</p>
                 <p href="#" onclick="_SM.setPage('Add an app', this)">Add an app</p>
-                <p href="#">Users</p>
+                <p href="#" onclick="_SM.setPage('Users', this)">Users</p>
                 <p href="#">Stats</p>
             </div>
             <div id="sessionInfo">
@@ -43,7 +43,7 @@
             </div>
         </nav>
         <div id="appContainer" class="page">
-            <a class="defaultApp" href="http://home.kentonvizdos.com/new">
+            <a class="defaultApp" href="" onclick="_SM.setPage('Add an app', this)">
                 <div class="app">
                     <h1>+</h1>
                 </div>
@@ -79,6 +79,23 @@
                     <input type="submit" value="Add">
                 </form>
             </div>
+        </div>
+
+        <div id="userList" class="page">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Last Login</th>
+                    </tr>
+                </thead>
+                <tbody id="users">
+                    <!-- <tr>
+                        <td>admin</td>
+                        <td>admin@admin.com</td>
+                    </tr> -->
+                </tbody>
+            </table>
         </div>
     </div>
 </body>

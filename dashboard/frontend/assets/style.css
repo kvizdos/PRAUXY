@@ -98,8 +98,8 @@ body, html {
 
 #navbar p.navActive {
     background-color: rgb(18, 148, 223);
-    border-bottom: 1px solid white;
     color: white;
+    box-shadow: inset 0 -1px 0 white;
 }
 
 #navbar p:hover {
@@ -113,8 +113,6 @@ body, html {
 
 #appContainer {
     display: flex;
-    padding: 25px;
-    grid-area: contentArea;
     display: inline-grid;
     grid-template-columns: auto auto;
     grid-gap: 25px;
@@ -147,13 +145,22 @@ a {
     color: rgb(82, 82, 82);
 }
 
+p, h1 {
+    padding: 0;
+    margin: 0;
+}
+
+.page {
+    padding: 25px;
+    grid-area: contentArea;
+}
+
 #addApp {
     display: flex;
     flex-direction: column;
     margin-top: 0;
     padding: 25px;
     padding-top: 15px;
-    grid-area: contentArea;
 }
 
 #addApp input[type="text"] {
@@ -201,6 +208,19 @@ a {
     display: none !important;
 }
 
+table {
+    text-align: left;
+    width: 100%;
+}
+
+table tbody tr {
+    padding: 0;
+    margin: 0;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: red;
+}
 @media only screen and (min-width: 768px) {
     #mobileHeader {
         display: none;

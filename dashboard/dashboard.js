@@ -63,10 +63,6 @@ app.get('/api/all', (req, res) => {
     });
 })
 
-app.get('/api/users/all', (req, res) => {
-    
-})
-
 app.post('/api/new', upload.single('icon'), (req, res) => {
     const name = req.body.name;
     const shortName = req.body.short;
@@ -96,6 +92,47 @@ app.post('/api/new', upload.single('icon'), (req, res) => {
     
 })
 
+app.post("/api/users/register", (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    const group = 0; // 0 = user; 1 = admin;
+
+    MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db("homerouter");
+        const token = bcrypt.genSaltSync(saltRounds);
+        const hash = bcrypt.hashSync(password, saltRounds);
+
+        const secret = speakeasy.generateSecret({length: 20, name: `HOME Router (${username})`});
+        
+        
+
+        QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
+
+            dbo.collection("users").insertOne({username: username, password: hash, token: token, tfa: secret.base32, loggedIn: false, qr: image_data, group: group}, function(err, result) {
+                if (err) throw err;
+
+                res.json({status: "complete"});
+
+                db.close();
+            });
+        })
+
+    });    
+})
+
+app.get('/api/users/all', (req, res) => {
+    MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+        var dbo = db.db("homerouter");
+
+        dbo.collection("users").find({}, { projection: { _id: 0, username: 1, loggedIn: 1, qr: 1, lastLogin: 1 } }).toArray((err, result) => {
+            if (err) throw err;
+
+            res.send(result)
+            db.close();
+        });
+    });
+})
 
 app.get("/*", (req, res) => {
     res.sendFile("./dashboard/frontend/index.html", {root: "./"})
