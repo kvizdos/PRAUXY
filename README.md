@@ -25,11 +25,12 @@ Really, it's THAT easy! The default login is username admin and password admin. 
 ### SSL Setup
 1. Install nginx
     - Hopefully soon HTTPS will be built in, but for now, you need to proxy the proxy!
-2. Create LetsEncrypt SSL certificate / other cert
+2. Create **WILDCARD** LetsEncrypt SSL certificate / other cert
 3. Modify config.js
     - Change `ports.proxy = 81` (or any other port)
     - Set `this.protocol = "https"`
 4. Create a server file and put the follow in it:
+    - This may soon be automated if I can figure out a secure way to do so.
 ```
 server {
         listen 80 default_server;
@@ -56,20 +57,26 @@ server {
     - sudo service nginx restart
 6. Enjoy!
 
-### Configure Error Pages
-1. Install nginx
-2. Create / modify server file
-3. Add the following (an example based on an SSL-enabled site)
-    - Why use 504? The proxy system does not yet support detecting timeouts, so it gives you a 504 timeout error.
+## Adding SSL to custom URL
+1. Generate SSL Certificate
+2. Append this to the bottom of the file you created above:
+    - This may soon be automated if I can figure out a secure way to do so.
 ```
 server {
-    ...
-    error_page 504 /errors/timeout
-
-    location /errors {
-        root <path_to_install>/errors
-        try_files $uri/ $uri.html;
+    listen 443 ssl;
+    server_name <url> www.<url>;
+    ssl_certificate /etc/letsencrypt/live/<URL>/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/<URL>/privkey.pem;
+    location / {
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade; # Optional; Allows WebSockets
+            proxy_set_header Connection "Upgrade";  # Optional; Allows WebSockets
+            proxy_pass http://localhost:81;
     }
+}
+
 }
 ```
 
