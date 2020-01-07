@@ -6,6 +6,7 @@ const config = function() {
         pageNotFound: process.env.PAGENOTFOUND || 8084,
         proxy: process.env.PORT || 80
     },
+    this.sslEnabled = false, // Requires SSL redirections thru Nginx/other
     this.baseURL = process.env.URL || "home.kentonvizdos.com",
     this.protocol = "http",
     this.createURL = (app = "", noProto = false) => {

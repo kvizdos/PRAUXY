@@ -3,7 +3,8 @@ class StateManager {
     pages = [
         {page: "Dashboard", path: "/dash", id: "appContainer"},
         {page: "Add an app", path: "/add", id: "addApp"},
-        {page: "Users", path: "/users", id: "userList"}
+        {page: "Users", path: "/users", id: "userList"},
+        {page: "Add User", path: "/users/add", id: "addUser"}
     ]
 
     constructor() {

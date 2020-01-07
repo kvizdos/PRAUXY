@@ -87,6 +87,7 @@
                     <tr>
                         <th>Username</th>
                         <th>Last Login</th>
+                        <th><button onclick="_SM.setPage('Add User', this)">+</button></th>
                     </tr>
                 </thead>
                 <tbody id="users">
@@ -96,6 +97,22 @@
                     </tr> -->
                 </tbody>
             </table>
+        </div>
+
+        <div id="addUser" class="page">
+            <h2>Add a User</h2>
+
+            <form id="createNewApplication" action="/api/users/register" method="post">
+                <p>Username</p>
+                <input type="text" name="name" id="name" placeholder="kvizdos" required>
+
+                <p>Group</p>
+                <input checked name="group" type="checkbox" id="userGroup"> Admin<br>
+
+                <br>
+
+                <input type="submit" value="Add">
+            </form>
         </div>
     </div>
 </body>
