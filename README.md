@@ -22,7 +22,8 @@ HOME Router allows for easy proxying of anything and allows you to put a strong 
 
 Really, it's THAT easy! The default login is username admin and password admin. You should immediately reset this and connect to your MFA of choice.
 
-### SSL Setup
+## SSL Setup
+### Initialize SSL
 1. Install nginx
     - Hopefully soon HTTPS will be built in, but for now, you need to proxy the proxy!
 2. Create **WILDCARD** LetsEncrypt SSL certificate / other cert
@@ -57,7 +58,7 @@ server {
     - sudo service nginx restart
 6. Enjoy!
 
-## Adding SSL to custom URL
+### Adding SSL to custom URL
 1. Generate SSL Certificate
 2. Create an app in the Proxy Dashboard
     - Set the Custom URL to whatever your URL will be.
