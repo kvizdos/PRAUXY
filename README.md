@@ -56,6 +56,23 @@ server {
     - sudo service nginx restart
 6. Enjoy!
 
+### Configure Error Pages
+1. Install nginx
+2. Create / modify server file
+3. Add the following (an example based on an SSL-enabled site)
+    - Why use 504? The proxy system does not yet support detecting timeouts, so it gives you a 504 timeout error.
+```
+server {
+    ...
+    error_page 504 /errors/timeout
+
+    location /errors {
+        root <path_to_install>/errors
+        try_files $uri/ $uri.html;
+    }
+}
+```
+
 ### Optional Environment Variables
 1. DASHPORT (8081) - This is to access the Dashboard server
 2. AUTHPORT (8082) - This is to access the Authorization server
