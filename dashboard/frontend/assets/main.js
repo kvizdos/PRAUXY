@@ -1,5 +1,5 @@
 const baseURL = "home.kentonvizdos.com";
-const proto = window.location.protocol + "/";
+const proto = window.location.protocol + "//";
 
 const getAndCache = (url, lsItem, cb = () => {}) => {
     $.get(url, (resp) => {

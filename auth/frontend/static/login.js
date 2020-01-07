@@ -4,7 +4,7 @@ const login = () => {
 
     $("#login").prop("disabled", true);
 
-    $.post(window.location.protocol + "/auth." + window.location.hostname.split(".").splice(1).join(".") + "/login", {
+    $.post(window.location.protocol + "//auth." + window.location.hostname.split(".").splice(1).join(".") + "/login", {
         username: username,
         password: password
     }, (res) => {
@@ -45,7 +45,7 @@ const confirmMFA = () => {
     const mfa = $("#mfa").val();
     const username = $("#username").val();
 
-    $.post(window.location.protocol + "/auth." + window.location.hostname.split(".").splice(1).join(".") + "/login/mfa", {
+    $.post(window.location.protocol + "//auth." + window.location.hostname.split(".").splice(1).join(".") + "/login/mfa", {
         username: username,
         mfa: mfa
     }, (res) => {
@@ -54,7 +54,7 @@ const confirmMFA = () => {
             var url = new URL(window.location.href);
             var redir = url.searchParams.get("go");
 
-            window.location.href = window.location.protocol + "/" + (redir !== null ? redir + "." : "") + "home.kentonvizdos.com";
+            window.location.href = window.location.protocol + "//" + (redir !== null ? redir + "." : "") + "home.kentonvizdos.com";
         } else {
             alert("Incorrect 2FA code");
         }
