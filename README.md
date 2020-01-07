@@ -59,6 +59,8 @@ server {
 
 ## Adding SSL to custom URL
 1. Generate SSL Certificate
+2. Create an app in the Proxy Dashboard
+    - Set the Custom URL to whatever your URL will be.
 2. Append this to the bottom of the file you created above:
     - This may soon be automated if I can figure out a secure way to do so.
 ```
@@ -76,9 +78,8 @@ server {
             proxy_pass http://localhost:81;
     }
 }
-
-}
 ```
+3. Restart Nginx
 
 ### Optional Environment Variables
 1. DASHPORT (8081) - This is to access the Dashboard server
