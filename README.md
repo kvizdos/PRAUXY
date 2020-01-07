@@ -9,30 +9,52 @@ HOME Router allows for easy proxying of anything and allows you to put a strong 
     - HOME Router is based upon subdomains, so you need to configure your DNS to use it properly.
     - First, setup an A name that points to your server, e.g `home`
     - Next, setup a wildcard A name under the previous subdomain, e.g `*.home` (or, you can do it on a per-service basis, just make sure you at least have (home here is the main dashboard page) `home`, `auth.home`, and `unauthed.home` (unauthed is a redirect proxy, it may change in the future))
-### Docker Setup
-2. Pull my Docker container
-    - `docker pull kentonv/homerouter`
-3. (semi-optional) Start a Redis docker container 
-    - `docker run --net=host --name homerouter-redis -d redis redis-server --appendonly yes`
-3. (semi-optional) Start a Mongo docker container 
-    - `docker run -d --net=host --name homerouter-mongo -v ~/data:/data/db mongo`
-5. Start 'er up!
-    - `docker run -d --net=host --privileged --name homerouter -e URL={YOUR BASE URL HERE} kentonv/homerouter` (the environment variables listed below work here too)
-    - **NOTE: --privileged is REQUIRED if you are running on Port 80!**
-6. Done!
-### Developer // Not sure how production-ready Docker Compose is Setup
-2. Clone/Download Repo
-3. `docker-compose up`
-4. Done!
+
 ### Manual Setup
-2. Clone/Download Repo
-3. Make sure MongoDB and Redis is running
+1. Clone/Download Repo
+2. Make sure MongoDB and Redis is running
+3. Change base url in config.js
 4. Change the logo if ya want!
 5. Run `sudo node .\dashboard\dashboard.js URL={YOUR BASE URL HERE}`
     - NOTE: Usually you must run as sudo because it is binding to port 80!
+    - You can also run in PM2!
 6. Done!
 
 Really, it's THAT easy! The default login is username admin and password admin. You should immediately reset this and connect to your MFA of choice.
+
+### SSL Setup
+1. Install nginx
+    - Hopefully soon HTTPS will be built in, but for now, you need to proxy the proxy!
+2. Create LetsEncrypt SSL certificate / other cert
+3. Modify config.js
+    - Change `ports.proxy = 81` (or any other port)
+    - Set `this.protocol = "https"`
+4. Create a server file and put the follow in it:
+```
+server {
+        listen 80 default_server;
+
+        server_name *.<BASE URL>$ <BASE URL>$;
+        return 301 https://$host$request_uri;
+}
+server {
+        listen  443 ssl;
+        server_name ~^(.*)\.<BASE URL>$ <BASE URL>$;
+        ssl_certificate /etc/letsencrypt/live/<BASE URL>/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/<BASE URL>/privkey.pem;
+        location / {
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade; # Allows WebSockets
+                proxy_set_header Connection "Upgrade";  # Allows WebSockets
+                proxy_pass http://localhost:81;
+        }
+}
+```
+5. Restart nginx
+    - sudo service nginx restart
+6. Enjoy!
 
 ### Optional Environment Variables
 1. DASHPORT (8081) - This is to access the Dashboard server
