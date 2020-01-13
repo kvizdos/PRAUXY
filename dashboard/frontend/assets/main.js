@@ -13,7 +13,7 @@ const renderApps = (apps, first = false) => {
 
     for(app of apps) {
         $("#appContainer").prepend(`
-        <a class="customApp" href="${app.customURL == "" || app.customURL == undefined ? proto + app.shortName + "." + baseURL : proto + app.customURL} ">
+        <a class="customApp" href="${app.customURL == "" || app.customURL == undefined ? proto + app.shortName + "." + baseURL : proto + app.customURL}" target="_blank">
             <div class="app">
                 ${app.isImage ? '<img src="assets/apps/' + app.image + '">' : app.name}
             </div>
