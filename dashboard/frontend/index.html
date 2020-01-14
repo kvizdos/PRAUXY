@@ -6,11 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="/assets/modal.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> 
     <script src="/assets/interactions.js"></script>
     <script src="/assets/stateMgr.js"></script>
+    <script src="/assets/modal.js"></script>
     <script src="/assets/main.js"></script>
 
     <title>Loading</title>
@@ -25,7 +27,20 @@
     <div id="content">
         <header id="mobileHeader">
             <i class="material-icons" onclick="showMenu()">menu</i>
-            <p id="pageTitle">DASHBOARD</p>
+            <p class="pageTitle">DASHBOARD</p>
+        </header>
+        <header id="mainHeader">
+            <article class="mainHeaderLeft">
+                <i class="material-icons" onclick="toggleMenu(this)">menu_open</i>
+
+                <p class="pageTitle">Header</p>
+            </article>
+
+            <article class="mainHeaderRight">
+                <p class="usernameText">{{ Username }}</p>
+
+                <i class="material-icons">input</i>
+            </article>
         </header>
         <nav id="navbar">
             <div id="links">
@@ -36,84 +51,90 @@
                 <p href="#" onclick="_SM.setPage('Users', this)">Users</p>
                 <p href="#">Stats</p>
             </div>
-            <div id="sessionInfo">
-                <span id="loggedInAs">{{username}}</span>
-                <br>
-                <button id="logout">Logout</button>
-            </div>
         </nav>
-        <div id="appContainer" class="page">
-            <a class="defaultApp" href="" onclick="_SM.setPage('Add an app', this)">
-                <div class="app">
-                    <h1>+</h1>
+
+        <section id="pageContainer">
+            <div id="appContainer" class="page">
+                <a class="defaultApp" href="" onclick="_SM.setPage('Add an app', this)">
+                    <div class="app">
+                        <h1>+</h1>
+                    </div>
+                </a>
+            </div>
+
+            
+            <div id="addApp" class="page">
+                <div id="create">
+                    <form id="createNewApplication" enctype="multipart/form-data" action="/api/new" method="post">
+                        <p>Application Name</p>
+                        <input type="text" name="name" id="name" placeholder="Visual Studio Code" required>
+
+                        <p>Application Subdomain</p>
+                        <input type="text" name="short" id="short" placeholder="code" required>
+
+                        <p>What port is this app running on?</p>
+                        <input type="text" name="port" id="port" placeholder="8080/an_optional_path" required>
+
+                        <p>Would you like to set an image?</p>
+                        <input name="icon" id="icon" type="file" accept="image/*">
+
+                        <hr>
+
+                        <p>Options</p>
+                        <input checked name="ra" type="checkbox" id="requireAuthentication"> Require Authentication<br>
+
+                        <p>Would you like to use a different URL?</p>
+                        <input name="customurl" type="text" id="customURL" placeholder="default is: {{subdomain}}.{{base_url}}"><br>
+
+                        <br>
+
+                        <input type="submit" value="Add">
+                    </form>
                 </div>
-            </a>
-        </div>
+            </div>
 
-        
-        <div id="addApp" class="page">
-            <div id="create">
-                <form id="createNewApplication" enctype="multipart/form-data" action="/api/new" method="post">
-                    <p>Application Name</p>
-                    <input type="text" name="name" id="name" placeholder="Visual Studio Code" required>
+            <div id="userList" class="page">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Last Login</th>
+                            <th><button onclick="_SM.setPage('Add User', this)">+</button></th>
+                        </tr>
+                    </thead>
+                    <tbody id="users">
+                        <!-- <tr>
+                            <td>admin</td>
+                            <td>admin@admin.com</td>
+                        </tr> -->
+                    </tbody>
+                </table>
+            </div>
 
-                    <p>Application Subdomain</p>
-                    <input type="text" name="short" id="short" placeholder="code" required>
+            <div id="addUser" class="page">
+                <h2>Add a User</h2>
 
-                    <p>What port is this app running on?</p>
-                    <input type="text" name="port" id="port" placeholder="8080/an_optional_path" required>
+                <form id="createNewApplication" action="/api/users/register" method="post">
+                    <p>Username</p>
+                    <input type="text" name="name" id="name" placeholder="kvizdos" required>
 
-                    <p>Would you like to set an image?</p>
-                    <input name="icon" id="icon" type="file" accept="image/*">
-
-                    <hr>
-
-                    <p>Options</p>
-                    <input checked name="ra" type="checkbox" id="requireAuthentication"> Require Authentication<br>
-
-                    <p>Would you like to use a different URL?</p>
-                    <input name="customurl" type="text" id="customURL" placeholder="default is: {{subdomain}}.{{base_url}}"><br>
+                    <p>Group</p>
+                    <input checked name="group" type="checkbox" id="userGroup"> Admin<br>
 
                     <br>
 
                     <input type="submit" value="Add">
                 </form>
             </div>
-        </div>
-
-        <div id="userList" class="page">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Username</th>
-                        <th>Last Login</th>
-                        <th><button onclick="_SM.setPage('Add User', this)">+</button></th>
-                    </tr>
-                </thead>
-                <tbody id="users">
-                    <!-- <tr>
-                        <td>admin</td>
-                        <td>admin@admin.com</td>
-                    </tr> -->
-                </tbody>
-            </table>
-        </div>
-
-        <div id="addUser" class="page">
-            <h2>Add a User</h2>
-
-            <form id="createNewApplication" action="/api/users/register" method="post">
-                <p>Username</p>
-                <input type="text" name="name" id="name" placeholder="kvizdos" required>
-
-                <p>Group</p>
-                <input checked name="group" type="checkbox" id="userGroup"> Admin<br>
-
-                <br>
-
-                <input type="submit" value="Add">
-            </form>
-        </div>
+        </section>
     </div>
+
+    <section id="modalContainer" onclick="ModalHandler.close(this)">
+        <article id="modal">
+            <h2>Modal Name</h2>
+            <hr>
+            <article id="modalContent"></article>
+        </article>
+    </section>
 </body>
 </html>

@@ -45,7 +45,7 @@ class StateManager {
         $(".page").addClass('hidePage');
         $("#" + goTo.id).removeClass('hidePage')
 
-        $("#pageTitle").text(page.toUpperCase())
+        $(".pageTitle").text(page.toUpperCase())
 
         hideMenu();
 

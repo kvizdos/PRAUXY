@@ -1,6 +1,8 @@
 const baseURL = "home.kentonvizdos.com";
 const proto = window.location.protocol + "//";
 
+const ModalHandler = new Modal('modalContainer')
+
 const getAndCache = (url, lsItem, cb = () => {}) => {
     $.get(url, (resp) => {
         localStorage.setItem(lsItem, JSON.stringify(resp));
@@ -13,13 +15,25 @@ const renderApps = (apps, first = false) => {
 
     for(app of apps) {
         $("#appContainer").prepend(`
-        <a class="customApp" href="${app.customURL == "" || app.customURL == undefined ? proto + app.shortName + "." + baseURL : proto + app.customURL}" target="_blank">
+        <div class="customApp">
             <div class="app">
-                ${app.isImage ? '<img src="assets/apps/' + app.image + '">' : app.name}
+                <a href="${app.customURL == "" || app.customURL == undefined ? proto + app.shortName + "." + baseURL : proto + app.customURL}" target="_blank">${app.isImage ? '<img src="assets/apps/' + app.image + '">' : `<span>${app.name}</span>`}</a>
             </div>
-        </a>
+                            
+            <div class="appSettings">
+                <i class="material-icons" onclick="openSettingsModal('${app.shortName}')">settings_applications</i>
+            </div>
+        </div>
         `)
     }
+}
+
+const openSettingsModal = (app) => {
+    const currentApp = JSON.parse(localStorage.getItem("applications")).filter(i => i.shortName == app)[0];
+
+    ModalHandler.setHeader(currentApp.name)
+
+    ModalHandler.open();
 }
 
 const renderUsers = (users) => {
@@ -33,6 +47,18 @@ const renderUsers = (users) => {
     }
 }
 
+const toggleMenu = (el) => {
+    if($(el).text() == "menu") {
+        $(el).text('menu_open')
+        $('#content').removeClass('hideHeaderMenu');
+        $('#navbar').removeClass('hidden')
+    } else {
+        $(el).text('menu')
+        $('#content').addClass('hideHeaderMenu');
+        $('#navbar').addClass('hidden')
+    }
+}
+
 let _SM;
 
 window.onload = function() {
@@ -41,4 +67,6 @@ window.onload = function() {
     if(localStorage.getItem("applications") != null) renderApps(JSON.parse(localStorage.getItem("applications")), true)
     getAndCache(`${proto}${baseURL}/api/all`, "applications", renderApps);
     getAndCache(`${proto}${baseURL}/api/users/all`, "users", renderUsers);
+    
+    $('.usernameText').text(JSON.parse(localStorage.getItem("users"))[0]['username']);
 }
