@@ -12,25 +12,44 @@ body, html {
     justify-content: center;
     align-content: center;
     align-items: center;
+    background-color: rgb(10, 15, 19);
+
 }
 
 #middle {
     text-align: center;
-    background-color: rgb(226, 226, 226);
-    padding: 10px;
-    border-radius: 10px;
+    background: radial-gradient(at bottom left, #303aa1 0%, #3c49c5 45%, #3e4bca 80%);
+    padding: 25px;
     width: 75vw;
-    padding: 20px;
+    padding: 30px;
+    box-shadow: 0 0 20px black;
+}
+
+h2 {
+    margin: 0;
+    padding: 0;
+    color: white;
 }
 
 #middle input {
-    font-size: 16pt;
-    margin-top: 15px;
+    font-size: 14pt;
     background-color: white;
-    border-radius: 5px;
-    width: calc(85% - 10px);
-    border: 1px solid rgb(184, 184, 184);
-    padding: 5px;
+    width: 100%;
+    background-color: rgb(14, 20, 26);
+    border: 0;
+    padding: 8px;
+    outline: none;
+    color: #818cee;
+    box-sizing: border-box;
+
+}
+
+#middle input::placeholder {
+    color: #6772d4;
+}
+
+#middle input:not(:first-child) {
+    margin-top: 15px;
 }
 
 #secondStep, #mfaStep {
@@ -38,10 +57,30 @@ body, html {
 }
 
 #login {
-    background-color: rgb(25, 204, 25) !important;
-    color: white;
+    /* background-color: #10c36a !important; */
+    cursor: pointer;
     font-size: 18pt !important;
     border: 0 !important;
+}
+
+.greenGradient {
+    background: linear-gradient(45deg, #27d673 0%, #0bde74 45%, #0ce277 60%);
+    color: white !important;
+    cursor: pointer;
+}
+
+#mfaContinue:disabled {
+    background: linear-gradient(45deg, #1c9e55 0%, #08a556 45%, #09a859 60%);
+    color: rgb(204, 204, 204) !important;
+    cursor: initial !important;
+}
+
+#login:disabled {
+    background: linear-gradient(45deg, #1c9e55 0%, #08a556 45%, #09a859 60%);
+    transition: 10s;
+    cursor: initial;
+    color: rgb(204, 204, 204) !important;
+
 }
 
 h1 {

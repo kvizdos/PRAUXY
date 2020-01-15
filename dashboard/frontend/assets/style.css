@@ -21,7 +21,7 @@ body, html {
 #mobileHeader {
     grid-area: mobileHeader;
     width: 100%;
-    background-color: rgb(0, 162, 255);
+    background: radial-gradient(at bottom left, #303aa1 0%, #3c49c5 45%, #3e4bca 80%);
     color: white;
     height: 50px;
     position: fixed;
@@ -43,7 +43,7 @@ body, html {
 
     width: 100%;
     height: 100%;
-    background-color: rgb(226, 226, 226);
+    background: radial-gradient(at bottom left, #303aa1 0%, #3c49c5 45%, #3e4bca 80%);
     border-right: 2px solid rgb(0, 109, 172);
 
     box-shadow: 5px 0px 20px rgb(0, 109, 172);
@@ -91,7 +91,7 @@ body, html {
 }
 
 #navbar p {
-    color: rgb(0, 162, 255);
+    color: #c4c9ff;
     margin: 0;
     padding: 10px;
     cursor: pointer;
@@ -251,7 +251,7 @@ table tbody tr:nth-child(even) {
         align-items: center;
         padding: 25px;
         background-color: rgb(18, 25, 33);
-        z-index: 10;
+        /* z-index: 10; */
         justify-content: space-between;
     }
 
@@ -329,7 +329,7 @@ table tbody tr:nth-child(even) {
         width: 250px;
         border: 0;
         transform: translateX(0) !important;
-        box-shadow: none;
+        box-shadow: 0 0 12px #000000;
         background: #3c49c5;
         background: radial-gradient(at bottom left, #303aa1 0%, #3c49c5 45%, #3e4bca 80%);
         /* radial-gradient(at bottom left, #2dad78 0%, #43b183 45%, #119a61 80%) */
@@ -348,7 +348,7 @@ table tbody tr:nth-child(even) {
     }
 
     #appContainer {
-        grid-template-columns: repeat(auto-fill, minmax(15vw, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(12vw, 1fr));
         grid-gap: 0px 25px;
     }
 }

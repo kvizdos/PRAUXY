@@ -14,26 +14,25 @@
 <body>
     <div id="container">
         <div id="middle">
-            <img src="/assets/logo.gif">
-            <h1>Login</h1>
-        
+            <!-- <img src="/assets/logo.gif"> -->        
             <div id="firstStep">
-                <input id="username" placeholder="Username" />
-                <input id="password" type="password" placeholder="Password" />
-                <input id="login" type="submit" value="Login" onclick="login()">
+                <input id="username" placeholder="Username" oninput="confirmInputs(0)" />
+                <input id="password" type="password" placeholder="Password" oninput="confirmInputs(0)" />
+                <input id="login" class="greenGradient" type="submit" value="Login" onclick="login()" disabled>
+                <!-- <br>
+                <a href="#">Forgot password?</a> -->
             </div>
 
             <div id="secondStep">
                 <h2>Please enter your 2FA code</h2>
-                <input id="mfa" type="number" placeholder="6-digit code" />
-                <input id="mfaContinue" type="submit" value="Submit" onclick="confirmMFA()">
-                <p>Was it your first time logging in? Did you not save your MFA code? If so, do reload to get the QR code back.</p>
+                <input id="mfa" type="number" placeholder="6-digit code" oninput="confirmInputs(1)" />
+                <input id="mfaContinue" class="greenGradient" type="submit" value="Submit" disabled onclick="confirmMFA()">
             </div>
 
             <div id="mfaStep">
                 <h2>Welcome! You must add me to your MFA platform of choice.</h2>
                 <img id="mfaQR">
-                <input id="mfaAddedBtn" type="submit" value="Continue" onclick="addedMFA()">
+                <input id="mfaAddedBtn" class="greenGradient" type="submit" value="Continue" onclick="addedMFA()">
             </div>
         </div>
     </div>

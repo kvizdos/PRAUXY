@@ -37,6 +37,8 @@ const openSettingsModal = (app) => {
 }
 
 const renderUsers = (users) => {
+    $('.usernameText').text(users[0]['username']);
+
     for(const {username, lastLogin} of users) {
         $('tbody#users').append(`
             <tr>
@@ -59,6 +61,29 @@ const toggleMenu = (el) => {
     }
 }
 
+const logout = () => {
+    modalConfirmation("Are you sure you want to logout?", () => {
+        localStorage.clear();
+        sessionStorage.clear();
+
+        var res = document.cookie;
+        var multiple = res.split(";");
+        for(var i = 0; i < multiple.length; i++) {
+           var key = multiple[i].split("=");
+           document.cookie = key[0]+` =;domain=.${baseURL};expires = Thu, 01 Jan 1970 00:00:00 UTC`;
+        }
+
+        window.location = "/";
+    }, () => {});
+}
+
+const modalConfirmation = (message, success, cancel) => {
+    const conf = confirm(message);
+    console.log(conf)
+    if(conf) success();
+    if(!conf) cancel();
+}
+
 let _SM;
 
 window.onload = function() {
@@ -67,6 +92,4 @@ window.onload = function() {
     if(localStorage.getItem("applications") != null) renderApps(JSON.parse(localStorage.getItem("applications")), true)
     getAndCache(`${proto}${baseURL}/api/all`, "applications", renderApps);
     getAndCache(`${proto}${baseURL}/api/users/all`, "users", renderUsers);
-    
-    $('.usernameText').text(JSON.parse(localStorage.getItem("users"))[0]['username']);
 }
