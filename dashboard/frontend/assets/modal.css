@@ -11,14 +11,30 @@
     justify-content: center;
 }
 
+#modalContainer #modal h2 {
+  margin: 0;
+}
+
 #modalContainer #modal {
     padding: 10px;
-    background-color: rgb(214, 214, 214);
+    background-color: rgba(235, 235, 235, 1);
     border-radius: 15px;
     box-shadow: 0 0 10px 0px #5a5a5a;
     height: 80vh;
     width: 80vw;
     overflow-y: scroll;
+    z-index: 3;
+}
+
+#modalContainer #modalBackground {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, .5);
+  z-index: 2;
+
 }
 
 /* width */

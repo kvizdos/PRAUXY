@@ -6,10 +6,38 @@ const MongoClient = require('mongodb').MongoClient;
 // const url = "mongodb://127.0.0.1:27017/";
 const url = _MongoConfig.url;
 
+function parseCookies (request) {
+    var list = {},
+        rc = request.headers.cookie;
+
+    rc && rc.split(';').forEach(function( cookie ) {
+        var parts = cookie.split('=');
+        list[parts.shift().trim()] = decodeURI(parts.join('='));
+    });
+
+    return list;
+}
+
+
 class Authenticator {
     constructor(redis) {
         this.id = Math.floor(Math.random() * 1000)
         this._REDIS = redis;
+    }
+
+    isAdmin(req, res, next = undefined) {
+        const cookies = parseCookies(req);
+
+        let groupLevel = cookies.kvToken.split(":")[2];
+
+        if(groupLevel < 5) {
+            res.status(401).json({error: "You do not have a high enough group to do this."})
+            return false;
+        } else {
+            if(next != undefined) next();
+
+            return true;
+        }
     }
 
     authenticate(tempToken, confirmRequiresAuth = false) {
@@ -18,6 +46,7 @@ class Authenticator {
     
         let token = tempToken.split(":")[0];
         let user = tempToken.split(":")[1];
+        let groupLevel = tempToken.split(":")[2];
 
         const _this = this;
     
@@ -27,7 +56,7 @@ class Authenticator {
                 if(requiresAuth == false) {
                     return resolve(true);
                 }
-                _this._REDIS.get(`${user}:${token}`).then(hasCache => {
+                _this._REDIS.get(`${user}:${token}:${groupLevel}`).then(hasCache => {
                     if(token !== undefined) {
                         if(hasCache) {
                             resolve(true);
@@ -39,7 +68,8 @@ class Authenticator {
                                 dbo.collection("users").findOne({username: user, token: token}, (err, u) => {
                                     if(err) throw err;
                                     if(u != null) {
-                                        _this._REDIS.set(`${user}:${token}`, true);
+                                        console.log(`${user}:${token}:${groupLevel}`)
+                                        _this._REDIS.set(`${user}:${token}:${groupLevel}`, true);
 
                                         _LOGGER.log(`${user} logged in (${_DATE.pretty()})`, "Authorization")
 

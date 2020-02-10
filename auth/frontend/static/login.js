@@ -51,7 +51,9 @@ const confirmMFA = () => {
         mfa: mfa
     }, (res) => {
         if(res.authenticated) {
-            setcookie("kvToken", res.token + ":" + username, 365);
+            console.log(res);
+            setcookie("kvToken", res.token + ":" + username + ":" + res.group, 365);
+
             var url = new URL(window.location.href);
             var redir = url.searchParams.get("go");
 

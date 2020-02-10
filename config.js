@@ -6,6 +6,9 @@ const config = function() {
         pageNotFound: process.env.PAGENOTFOUND || 8084,
         proxy: process.env.PORT || 80
     },
+    this.email = {
+        sgkey: process.env.SGKEY || "insert-key-here"
+    },
     this.baseURL = process.env.URL || "home.kentonvizdos.com",
     this.protocol = "http",
     this.createURL = (app = "", noProto = false) => {

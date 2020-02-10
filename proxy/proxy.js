@@ -78,6 +78,7 @@ const confirmAuth = (host, url, req) => {
 
     const cookies = parseCookies(req);
 
+
     const t1 = new Date();
 
     if(mainApp == "unauthed" || mainApp == "auth") {
@@ -85,7 +86,6 @@ const confirmAuth = (host, url, req) => {
     } else {
         return new Promise((resolve, reject) => { 
             if(mainApp == "unauthed" || mainApp == "auth") {resolve(true)} else {
-
                 _AUTH.authenticate(cookies.kvToken, mainApp).then(authed => {
                     if(authed) {
                         resolve(null);

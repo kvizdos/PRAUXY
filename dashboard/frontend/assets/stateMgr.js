@@ -1,14 +1,35 @@
 class StateManager {
 
     pages = [
-        {page: "Dashboard", path: "/dash", id: "appContainer"},
-        {page: "Add an app", path: "/add", id: "addApp"},
-        {page: "Users", path: "/users", id: "userList"},
-        {page: "Add User", path: "/users/add", id: "addUser"}
+        {page: "Dashboard", path: "/dash", id: "appContainer", group: 0},
+        {page: "Add an app", path: "/add", id: "addApp", group: 1},
+        {page: "Users", path: "/users", id: "userList", group: 1},
+        {page: "Add User", path: "/users/add", id: "addUser", group: 1},
+        {page: "User Settings", path: "/me/settings", id: "userSettings", group: 0}
     ]
 
     constructor() {
-        console.log("SM Loaded")
+        this.username = getCookieValue("kvToken").split(":")[1];
+        this.group    = getCookieValue("kvToken").split(":")[2];
+
+        console.log(`SM Loaded (${this.username} - ${this.group})`)
+
+        this.pages = this.pages.filter(p => {
+            let c = $("#links").children()
+            if(p.group > this.group) {
+                for(var z of c) {
+                    if(z.innerText == p.page) {
+                        console.log("Deleting " + z.innerText)
+                        z.remove();
+                    }
+                }
+
+                $("#" + p.id).remove();
+                return false;
+            } else {
+                return true;
+            }
+        });
 
         const goTo = this.pages.filter(p => p.path == window.location.pathname)[0];
 

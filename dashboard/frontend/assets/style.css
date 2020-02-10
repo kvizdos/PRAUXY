@@ -15,7 +15,7 @@ body, html {
     grid-template-rows: 50px;
     width: 100vw;
     height: 100vh;
-    background-color: rgb(10, 15, 19);
+    background-color: rgba(235, 235, 235, 1);
 }
 
 #mobileHeader {
@@ -121,7 +121,7 @@ body, html {
 }
 
 .app {
-    background-color: rgb(17, 23, 29);
+    background-color: rgb(245, 245, 245);
     display: flex;
     justify-content: center;
     align-content: center;
@@ -130,6 +130,7 @@ body, html {
     transition: .25s;
     /* border-radius: 5px; */
     height: 125px;
+    border-radius: 8px;
 }
 
 .app img {
@@ -141,6 +142,8 @@ body, html {
     transition: .25s;
     box-shadow: 0 0 5px 0px rgb(4, 5, 7);
     transform: scale(1.03);
+    box-shadow: 0 0 5px 0px rgba(0, 0, 0, 0.25);
+    border-radius: 4px;
 }
 
 a {
@@ -223,7 +226,23 @@ table tbody tr {
 }
 
 table tbody tr:nth-child(even) {
-    background-color: red;
+    background-color: #a5adff;
+}
+
+#createNewUser {
+    margin-bottom: 15px;
+}
+
+.niceBtn {
+    border: 2px solid rgb(107, 62, 245);
+    border-radius: 10px;
+    padding: 5px;
+    /* background-color: rgb(57, 7, 210); */
+    color: rgb(107, 62, 245);
+}
+
+.niceBtn:hover {
+    cursor: pointer;
 }
 
 .appSettings {
@@ -245,12 +264,44 @@ table tbody tr:nth-child(even) {
     grid-area: pageContent;
 }
 
+.deleteUserBtn {
+    border: 2px solid #ff7a7a;
+    border-radius: 10px;
+    color: #ff7a7a;
+    cursor: pointer;
+    outline: none;
+    transition: .25s;
+    margin: 5px;
+}
+
+.deleteUserBtn:hover {
+    transition: .25s;
+    background-color: rgb(216, 12, 12);
+    border: 2px solid rgb(216, 12, 12);
+    color: white;
+}
+
+#userSettings h2 {
+    margin: 0;
+
+}
+
+#userSettings strong {
+    font-size: 16pt;
+}
+
+#userSettings input {
+    font-size: 14pt;
+    margin: 10px 10px 10px 0px;
+    padding: 4px;
+}
+
 @media only screen and (min-width: 768px) {
     #mainHeader {
         display: flex;
         align-items: center;
         padding: 25px;
-        background-color: rgb(18, 25, 33);
+        background-color: rgb(107, 62, 245);
         /* z-index: 10; */
         justify-content: space-between;
     }
@@ -260,8 +311,18 @@ table tbody tr:nth-child(even) {
         flex-direction: row;
     }
 
+    #mainHeader .mainHeaderLeft, #mainHeader .mainHeaderRight p {
+        transition: .25s;
+    }
+
+    #mainHeader .mainHeaderLeft, #mainHeader .mainHeaderRight p:hover {
+        color: #e4e1f1;
+        transition: .25s;
+        cursor: pointer;
+    }
+
     #mainHeader .mainHeaderLeft i {
-        color: rgb(49, 62, 78);
+        color: rgb(52, 18, 158);
         padding-right: 15px;
         transition: .1s;
     }
@@ -269,11 +330,11 @@ table tbody tr:nth-child(even) {
     #mainHeader .mainHeaderLeft i:hover {
         transition: .1s;
         cursor: pointer;
-        color: #303aa1;
+        color: #e4e1f1;
     }
 
     #mainHeader .mainHeaderRight {
-        color: rgb(49, 62, 78);
+        color: rgb(52, 18, 158);
     }
 
     #mainHeader .mainHeaderRight i {
@@ -282,7 +343,7 @@ table tbody tr:nth-child(even) {
     }
 
     #mainHeader .mainHeaderRight i:hover {
-        color: rgb(168, 34, 22);
+        color: #e4e1f1;
         transition: .1s;
         cursor: pointer;
     }

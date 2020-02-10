@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> 
+    <script src="/assets/helper.js"></script>
     <script src="/assets/interactions.js"></script>
     <script src="/assets/stateMgr.js"></script>
     <script src="/assets/modal.js"></script>
@@ -37,7 +38,7 @@
             </article>
 
             <article class="mainHeaderRight">
-                <p class="usernameText"></p>
+                <p class="usernameText" onclick="_SM.setPage('User Settings', this)"></p>
 
                 <i class="material-icons" onclick="logout()">input</i>
             </article>
@@ -49,7 +50,7 @@
                 <p href="#" onclick="_SM.setPage('Dashboard', this)">Dashboard</p>
                 <p href="#" onclick="_SM.setPage('Add an app', this)">Add an app</p>
                 <p href="#" onclick="_SM.setPage('Users', this)">Users</p>
-                <p href="#">Stats</p>
+                <!-- <p href="#">Stats</p> -->
             </div>
         </nav>
 
@@ -93,13 +94,28 @@
                 </div>
             </div>
 
+            <div id="userSettings" class="page">
+                <h2>Authentication Settings</h2>
+                <hr>
+                <strong>Reset Password</strong>
+                <br>
+                <input name="oldPass" type="password" id="oldPass" placeholder="Current Password" />
+                <br>
+                <input name="newPass" type="password" id="newPass" placeholder="New Password" />
+                <input name="newPassConf" type="password" id="newPassConf" placeholder="Confirm New Password" />
+                <br>
+                <button class="niceBtn" onclick="updateUser('reset password')">Change</button>
+            </div>
+
             <div id="userList" class="page">
+                <button class="niceBtn" id="createNewUser" onclick="newUserModal()">Register new User</button>
+
                 <table>
                     <thead>
                         <tr>
                             <th>Username</th>
                             <th>Last Login</th>
-                            <th><button onclick="_SM.setPage('Add User', this)">+</button></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody id="users">
@@ -110,31 +126,17 @@
                     </tbody>
                 </table>
             </div>
-
-            <div id="addUser" class="page">
-                <h2>Add a User</h2>
-
-                <form id="createNewApplication" action="/api/users/register" method="post">
-                    <p>Username</p>
-                    <input type="text" name="name" id="name" placeholder="kvizdos" required>
-
-                    <p>Group</p>
-                    <input checked name="group" type="checkbox" id="userGroup"> Admin<br>
-
-                    <br>
-
-                    <input type="submit" value="Add">
-                </form>
-            </div>
         </section>
     </div>
 
-    <section id="modalContainer" onclick="ModalHandler.close(this)">
+    <section id="modalContainer">
         <article id="modal">
             <h2>Modal Name</h2>
             <hr>
             <article id="modalContent"></article>
         </article>
+        <article id="modalBackground" onclick="ModalHandler.close(this)"></article>
+
     </section>
 </body>
 </html>

@@ -5,3 +5,4 @@ proxy/certs/*
 certs/*
 tmp/*
 dashboard/frontend/assets/apps/*
+.env
