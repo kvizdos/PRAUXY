@@ -54,7 +54,6 @@ const confirmMFA = () => {
         mfa: mfa
     }, (res) => {
         if(res.authenticated) {
-            console.log(res);
             setcookie("kvToken", res.token + ":" + username + ":" + res.group, 365);
 
             var url = new URL(window.location.href);

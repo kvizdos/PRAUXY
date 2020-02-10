@@ -219,10 +219,28 @@ app.post("/users/update", (req, res) => {
         var dbo = db.db("homerouter");
         
         switch(type) {
+            case "changeemail":
+                var username = req.body.username;
+                var email = req.body.email;
+                
+                if(username == undefined || email == undefined) {
+                    res.json({status: "fail", reason: "invalid params"})
+                    return;
+                }
+
+                dbo.collection("users").updateOne({username: username}, {$set: { email: email }}, (err, result) => {
+                    if(result.matchedCount == 0) {
+                        res.json({status: "fail", reason: "user does not exist"})
+                        return;
+                    } 
+                    res.json({status: "complete"});
+
+                });
+                break;
             case "resetpw":
-                const username = req.body.username;
-                const old = req.body.old;
-                const newp = req.body.newp;
+                var username = req.body.username;
+                var old = req.body.old;
+                var newp = req.body.newp;
 
                 if(username == undefined || old == undefined || newp == undefined) {
                     res.json({status: "fail", reason: "invalid params"})
@@ -238,9 +256,7 @@ app.post("/users/update", (req, res) => {
                         bcrypt.compare(old, result['password'], (err, verify) => {
 
                             if(verify) {
-                                dbo.collection("users").updateOne({username: username}, {$set: { password: hashedNew }}, (err, result) => {
-                                    console.log(result.result);
-                                    
+                                dbo.collection("users").updateOne({username: username}, {$set: { password: hashedNew }}, (err, result) => {                                    
                                     if(result.result.nModified == 0) {
                                         res.json({status: "fail", reason: "user does not exist"})
                                         return;
@@ -279,7 +295,7 @@ app.get('/users/all', (req, res) => {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
         var dbo = db.db("homerouter");
 
-        dbo.collection("users").find({}, { projection: { _id: 0, username: 1, loggedIn: 1, qr: 1, lastLogin: 1 } }).toArray((err, result) => {
+        dbo.collection("users").find({}, { projection: { _id: 0, username: 1, loggedIn: 1, lastLogin: 1, email: 1 } }).toArray((err, result) => {
             if (err) throw err;
 
             res.send(result)
@@ -292,17 +308,22 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     if (err) throw err;
     var dbo = db.db("homerouter");
 
-    dbo.collection("users").find({}).toArray((err, result) => {
+    dbo.collection("users").find({username: "admin"}).toArray((err, result) => {
         if(err) throw err;
 
         if(result.length == 0) {
+            if(process.env.ADMINEMAIL == undefined || process.env.ADMINEMAIL == "") {
+                console.log("Biasujdfisdfg")
+                _LOGGER.error("First launch; you must specify an admin email w/ the environment variable, 'ADMINEMAIL'", "Critical")
+                process.exit(22);
+            }
             const token = bcrypt.genSaltSync(saltRounds);
             const hash = bcrypt.hashSync("admin", saltRounds);
 
             const secret = speakeasy.generateSecret({length: 20, name: `HOME Router (admin)`});
 
             QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
-                dbo.collection("users").insertOne({username: "admin", password: hash, token: token, tfa: secret.base32, loggedIn: false, qr: image_data, group: 10}, function(err, result) {
+                dbo.collection("users").insertOne({email: process.env.ADMINEMAIL, username: "admin", password: hash, token: token, tfa: secret.base32, loggedIn: false, qr: image_data, group: 10}, function(err, result) {
                     if (err) throw err;
 
                     _LOGGER.log("Admin registered (admin/admin)", "user");
@@ -312,6 +333,9 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
 
             })
 
+        } else if(result[0].email == "" || result[0].email == undefined) {
+            _LOGGER.error("First launch; you must specify an admin email w/ the environment variable, 'ADMINEMAIL'", "Critical")
+            process.exit(22);
         }
     });
 

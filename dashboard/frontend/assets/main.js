@@ -134,6 +134,16 @@ const updateUser = (type, info = {}) => {
 
             makeReq("POST", `${proto}auth.${baseURL}/users/update`, `type=resetpw&username=${activeUser}&old=${old}&newp=${newp}`, () => { alert("Password changed!") }, (err) => { alert("Failed to reset password. Please reload page. " + err.reason) });
             break;
+        case "change email":
+            const email = $('#changeEmail')[0].value;
+
+            if(email == "") {
+                alert("The email cannot be blank!")
+                return;
+            }
+
+            makeReq("POST", `${proto}auth.${baseURL}/users/update`, `type=changeemail&username=${activeUser}&email=${email}`, () => { alert("Email changed!") }, (err) => { alert("Failed to change email. Please reload page. " + err.reason) });
+            break;
     }
 }
 
@@ -168,7 +178,11 @@ const renderUsers = (users) => {
     $('.usernameText').text(activeUser);
     $('tbody#users').empty();
 
-    for(const {username, lastLogin} of users) {
+    for(const {username, lastLogin, email} of users) {
+        if(username == activeUser) {
+            $("#changeEmail")[0].value = email;
+            $("#changeEmail")[0].placeholder = email;
+        }
         $('tbody#users').append(`
             <tr>
                 <td>${username}</td>
