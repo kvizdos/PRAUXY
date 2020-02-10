@@ -1,3 +1,5 @@
+let firstLogin = false;
+
 const login = () => {
     const username = $("#username").val();
     const password = $("#password").val();
@@ -25,6 +27,7 @@ const login = () => {
 }
 
 const addedMFA = () => {
+    firstLogin = true;
     $('#mfaStep').hide()
     $("#secondStep").show();
 }
@@ -57,7 +60,9 @@ const confirmMFA = () => {
             var url = new URL(window.location.href);
             var redir = url.searchParams.get("go");
 
-            window.location.href = window.location.protocol + "//" + (redir !== null ? redir + "." : "") + "home.kentonvizdos.com";
+            if(firstLogin) alert("Welcome to Auxy- you will be redirected to the password configuration page (you can get back at any time by pressing your username in the navigation bar)")
+
+            window.location.href = window.location.protocol + "//" + (redir !== null ? redir + "." : "") + "home.kentonvizdos.com" + (redir == null && firstLogin ? "/me/settings" : "");
         } else {
             alert("Incorrect 2FA code");
         }

@@ -17,9 +17,7 @@ const saltRounds = 10;
 
 const speakeasy = require('speakeasy');
 const QRCode = require("qrcode");
-let tempToken;
 
-let tokenCache = [];
 const _CONF = require('../config');
 
 const _REDIS = new (require('../helpers/redis'))();

@@ -34,12 +34,25 @@ const storage = multer.diskStorage({ // notice you are calling the multer.diskSt
 });
 var upload = multer({ storage })
 
+function parseCookies (request) {
+    var list = {},
+        rc = request.headers.cookie;
+
+    rc && rc.split(';').forEach(function( cookie ) {
+        var parts = cookie.split('=');
+        list[parts.shift().trim()] = decodeURI(parts.join('='));
+    });
+
+    return list;
+}
+
 app.use('/assets', express.static("./dashboard/frontend/assets"));
 
 app.get('/api/all', (req, res) => {
+    const cookies = parseCookies(req);
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
         var dbo = db.db("homerouter");
-        dbo.collection("applications").find({}).toArray(function(err, result) {
+        dbo.collection("applications").find({ $or: [ { group: { $lte: parseInt(cookies.kvToken.split(":")[2]) } }, { users: { $in: [cookies.kvToken.split(":")[1]] } }]}).toArray(function(err, result) {
             if (err) throw err;
             res.json(result);
             db.close();
@@ -48,7 +61,11 @@ app.get('/api/all', (req, res) => {
 })
 
 app.post('/api/new', upload.single('icon'), (req, res) => {
-    _AUTH.isAdmin(req, res);
+    if(!_AUTH.isAdmin(req, res)) { return; }
+
+    const cookies = parseCookies(req);
+    const createdGroup = cookies.kvToken.split(":")[2];
+
     const name = req.body.name;
     const shortName = req.body.short;
     const isImage = req.file ? true : false;
@@ -57,7 +74,7 @@ app.post('/api/new', upload.single('icon'), (req, res) => {
     const image = req.file.originalname;
     const customURL = req.body.customurl;
 
-    const newApp = {name: name, image: image, shortName: shortName, isImage: isImage, port: port, requiresAuthentication: requiresAuthentication, customURL: customURL == "" ? "" : customURL};
+    const newApp = {name: name, image: image, shortName: shortName, isImage: isImage, port: port, requiresAuthentication: requiresAuthentication, customURL: customURL == "" ? "" : customURL, users: [], group: createdGroup};
     var file = __dirname + '/frontend/assets/apps/' + req.file.originalname;
 
     fs.renameSync(req.file.path, file);
@@ -75,6 +92,23 @@ app.post('/api/new', upload.single('icon'), (req, res) => {
         });
     });
     
+})
+
+app.post('/api/update', _AUTH.isAdmin, (req, res) => {
+    const name = req.body.name;
+    const lvl = req.body.lvl;
+    const users = req.body.users;
+
+    MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+        var dbo = db.db("homerouter");
+
+        dbo.collection("applications").updateOne({name: name}, {$set: { group: parseInt(lvl), users: users != "no-users-added" ? users.split(", ") : [] }}, function(err, result) {
+            if (err) throw err;
+
+            res.json({status: "complete"})
+            db.close();
+        });
+    });
 })
 
 app.get("/*", (req, res) => {
