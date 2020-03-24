@@ -64,20 +64,20 @@ app.post('/api/new', upload.single('icon'), (req, res) => {
     if(!_AUTH.isAdmin(req, res)) { return; }
 
     const cookies = parseCookies(req);
-    const createdGroup = cookies.kvToken.split(":")[2];
+    const createdGroup = parseInt(cookies.kvToken.split(":")[2]);
 
     const name = req.body.name;
     const shortName = req.body.short;
     const isImage = req.file ? true : false;
     const port = req.body.port;
     const requiresAuthentication = req.body.ra !== undefined && req.body.ra == "on" ? true : false;
-    const image = req.file.originalname;
+    const image = req.file ? req.file.originalname : "NO IMAGE";
     const customURL = req.body.customurl;
 
     const newApp = {name: name, image: image, shortName: shortName, isImage: isImage, port: port, requiresAuthentication: requiresAuthentication, customURL: customURL == "" ? "" : customURL, users: [], group: createdGroup};
-    var file = __dirname + '/frontend/assets/apps/' + req.file.originalname;
+    var file = __dirname + '/frontend/assets/apps/' + image;
 
-    fs.renameSync(req.file.path, file);
+    if(req.file) fs.renameSync(req.file.path, file);
 
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
         var dbo = db.db("homerouter");

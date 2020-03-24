@@ -174,6 +174,8 @@ app.post("/users/register", _AUTH.isAdmin, (req, res) => {
     const email    = req.body.email;
     const group    = req.body.group || 0;
 
+    console.log(password)
+
     if(username == undefined || email == undefined || group == undefined) {
         res.json({status: "fail", reason: "invalid params"})
         return;
@@ -222,7 +224,7 @@ app.post("/users/update", (req, res) => {
             case "changeemail":
                 var username = req.body.username;
                 var email = req.body.email;
-                
+
                 if(username == undefined || email == undefined) {
                     res.json({status: "fail", reason: "invalid params"})
                     return;
@@ -313,7 +315,6 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
 
         if(result.length == 0) {
             if(process.env.ADMINEMAIL == undefined || process.env.ADMINEMAIL == "") {
-                console.log("Biasujdfisdfg")
                 _LOGGER.error("First launch; you must specify an admin email w/ the environment variable, 'ADMINEMAIL'", "Critical")
                 process.exit(22);
             }

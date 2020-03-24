@@ -40,7 +40,27 @@ class Authenticator {
         }
     }
 
-    authenticate(tempToken, confirmRequiresAuth = false) {
+    confirmAccessLevel(app, user, current) {
+        const _this = this;
+        return new Promise((resolve, reject) => {
+            MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+                var dbo = db.db("homerouter");
+                dbo.collection("applications").findOne({shortName: app}, (err, appResult) => {
+                    if(appResult != null) {
+                        if(appResult.users.indexOf(user) >= 0 || appResult.group <= current) {
+                            resolve(true)
+                        } else {
+                            resolve(false)
+                        }
+                    } else {
+                        resolve(true)
+                    }
+                })
+            });
+        });
+    }
+
+    authenticate(tempToken, appName = false) {
 
         if(tempToken == undefined) tempToken = "x.x"
     
@@ -51,7 +71,7 @@ class Authenticator {
         const _this = this;
     
         return new Promise((resolve, reject) => {
-            _this._REDIS.get(`APP:${confirmRequiresAuth}`).then(requiresAuth => {
+            _this._REDIS.get(`APP:${appName}`).then(requiresAuth => {
                 requiresAuth = JSON.parse(requiresAuth) != null ? JSON.parse(requiresAuth).requiresAuth : true;
                 if(requiresAuth == false) {
                     return resolve(true);
@@ -59,7 +79,9 @@ class Authenticator {
                 _this._REDIS.get(`${user}:${token}:${groupLevel}`).then(hasCache => {
                     if(token !== undefined) {
                         if(hasCache) {
-                            resolve(true);
+                            this.confirmAccessLevel(appName, user, groupLevel).then(r => {
+                                resolve(r);
+                            })
                         } else {
                             MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
                                 if (err) throw err;
@@ -68,12 +90,13 @@ class Authenticator {
                                 dbo.collection("users").findOne({username: user, token: token}, (err, u) => {
                                     if(err) throw err;
                                     if(u != null) {
-                                        console.log(`${user}:${token}:${groupLevel}`)
                                         _this._REDIS.set(`${user}:${token}:${groupLevel}`, true);
 
                                         _LOGGER.log(`${user} logged in (${_DATE.pretty()})`, "Authorization")
 
-                                        resolve(true)
+                                        this.confirmAccessLevel(appName, user, groupLevel).then(r => {
+                                            resolve(r);
+                                        })
                                     }
             
                                     resolve(false);

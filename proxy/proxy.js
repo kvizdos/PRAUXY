@@ -69,15 +69,19 @@ const confirmAuth = (host, url, req) => {
         })
     }
 
+
     const base = escape(_CONF.baseURL);
-    const regex = new RegExp(base, 'g' );
+    const regex = new RegExp(base.replace(/\./g, '\\.'), 'g');
 
     let mainApp = req.headers.host;
 
-    if(req.headers.host.match(regex)) mainApp = req.headers.host.split(".")[0];
+    const isNotCustom = regex.test(req.headers.host);
+
+    if(isNotCustom) {
+        mainApp = req.headers.host.split(".")[0];
+    }
 
     const cookies = parseCookies(req);
-
 
     const t1 = new Date();
 
