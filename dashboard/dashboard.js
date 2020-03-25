@@ -1,6 +1,8 @@
 // Install body-parser and Express
 const express = require('express')
 const app = express()
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
 
 var bodyParser = require('body-parser')
 var multer  = require('multer');
@@ -16,9 +18,11 @@ const _LOGGER = require('../helpers/logging');
 const _REDIS = new (require('../helpers/redis'))();
 const _AUTH = new (require('../auth/confirmAuth'))(_REDIS);
 const _PM = require('../proxy/proxy');
-const _AUTHMODULE = require('../auth/auth');
+const _AUTHMODULE = require("../auth/auth")
+const _MONITOR = require('../monitoring/monitor')();
 
 const _CONF = require('../config');
+
 
 // Use req.query to read values!!
 app.use(bodyParser.json());
@@ -59,6 +63,20 @@ app.get('/api/all', (req, res) => {
         });
     });
 })
+
+app.get('/api/monitors', (req, res) => {
+    const type = req.query.type;
+    MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+        var dbo = db.db("homerouter");
+        switch(type) {
+            case "speedtest":
+                dbo.collection("speedtests").find({}).project({_id: 0}).limit(48).toArray(function(err, result) {
+                    res.json(result);
+                    db.close();
+                });
+        }
+    });
+});
 
 app.post('/api/new', upload.single('icon'), (req, res) => {
     if(!_AUTH.isAdmin(req, res)) { return; }
@@ -115,8 +133,16 @@ app.get("/*", (req, res) => {
     res.sendFile("./dashboard/frontend/index.html", {root: "./"})
 })
 
+io.on('connection', (socket) => {
+    const date = new Date((+ new Date));
+
+    socket.on('connection', (username) => {
+        socket.broadcast.emit('alert', {msg: username + " connected", time: `${(date.getHours() > 12 ? date.getHours() - 12 : date.getHours())}:${("0" + date.getMinutes()).substr(-2)} a ${date.getHours() > 12 ? "PM" : "AM"}`,type: 'user'})
+    })
+})
+
 try {
-    app.listen(_CONF.ports.dashboard, (err) =>{ 
+    http.listen(_CONF.ports.dashboard, (err) =>{ 
         if(err) throw err;
         _LOGGER.log(`Started`, "Dashboard")
     })

@@ -47,10 +47,14 @@ class Authenticator {
                 var dbo = db.db("homerouter");
                 dbo.collection("applications").findOne({shortName: app}, (err, appResult) => {
                     if(appResult != null) {
-                        if(appResult.users.indexOf(user) >= 0 || appResult.group <= current) {
-                            resolve(true)
+                        if(appResult.requiresAuthentication) {
+                            if(appResult.users.indexOf(user) >= 0 || appResult.group <= current) {
+                                resolve(true)
+                            } else {
+                                resolve(false)
+                            }
                         } else {
-                            resolve(false)
+                            resolve(true)
                         }
                     } else {
                         resolve(true)

@@ -7,14 +7,22 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/style.css">
     <link rel="stylesheet" href="/assets/modal.css">
+    <link rel="stylesheet" href="/assets/alerts.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="https://kit.fontawesome.com/f40d5f26b8.js" crossorigin="anonymous"></script>
 
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> 
+    <script src="/assets/monitor.js"></script>
     <script src="/assets/helper.js"></script>
     <script src="/assets/interactions.js"></script>
     <script src="/assets/stateMgr.js"></script>
     <script src="/assets/modal.js"></script>
     <script src="/assets/main.js"></script>
+    <script src="/assets/sockets.js"></script>
+    <script src="/assets/alerts.js"></script>
 
     <title>Loading</title>
 </head>
@@ -25,6 +33,8 @@
             <h1>DASHBOARD</h1>
         </div>
     </div> -->
+    <section class="alerts"></section>
+    
     <div id="content">
         <header id="mobileHeader">
             <i class="material-icons" onclick="showMenu()">menu</i>
@@ -56,6 +66,13 @@
 
         <section id="pageContainer">
             <div id="appContainer" class="page">
+                <section class="customApp full">
+                    <article class="app">
+                        <div id="chartContainer" style="height: 100%; width: 100%"></div>
+
+                    </article>
+                </section>
+                
                 <a class="defaultApp" href="" onclick="_SM.setPage('Add an app', this)">
                     <div class="app">
                         <h1>+</h1>
@@ -124,12 +141,7 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody id="users">
-                        <!-- <tr>
-                            <td>admin</td>
-                            <td>admin@admin.com</td>
-                        </tr> -->
-                    </tbody>
+                    <tbody id="users"></tbody>
                 </table>
             </div>
         </section>

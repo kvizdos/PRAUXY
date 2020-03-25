@@ -13,8 +13,7 @@ body, html {
     display: grid;
     grid-template-areas: "mobileHeader" "pageContent";
     grid-template-rows: 50px;
-    width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
     background-color: rgba(235, 235, 235, 1);
 }
 
@@ -118,6 +117,20 @@ body, html {
     display: inline-grid;
     grid-template-columns: auto auto;
     grid-gap: 25px;
+    grid-auto-rows: 1fr;
+}
+
+.customApp.full {
+    grid-column: 1 / -1;
+    grid-row-end: span 2;
+}
+
+.customApp canvas {
+    overflow: hidden;
+}
+
+.customApp {
+    height: 100%;
 }
 
 .app {
@@ -131,6 +144,7 @@ body, html {
     /* border-radius: 5px; */
     height: 125px;
     border-radius: 8px;
+    height: 100%;
 }
 
 .app img {
@@ -410,6 +424,6 @@ table tbody tr:nth-child(even) {
 
     #appContainer {
         grid-template-columns: repeat(auto-fill, minmax(12vw, 1fr));
-        grid-gap: 0px 25px;
+        grid-gap: 25px;
     }
 }

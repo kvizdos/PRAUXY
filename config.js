@@ -13,7 +13,8 @@ const config = function() {
     this.protocol = "http",
     this.createURL = (app = "", noProto = false) => {
         return `${!noProto ? this.protocol + "://" : ""}${app != "" ? app + "." : ""}${this.baseURL}`
-    }
+    },
+    this.monitorLength = 300000 // 5 minutes in ms
 }
 
 module.exports = new config();

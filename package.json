@@ -17,7 +17,9 @@
     "redbird": "^0.9.1",
     "redis": "^2.8.0",
     "request": "^2.88.0",
+    "socket.io": "^2.3.0",
     "speakeasy": "^2.0.0",
+    "speedtest-net": "^2.1.1",
     "url": "^0.11.0"
   },
   "devDependencies": {},

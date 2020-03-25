@@ -4,9 +4,10 @@ const makeReq = (type, url, data, success, failure) => {
     
     xhr.addEventListener("readystatechange", function () {
     if (this.readyState === 4) {
+        console.log(this)
         const resp = JSON.parse(this.responseText);
-        if(resp.status == "complete") {
-            success()
+        if(this.status == 200) {
+            success(resp)
         } else {
             failure(resp);
         }

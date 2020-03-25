@@ -18,10 +18,10 @@ const getAndCache = (url, lsItem, cb = () => {}) => {
 let activeUser = "";
 
 const renderApps = (apps, first = false) => {
-    if(!first) $(".customApp").remove();
+    if(!first) $(".customApp").not('.full').remove();
 
     for(app of apps) {
-        $("#appContainer").prepend(`
+        $(`
         <div class="customApp">
             <div class="app">
                 <a href="${app.customURL == "" || app.customURL == undefined ? proto + app.shortName + "." + baseURL : proto + app.customURL}" target="_blank">${app.isImage ? '<img src="assets/apps/' + app.image + '">' : `<span>${app.name}</span>`}</a>
@@ -30,7 +30,7 @@ const renderApps = (apps, first = false) => {
                 <i class="material-icons" onclick="openSettingsModal('${app.shortName}')">settings_applications</i>
             </div>
         </div>
-        `)
+        `).insertAfter('.customApp.full')
     }
 }
 
@@ -236,4 +236,6 @@ window.onload = function() {
     if(localStorage.getItem("applications") != null) renderApps(JSON.parse(localStorage.getItem("applications")), true)
     getAndCache(`${proto}${baseURL}/api/all`, "applications", renderApps);
     getAndCache(`${proto}auth.${baseURL}/users/all`, "users", renderUsers);
+
+    startCanvas();
 }

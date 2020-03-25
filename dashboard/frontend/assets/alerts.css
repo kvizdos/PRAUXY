@@ -1,0 +1,39 @@
+.alerts {
+    position: absolute;
+    z-index: 10;
+    right: 0;
+    overflow: hidden;
+}
+
+.alerts .alert {
+    background-color: white;
+    border: 2px solid rgb(58, 123, 226);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    min-width: 250px;
+    box-shadow: 0 0 10px rgb(159, 131, 224);
+    margin: 15px;
+    opacity: 0;
+    transition: .25s;
+}
+
+@keyframes fadeIn {
+    0% {
+      opacity:0;
+    }
+    100% {
+      opacity:1;
+      background-color: red !important;
+    }
+  }
+  
+.alerts .alert .icon {
+    font-size: 2em;
+    padding: 10px;
+}
+
+.alerts .alert section .timestamp {
+    color: rgb(173, 173, 173);
+}
