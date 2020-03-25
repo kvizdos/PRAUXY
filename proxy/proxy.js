@@ -89,7 +89,7 @@ const confirmAuth = (host, url, req) => {
         return null;
     } else {
         return new Promise((resolve, reject) => { 
-            if(mainApp == "unauthed" || mainApp == "auth") {resolve(true)} else {
+            if(mainApp == "unauthed" || mainApp == "auth" || mainApp == "sites") {resolve(true)} else {
                 _AUTH.authenticate(cookies.kvToken, mainApp).then(authed => {
                     if(authed) {
                         resolve(null);
@@ -111,6 +111,8 @@ proxy.addResolver(confirmAuth);
 proxy.register(_CONF.createURL('auth', true), "127.0.0.1:" + _CONF.ports.auth);
 
 proxy.register(_CONF.createURL('unauth', true), "127.0.0.1:" + _CONF.ports.unauthed);
+
+proxy.register(_CONF.createURL('sites', true), "127.0.0.1:" + _CONF.ports.siteLauncher);
 
 proxy.register(_CONF.createURL('', true), "127.0.0.1:" + _CONF.ports.dashboard);
 
@@ -160,7 +162,7 @@ module.exports = {
             _REDIS.set(`APP:${sub}`, JSON.stringify({requiresAuth: requireAuthentication}));
             proxy.register(_CONF.createURL(sub, true), "127.0.0.1:" + port);
         } else {
-            _REDIS.set(`APP:${sub}`, JSON.stringify({requiresAuth: requireAuthentication}));
+            _REDIS.set(`APP:${customURL}`, JSON.stringify({requiresAuth: requireAuthentication}));
             proxy.register(customURL, "127.0.0.1:" + port);
         }
     }

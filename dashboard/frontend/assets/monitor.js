@@ -23,9 +23,6 @@
             chart = new CanvasJS.Chart("chartContainer", {
                 backgroundColor: "#f5f5f5",
                 markerBorderThickness: 10,
-                title: {
-                    text: "WiFi Speed Monitor"
-                },
                 axisX: {
                     valueFormatString: "h:mm tt"
                 },

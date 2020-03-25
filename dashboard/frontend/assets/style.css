@@ -2,7 +2,11 @@ body, html {
     padding: 0;
     margin: 0;
     font-family: 'Open Sans', sans-serif;
+}
 
+.page h2.title {
+    margin: 0;
+    padding: 0;
 }
 
 #header {
@@ -28,6 +32,8 @@ body, html {
     display: flex;
     align-items: center;
     padding-left: 25px;
+    z-index: 1000000;
+
 }
 
 #mobileHeader p {
@@ -125,7 +131,15 @@ body, html {
     grid-row-end: span 2;
 }
 
-.customApp canvas {
+.customApp.full .app {
+    flex-direction: column;
+}
+
+.customApp.full .app h3 {
+    margin: 5px;
+}
+
+.customApp.full .app canvas {
     overflow: hidden;
 }
 
@@ -145,6 +159,7 @@ body, html {
     height: 125px;
     border-radius: 8px;
     height: 100%;
+    overflow: hidden;
 }
 
 .app img {
@@ -152,7 +167,7 @@ body, html {
     width: 100px;
 }
 
-.app:hover {
+.app:not(.full):hover {
     transition: .25s;
     box-shadow: 0 0 5px 0px rgb(4, 5, 7);
     transform: scale(1.03);
@@ -239,8 +254,14 @@ table tbody tr {
     margin: 0;
 }
 
+table tbody tr td,
+table tbody tr th {
+    padding: 12px;
+    border-bottom: 2px solid rgb(42, 125, 221);
+}
+
 table tbody tr:nth-child(even) {
-    background-color: #a5adff;
+    /* background-color: #a5adff; */
 }
 
 #createNewUser {

@@ -60,6 +60,7 @@
                 <p href="#" onclick="_SM.setPage('Dashboard', this)">Dashboard</p>
                 <p href="#" onclick="_SM.setPage('Add an app', this)">Add an app</p>
                 <p href="#" onclick="_SM.setPage('Users', this)">Users</p>
+                <p href="#" onclick="_SM.setPage('Sites', this)">Sites</p>
                 <!-- <p href="#">Stats</p> -->
             </div>
         </nav>
@@ -67,7 +68,8 @@
         <section id="pageContainer">
             <div id="appContainer" class="page">
                 <section class="customApp full">
-                    <article class="app">
+                    <article class="app full">
+                        <h3>Wifi Speeds</h3>
                         <div id="chartContainer" style="height: 100%; width: 100%"></div>
 
                     </article>
@@ -143,6 +145,27 @@
                     </thead>
                     <tbody id="users"></tbody>
                 </table>
+            </div>
+
+            <div id="siteLauncher" class="page">
+                <h2 class="title">Sites</h2>
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <td>VirusWatch</td>
+                        <td>Node</td>
+                        <td><a href="#" target="_blank">Visit <i class="fas fa-external-link-alt"></i></a></td>
+                    </tr>
+                    <tr>
+                        <td>Chef</td>
+                        <td>Static</td>
+                        <td><a href="#" target="_blank">Visit <i class="fas fa-external-link-alt"></i></a></td>
+                    </tr>
+                </table>    
             </div>
         </section>
     </div>

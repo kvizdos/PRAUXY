@@ -4,6 +4,8 @@ const config = function() {
         auth: process.env.AUTHPORT || 8082,
         unauthed: process.env.DEAUTHPORT || 8083,
         pageNotFound: process.env.PAGENOTFOUND || 8084,
+        siteLauncher: process.env.SITELAUNCHER || 8085,
+        siteLauncherHost: process.env.SITELAUNCHER || 8086,
         proxy: process.env.PORT || 80
     },
     this.email = {
@@ -14,7 +16,7 @@ const config = function() {
     this.createURL = (app = "", noProto = false) => {
         return `${!noProto ? this.protocol + "://" : ""}${app != "" ? app + "." : ""}${this.baseURL}`
     },
-    this.monitorLength = 300000 // 5 minutes in ms
+    this.monitorLength = 600000 // 5 minutes in ms
 }
 
 module.exports = new config();

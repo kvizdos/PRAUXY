@@ -83,7 +83,7 @@ class Authenticator {
                 _this._REDIS.get(`${user}:${token}:${groupLevel}`).then(hasCache => {
                     if(token !== undefined) {
                         if(hasCache) {
-                            this.confirmAccessLevel(appName, user, groupLevel).then(r => {
+                            _this.confirmAccessLevel(appName, user, groupLevel).then(r => {
                                 resolve(r);
                             })
                         } else {
@@ -98,7 +98,7 @@ class Authenticator {
 
                                         _LOGGER.log(`${user} logged in (${_DATE.pretty()})`, "Authorization")
 
-                                        this.confirmAccessLevel(appName, user, groupLevel).then(r => {
+                                        _this.confirmAccessLevel(appName, user, groupLevel).then(r => {
                                             resolve(r);
                                         })
                                     }

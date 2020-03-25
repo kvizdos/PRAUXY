@@ -18,7 +18,9 @@ const _LOGGER = require('../helpers/logging');
 const _REDIS = new (require('../helpers/redis'))();
 const _AUTH = new (require('../auth/confirmAuth'))(_REDIS);
 const _PM = require('../proxy/proxy');
-const _AUTHMODULE = require("../auth/auth")
+const _AUTHMODULE = require("../auth/auth");
+const _SITELAUNCHER = new (require("../sites/launcher"))();
+
 const _MONITOR = require('../monitoring/monitor')();
 
 const _CONF = require('../config');
