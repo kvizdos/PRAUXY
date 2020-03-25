@@ -108,6 +108,47 @@ const newUserModal = (app) => {
     ModalHandler.open();
 }
 
+const newSiteModal = () => {
+    ModalHandler.setHeader("Create a new site")
+    ModalHandler.setContent(`
+        <style>
+        .thisModalContentTho p {
+            font-size: 16pt;
+        }
+
+        .thisModalContentTho input {
+            font-size: 14pt;
+            padding: 4px;
+        }
+        </style>
+        <article class="thisModalContentTho">
+        <p>Name</p>
+        <input type="text" name="name" id="newSiteName" placeholder="Portfolio" auto-complete="off" required>
+        <br>
+        <p>Short Name</p>
+        <input type="text" name="name" id="newSiteShortName" placeholder="port" auto-complete="off" required>
+        <br>
+        <p>GitHub Repo URL (not SSH/HTTPS, just the normal URL)</p>
+        <input type="text" name="name" id="newSiteRepo" placeholder="https://github.com/kvizdos/Portfolio" auto-complete="off" required>
+        <br>
+        <p>Root Directory (optional)</p>
+        <input type="text" name="name" id="newSiteRoot" placeholder="portfolio" auto-complete="off">
+        <br>
+        <p>Custom URL (Optional)</p>
+        <input type="text" name="name" id="newSiteCustomURL" placeholder="kentonvizdos.com" auto-complete="off">
+        <br>
+        <br>
+
+        <input type="submit" id="createNewSiteBtn" value="Add" onclick="createNewSite()">
+        </article>
+        <article class="thisModalContentTho" id="modalRegisterComplete">
+            <p id="modalRegisterStatus"></p>
+        </article>
+    `)
+
+    ModalHandler.open();
+}
+
 const saveAppUpdates = () => {
     const newGroupLevel = $("#changeGroupLevel")[0].value
     const newUsers = $("#changeUsers")[0].value
@@ -171,6 +212,51 @@ const register = () => {
     })
 }
 
+const createNewSite = () => {
+    const name = document.getElementById("newSiteName").value;
+    const shortName = document.getElementById("newSiteShortName").value;
+    const repo = document.getElementById("newSiteRepo").value;
+    const rootDir = document.getElementById("newSiteRoot").value || "";
+    const custom = document.getElementById("newSiteCustomURL").value || "";
+
+    console.log(name, shortName, repo, rootDir, custom)
+
+    document.getElementById("createNewSiteBtn").value = "Creating..."
+    document.getElementById("createNewSiteBtn").disabled = true;
+    
+    let data = JSON.stringify({
+        name: name,
+        shortName: shortName,
+        repo: repo,
+        root: rootDir,
+        customurl: custom
+    })
+    
+    makeReq("POST", `${proto}sites.${baseURL}/api/create`, data, (data) => {
+        console.log(data)
+        getAndCache(`${proto}sites.${baseURL}/api/all`, "sites", renderSites);
+        console.log()
+        if(data.status == "complete") {
+            document.getElementById("createNewSiteBtn").value = "Done!"
+            document.getElementById("modalRegisterStatus").innerHTML = `
+            <p>Site created!</p>
+            <br>
+            <strong>Make sure to set the GitHub Webhook for the repo you specified to ${proto}sites.${baseURL}/api/update and set the secret token to ${data.secret}!</strong>
+            `;
+        } else {
+            document.getElementById("createNewSiteBtn").value = "Add"
+            document.getElementById("createNewSiteBtn").disabled = false;
+            document.getElementById("modalRegisterStatus").innerHTML = `
+            <p>Site failed to publish.</p>
+            <br>
+            <strong>${data.reason}</strong>
+            `;
+        }
+    }, (err) => {
+        alert("User failure: " + err.reason);
+    }, "application/json")
+}
+
 
 const renderUsers = (users) => {
     activeUser = getCookieValue("kvToken").split(":")[1];
@@ -188,6 +274,21 @@ const renderUsers = (users) => {
                 <td>${username}</td>
                 <td>${lastLogin != undefined ? (new Date(lastLogin)).toString() : "Never logged in"}</td>
                 <td><button class="deleteUserBtn" onclick="deleteUser('${username}')">-</button></td>
+            </tr>
+        `)
+    }
+}
+
+const renderSites = (sites) => {    
+    $('tbody#sites').empty();
+
+    for(const {name, pushSecret, root, customURL, shortName } of sites) {
+        $('tbody#sites').append(`
+            <tr>
+                <td>${name}</td>
+                <td>Static</td>
+                <td>${pushSecret}</td>
+                <td><a href="${customURL == undefined || customURL == "" ? `${proto}site-${shortName}.${baseURL}` : proto + customURL}" target="_blank">Vist</a></td>
             </tr>
         `)
     }
@@ -236,6 +337,7 @@ window.onload = function() {
     if(localStorage.getItem("applications") != null) renderApps(JSON.parse(localStorage.getItem("applications")), true)
     getAndCache(`${proto}${baseURL}/api/all`, "applications", renderApps);
     getAndCache(`${proto}auth.${baseURL}/users/all`, "users", renderUsers);
+    getAndCache(`${proto}sites.${baseURL}/api/all`, "sites", renderSites);
 
     startCanvas();
 }

@@ -6,3 +6,4 @@ certs/*
 tmp/*
 dashboard/frontend/assets/apps/*
 .env
+sites/data/*

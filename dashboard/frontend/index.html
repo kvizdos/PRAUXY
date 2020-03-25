@@ -148,24 +148,26 @@
             </div>
 
             <div id="siteLauncher" class="page">
-                <h2 class="title">Sites</h2>
+                <button class="niceBtn" id="createNewSite" onclick="newSiteModal()">Create new Site</button>
+
                 <table>
                     <tr>
                         <th>Name</th>
                         <th>Type</th>
+                        <th>GitHub Push</th>
                         <th></th>
                     </tr>
-                    <tr>
-                        <td>VirusWatch</td>
-                        <td>Node</td>
-                        <td><a href="#" target="_blank">Visit <i class="fas fa-external-link-alt"></i></a></td>
-                    </tr>
-                    <tr>
-                        <td>Chef</td>
-                        <td>Static</td>
-                        <td><a href="#" target="_blank">Visit <i class="fas fa-external-link-alt"></i></a></td>
-                    </tr>
+                    <tbody id="sites"></tbody>
                 </table>    
+
+                <h3>How to setup a webhook</h3>
+                <ol>
+                    <li>Navigate to GitHub Repo Settings</li>
+                    <li>Click Webhooks</li>
+                    <li>Click "Add webhook"</li>
+                    <li>Set Payload URI to http(s)://sites.{baseURL}/api/update</li>
+                    <li>Set the Secret to whatever the GitHub Push token is on this page (note: it must be the correct one!)</li>
+                </ol>
             </div>
         </section>
     </div>

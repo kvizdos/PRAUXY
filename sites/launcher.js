@@ -11,6 +11,7 @@ const cors = require('cors')
 const corsOptions = {
     origin: _CONF.createURL('')
 }
+console.log(corsOptions)
 const bcrypt = require('bcrypt');
 
 const fs = require('fs');
@@ -35,6 +36,8 @@ class SiteLauncher {
             });
         
         });
+
+        app.use(cors())
         
         app.use(bodyParser.json());
         app.use(bodyParser.urlencoded({ extended: true }));
@@ -67,7 +70,6 @@ class SiteLauncher {
                         if (!compareSignatures(signature, comparison_signature)) {
                             return res.status(401).json({status: "invalid verification"})
                         } else {
-                            console.log("pulling " + updating)
                             exec(`echo $pwd && cd ./sites/data/${updating} && git pull`, (err, stdout, stderr) => {
                                 if(err) {
                                     res.json({done: false})
@@ -84,27 +86,28 @@ class SiteLauncher {
             });
         })
 
-        app.post("/api/create", cors(corsOptions), (req, res) => {
+        app.post("/api/create", cors(), (req, res) => {
             this.addSite(req, res, req.body.name, req.body.shortName, req.body.repo, req.body.customurl || undefined, req.body.root);
         })
+
+        app.get("/api/all", cors(), (req, res) => {
+            MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, db) {
+                var dbo = db.db("homerouter");
+                dbo.collection("sites").find({}).project({_id: 0}).toArray((err, results) => {
+                    res.json(results)
+                });
+            
+            });
+        })
+
         app.get("/404", (req, res) => {
             res.send("That file does not seem to exist.")
         })
 
         app.get("/", (req, res) => {
-            res.send("hi")
+            res.redirect(_CONF.createURL())
         })
         app.listen(_CONF.ports.siteLauncher, () => _LOGGER.log("Started", "Site Launcher"))
-    }
-
-    registerSite(shortName, customURL = undefined) {
-        if(customURL != undefined) {
-            _PM.add("site-" + shortName, _CONF.ports.siteLauncherHost, false, customURL);
-        } else {
-            _PM.add("site-" + shortName, _CONF.ports.siteLauncherHost, false);
-        }
-
-        _LOGGER.log(`Started site ${shortName}${customURL != undefined ? ` (${customURL})` : ""}`, "Site Launcher Host")
     }
 
     addSite(req, res, name, short, repo, customURL = undefined, rootDir = "/") {
@@ -129,6 +132,7 @@ class SiteLauncher {
                     dbo.collection("sites").insertOne(newSite, (err, resu) => {
                         if(fs.existsSync(`./sites/data/${repo.split("/")[repo.split("/").length - 1]}`)) {
                             _LOGGER.log(`New Static Site: ${name}`, "Site Launcher")
+                            _this.registerSite(short, customURL);
             
                             res.json({status: "complete", secret: postSecret})
                         } else {
@@ -166,6 +170,16 @@ class SiteLauncher {
                 }
             });
         });
+    }
+
+    registerSite(shortName, customURL = undefined) {
+        if(customURL != undefined) {
+            _PM.add("site-" + shortName, _CONF.ports.siteLauncherHost, false, customURL);
+        } else {
+            _PM.add("site-" + shortName, _CONF.ports.siteLauncherHost, false);
+        }
+
+        _LOGGER.log(`Started site ${shortName}${customURL != undefined ? ` (${customURL})` : ""}`, "Site Launcher Host")
     }
 }
 

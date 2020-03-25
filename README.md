@@ -89,6 +89,9 @@ server {
 4. PORT (80) - This is the main port for the entire proxy server (what redirects you to everywhere)
 5. PROXYLOGS (false) - Set this to true to have a ton of BUNYAN logs from the Proxy (usually for development / debug only!)
 
+## Site Launcher
+As of now, you NEED an SSH Key for GitHub on the server that this is hosted on as it relies on pulling and cloning. 
+
 ## Use Cases
 Personally, I use HOME Router on my home network to allow me to access Guacamole, VSCode, and developmental servers while remaining safe and secure. I really like knowing that even if a piece of premade software doesn't already have an authentication system that I can trust HOME Router to handle it for me, while being able to use MFA! It's also pretty nice how it works across applications, so it's all Single Sign On and then cookie-based from there. 
 
