@@ -40,20 +40,6 @@ const openSettingsModal = (app) => {
 
     ModalHandler.setHeader(currentApp.name)
     ModalHandler.setContent(`
-        <style>
-        .thisModalContentTho p {
-            font-size: 16pt;
-        }
-
-        .thisModalContentTho input {
-            font-size: 14pt;
-            padding: 4px;
-        }
-
-        .thisModalContentTho .small {
-            font-size: 12pt;
-        }
-        </style>
         <article class="thisModalContentTho">
         <p>Group Level</p>
         <input ${!isAdmin ? "disabled" : ""} type="number" max="10" min="0" name="grouplvl" id="changeGroupLevel" placeholder="${currentApp.group}" value="${currentApp.group}" auto-complete="off" required>
@@ -79,26 +65,19 @@ const openSettingsModal = (app) => {
 const newUserModal = (app) => {
     ModalHandler.setHeader("Register a user")
     ModalHandler.setContent(`
-        <style>
-        .thisModalContentTho p {
-            font-size: 16pt;
-        }
-
-        .thisModalContentTho input {
-            font-size: 14pt;
-            padding: 4px;
-        }
-        </style>
         <article class="thisModalContentTho">
-        <p>Username</p>
-        <input type="text" name="name" id="registerUsername" placeholder="kvizdos" auto-complete="off" required>
-        <br>
-        <p>Email</p>
-        <input type="email" name="name" id="registerEmail" placeholder="example@provider.com" auto-complete="off" required>
-        <br>
-        <br>
+        <article class="formItem">
+            <label>Username</label>
+            <input type="text" name="name" id="registerUsername" placeholder="kvizdos" auto-complete="off" required>
+        </article>
+        <article class="formItem">
+            <label>Email</label>
+            <input type="email" name="name" id="registerEmail" placeholder="example@provider.com" auto-complete="off" required>
+        </article>
 
-        <input type="submit" value="Add" onclick="register()">
+        <article class="formItem">
+            <input type="submit" value="Add" onclick="register()">
+        </article>
         </article>
         <article class="thisModalContentTho" id="modalRegisterComplete">
             <p id="modalRegisterStatus"></p>
@@ -108,38 +87,73 @@ const newUserModal = (app) => {
     ModalHandler.open();
 }
 
+const addAppModal = () => {
+    ModalHandler.setHeader("Add an App")
+    ModalHandler.setContent(`
+    <form id="createNewApplication" enctype="multipart/form-data" action="/api/new" method="post">
+        <article class="formItem">        
+            <label>Application Name</label>
+            <input type="text" name="name" id="name" placeholder="Visual Studio Code" required>
+        </article>
+        <article class="formItem">
+            <label>Application Short Name</label>
+            <input type="text" name="short" id="short" placeholder="code" required>
+        </article>
+        <article class="formItem">
+            <label>Application Port</label>
+            <input type="text" name="port" id="port" placeholder="8080/an_optional_path" required>
+        </article>
+        <article class="formItem">
+            <label class="optional">App Icon</label>
+            <input name="icon" id="icon" type="file" accept="image/*">
+        </article>
+
+        <article class="formItem">
+            <label class="optional">Custom URL</label>
+            <input name="customurl" type="text" id="customURL" placeholder="default is: {{subdomain}}.{{base_url}}">
+        </article>
+        
+        <article class="formItem checkbox">    
+            <input checked name="ra" type="checkbox" id="requireAuthentication">
+            <label>Require Authentication</label>
+        </article>
+
+        <article class="formItem">
+            <input type="submit" value="Add">
+        </article>
+    </form>
+    `)
+
+    ModalHandler.open();
+}
+
 const newSiteModal = () => {
     ModalHandler.setHeader("Create a new site")
     ModalHandler.setContent(`
-        <style>
-        .thisModalContentTho p {
-            font-size: 16pt;
-        }
-
-        .thisModalContentTho input {
-            font-size: 14pt;
-            padding: 4px;
-        }
-        </style>
         <article class="thisModalContentTho">
-        <p>Name</p>
-        <input type="text" name="name" id="newSiteName" placeholder="Portfolio" auto-complete="off" required>
-        <br>
-        <p>Short Name</p>
-        <input type="text" name="name" id="newSiteShortName" placeholder="port" auto-complete="off" required>
-        <br>
-        <p>GitHub Repo URL (not SSH/HTTPS, just the normal URL)</p>
-        <input type="text" name="name" id="newSiteRepo" placeholder="https://github.com/kvizdos/Portfolio" auto-complete="off" required>
-        <br>
-        <p>Root Directory (optional)</p>
-        <input type="text" name="name" id="newSiteRoot" placeholder="portfolio" auto-complete="off">
-        <br>
-        <p>Custom URL (Optional)</p>
-        <input type="text" name="name" id="newSiteCustomURL" placeholder="kentonvizdos.com" auto-complete="off">
-        <br>
-        <br>
-
-        <input type="submit" id="createNewSiteBtn" value="Add" onclick="createNewSite()">
+            <article class="formItem">
+                <label>Name</label>
+                <input type="text" name="name" id="newSiteName" placeholder="Portfolio" auto-complete="off" required>
+            </article>
+            <article class="formItem">
+                <label>Short Name</label>
+                <input type="text" name="name" id="newSiteShortName" placeholder="port" auto-complete="off" required>
+            </article>
+            <article class="formItem">
+                <label>GitHub Repo URL (not SSH/HTTPS, just the normal URL)</label>
+                <input type="text" name="name" id="newSiteRepo" placeholder="https://github.com/kvizdos/Portfolio" auto-complete="off" required>
+            </article>
+            <article class="formItem">
+                <label class="optional">Root Directory</label>
+                <input type="text" name="name" id="newSiteRoot" placeholder="portfolio" auto-complete="off">
+            </article>
+            <article class="formItem">
+                <label class="optional">Custom URL</label>
+                <input type="text" name="name" id="newSiteCustomURL" placeholder="kentonvizdos.com" auto-complete="off">
+            </article>
+            <article class="formItem">
+                <input type="submit" id="createNewSiteBtn" value="Add" onclick="createNewSite()">
+            </article>
         </article>
         <article class="thisModalContentTho" id="modalRegisterComplete">
             <p id="modalRegisterStatus"></p>

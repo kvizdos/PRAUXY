@@ -1,0 +1,15 @@
+.tableContainer {
+    overflow-x: auto;
+    max-width: 100%;
+    margin-top: 25px;
+}
+
+table {
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 1.25em;
+}
+
+table td, table th {
+    padding: 10px;
+}

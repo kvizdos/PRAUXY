@@ -2,7 +2,6 @@ class StateManager {
 
     pages = [
         {page: "Dashboard", path: "/dash", id: "appContainer", group: 0},
-        {page: "Add an app", path: "/add", id: "addApp", group: 1},
         {page: "Users", path: "/users", id: "userList", group: 1},
         {page: "Add User", path: "/users/add", id: "addUser", group: 1},
         {page: "User Settings", path: "/me/settings", id: "userSettings", group: 0},

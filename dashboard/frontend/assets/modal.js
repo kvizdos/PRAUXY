@@ -9,7 +9,7 @@ function Modal(container) {
     }
 
     this.setContent = (content) => {
-        document.getElementById(this.container).children[0].children[2].innerHTML = content;
+        document.getElementById(this.container).children[0].children[1].innerHTML = content;
         this.content = content;
     }
     

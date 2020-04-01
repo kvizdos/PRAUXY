@@ -1,6 +1,6 @@
 #modalContainer {
-    z-index: 10;
-    position: absolute;
+    z-index: 1000001;
+    position: fixed;
     left: 0;
     top: 0;
     width: 100vw;
@@ -13,17 +13,28 @@
 
 #modalContainer #modal h2 {
   margin: 0;
+  padding: 15px;
+  position: sticky;
+  top: 0;
+  background-color: rgb(97, 133, 233);
+  color: white;
+  font-weight: 100;
+  font-size: 1em;
 }
 
 #modalContainer #modal {
-    padding: 10px;
-    background-color: rgba(235, 235, 235, 1);
-    border-radius: 15px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 8px;
     box-shadow: 0 0 10px 0px #5a5a5a;
-    height: 80vh;
+    min-height: 10vh;
     width: 80vw;
     overflow-y: scroll;
     z-index: 3;
+    max-height: 80vh;
+}
+
+#modalContainer #modal #modalContent {
+  padding: 15px;
 }
 
 #modalContainer #modalBackground {
@@ -32,36 +43,18 @@
   top: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, .5);
+  background-color: rgba(0, 0, 0, .15);
   z-index: 2;
 
 }
 
 /* width */
 #modalContainer #modal::-webkit-scrollbar {
-    width: 18px;
+    display: none;
 }
   
-/* Track */
-#modalContainer #modal::-webkit-scrollbar-track {
-  background: rgb(202, 202, 202);
-  border-radius: 0 15px 15px 0;
-}
-
-/* Handle */
-#modalContainer #modal::-webkit-scrollbar-thumb {
-  background: rgb(180, 180, 180);
-  border-radius: 0 15px 15px 0;
-}
-
-/* Handle on hover */
-#modalContainer #modal::-webkit-scrollbar-thumb:hover {
-  background: rgb(184, 184, 184)
-}
-
 @media only screen and (min-width: 768px) {
     #modalContainer #modal {
-        height: 60vh;
         width: 75vw;
     }
 }

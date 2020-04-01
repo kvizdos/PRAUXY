@@ -1,0 +1,59 @@
+.formItem {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.formItem label {
+    font-size: 1.15em;
+    font-weight: bold;
+    color: rgb(63, 106, 224);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.formItem input {
+    font-size: 1.2em;
+    margin: 0;
+    padding: 10px;
+    border: 2px solid rgb(230, 230, 230);
+    border-radius: 5px;
+    width: 100%;
+    min-width: 100%;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.formItem label.optional::after {
+    content: "(OPTIONAL)";
+    color: rgb(105, 137, 228);
+    margin-left: 10px;
+}
+
+.formItem.checkbox {
+    flex-direction: row;
+    align-items: center;
+    text-transform: unset;
+}
+
+.formItem.checkbox input {
+    min-width: fit-content;
+    width: 20px;
+    height: 20px;
+    margin: 10px;
+}
+
+.formItem input[type="submit"] {
+    border: none;
+}
+
+@media only screen and (min-width: 768px) {
+    .formItem input {
+        min-width: 75%;
+        width: fit-content;
+
+    }
+    .formItem input[type="submit"] {
+        min-width: 15% !important;
+    }
+}

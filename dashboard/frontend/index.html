@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="/assets/style.css">
     <link rel="stylesheet" href="/assets/modal.css">
     <link rel="stylesheet" href="/assets/alerts.css">
+    <link rel="stylesheet" href="/assets/forms.css">
+    <link rel="stylesheet" href="/assets/tables.css">
+
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <script src="https://kit.fontawesome.com/f40d5f26b8.js" crossorigin="anonymous"></script>
 
@@ -58,7 +61,6 @@
                 <i class="material-icons" onclick="hideMenu()" id="closeMenu">close</i>
                 
                 <p href="#" onclick="_SM.setPage('Dashboard', this)">Dashboard</p>
-                <p href="#" onclick="_SM.setPage('Add an app', this)">Add an app</p>
                 <p href="#" onclick="_SM.setPage('Users', this)">Users</p>
                 <p href="#" onclick="_SM.setPage('Sites', this)">Sites</p>
                 <!-- <p href="#">Stats</p> -->
@@ -75,42 +77,11 @@
                     </article>
                 </section>
                 
-                <a class="defaultApp" href="" onclick="_SM.setPage('Add an app', this)">
+                <article class="defaultApp"  onclick="addAppModal()">
                     <div class="app">
                         <h1>+</h1>
                     </div>
-                </a>
-            </div>
-
-            
-            <div id="addApp" class="page">
-                <div id="create">
-                    <form id="createNewApplication" enctype="multipart/form-data" action="/api/new" method="post">
-                        <p>Application Name</p>
-                        <input type="text" name="name" id="name" placeholder="Visual Studio Code" required>
-
-                        <p>Application Subdomain</p>
-                        <input type="text" name="short" id="short" placeholder="code" required>
-
-                        <p>What port is this app running on?</p>
-                        <input type="text" name="port" id="port" placeholder="8080/an_optional_path" required>
-
-                        <p>Would you like to set an image?</p>
-                        <input name="icon" id="icon" type="file" accept="image/*">
-
-                        <hr>
-
-                        <p>Options</p>
-                        <input checked name="ra" type="checkbox" id="requireAuthentication"> Require Authentication<br>
-
-                        <p>Would you like to use a different URL?</p>
-                        <input name="customurl" type="text" id="customURL" placeholder="default is: {{subdomain}}.{{base_url}}"><br>
-
-                        <br>
-
-                        <input type="submit" value="Add">
-                    </form>
-                </div>
+                </article>
             </div>
 
             <div id="userSettings" class="page">
@@ -133,38 +104,42 @@
             </div>
 
             <div id="userList" class="page">
-                <button class="niceBtn" id="createNewUser" onclick="newUserModal()">Register new User</button>
+                <button class="headerBtn" id="createNewUser" onclick="newUserModal()">Register new User</button>
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Last Login</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="users"></tbody>
-                </table>
+                <section class="tableContainer">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Last Login</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="users"></tbody>
+                    </table>
+                </section>
             </div>
 
             <div id="siteLauncher" class="page">
-                <button class="niceBtn" id="createNewSite" onclick="newSiteModal()">Create new Site</button>
+                <button class="headerBtn" id="createNewSite" onclick="newSiteModal()">Create new Site</button>
 
-                <table>
-                    <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>GitHub Push</th>
-                        <th></th>
-                    </tr>
-                    <tbody id="sites"></tbody>
-                </table>    
-
+                <section class="tableContainer">
+                    <table>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>GitHub Push</th>
+                            <th></th>
+                        </tr>
+                        <tbody id="sites"></tbody>
+                    </table>    
+                </section>
                 <h3>How to setup a webhook</h3>
                 <ol>
                     <li>Navigate to GitHub Repo Settings</li>
                     <li>Click Webhooks</li>
                     <li>Click "Add webhook"</li>
+                    <li>Set Content Type to application/json</li>
                     <li>Set Payload URI to http(s)://sites.{baseURL}/api/update</li>
                     <li>Set the Secret to whatever the GitHub Push token is on this page (note: it must be the correct one!)</li>
                 </ol>
@@ -175,7 +150,6 @@
     <section id="modalContainer">
         <article id="modal">
             <h2>Modal Name</h2>
-            <hr>
             <article id="modalContent"></article>
         </article>
         <article id="modalBackground" onclick="ModalHandler.close(this)"></article>
