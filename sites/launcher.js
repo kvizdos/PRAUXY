@@ -92,11 +92,11 @@ class SiteLauncher {
             });
         })
 
-        app.post("/api/create", cors(), (req, res) => {
+        app.post("/api/create", (req, res) => {
             this.addSite(req, res, req.body.name, req.body.shortName, req.body.repo, req.body.customurl || undefined, req.body.root);
         })
 
-        app.get("/api/all", cors(), (req, res) => {
+        app.get("/api/all", (req, res) => {
             MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, db) {
                 var dbo = db.db("homerouter");
                 dbo.collection("sites").find({}).project({_id: 0}).toArray((err, results) => {
