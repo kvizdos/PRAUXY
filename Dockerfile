@@ -2,9 +2,9 @@
 FROM node:alpine as build
 
 # Setup workspace
-WORKDIR .
+WORKDIR /
 
-COPY . .
+COPY / .
 
 # Install dependencies
 RUN npm install --save
