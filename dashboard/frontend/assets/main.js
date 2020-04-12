@@ -100,8 +100,8 @@ const addAppModal = () => {
             <input type="text" name="short" id="short" placeholder="code" required>
         </article>
         <article class="formItem">
-            <label>Application Port</label>
-            <input type="text" name="port" id="port" placeholder="8080/an_optional_path" required>
+            <label>Application Address (either just a port or IP:PORT)</label>
+            <input type="text" name="port" id="port" placeholder="8080/an_optional_path or 127.0.0.1:8080" required>
         </article>
         <article class="formItem">
             <label class="optional">App Icon</label>

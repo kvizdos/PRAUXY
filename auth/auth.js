@@ -21,11 +21,13 @@ const QRCode = require("qrcode");
 const _CONF = require('../config');
 
 const _REDIS = new (require('../helpers/redis'))();
-const _AUTH = new (require('./confirmAuth'))(_REDIS);
+const _PERMISSIONS = new (require('./permissions'))();
 
+const _AUTH = new (require('./confirmAuth'))(_REDIS);
 const _LOGGER = require('../helpers/logging');
 
 const _EMAIL = new (require("../helpers/email")).email();
+
 
 // Use req.query to read values!!
 app.use(bodyParser.json());
@@ -310,6 +312,9 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     if (err) throw err;
     var dbo = db.db("homerouter");
 
+    _PERMISSIONS.registerRoutes(app);
+    _PERMISSIONS.confirmAlreadyExists();
+
     dbo.collection("users").find({username: "admin"}).toArray((err, result) => {
         if(err) throw err;
 
@@ -324,7 +329,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
             const secret = speakeasy.generateSecret({length: 20, name: `HOME Router (admin)`});
 
             QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
-                dbo.collection("users").insertOne({email: process.env.ADMINEMAIL, username: "admin", password: hash, token: token, tfa: secret.base32, loggedIn: false, qr: image_data, group: 10}, function(err, result) {
+                dbo.collection("users").insertOne({email: process.env.ADMINEMAIL, username: "admin", password: hash, token: token, tfa: secret.base32, loggedIn: false, qr: image_data, group: 10, isInGroup: "Super Users"}, function(err, result) {
                     if (err) throw err;
 
                     _LOGGER.log("Admin registered (admin/admin)", "user");
@@ -339,6 +344,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
             process.exit(22);
         }
     });
+
+    
 
 });
 

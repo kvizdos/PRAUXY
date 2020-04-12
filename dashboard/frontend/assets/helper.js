@@ -1,6 +1,6 @@
 const makeReq = (type, url, data, success, failure, contentType = "application/x-www-form-urlencoded") => {
     const xhr = new XMLHttpRequest();
-    
+    xhr.withCredentials = true;
     xhr.addEventListener("readystatechange", function () {
     if (this.readyState === 4) {
         console.log(this)

@@ -131,12 +131,15 @@ const registerSaved = () => {
                 if(p.customURL == undefined || p.customURL == "") {
                     _LOGGER.log(`Started on port ${p.port} (requires authentication: ${p.requiresAuthentication})`, p.name + " (" + p.shortName + ")");
                     _REDIS.set(`APP:${p.shortName}`, JSON.stringify({requiresAuth: p.requiresAuthentication}));
-                    proxy.register(_CONF.createURL(p.shortName, true), "127.0.0.1:" + p.port);
+                    // proxy.register(_CONF.createURL(p.shortName, true), "127.0.0.1:" + p.port);
+                    proxy.register(_CONF.createURL(p.shortName, true), p.port.toString().indexOf(":") > 0 ? p.port : "127.0.0.1:" + p.port);
+
                     registered.push(p.shortName)
                 } else {
                     _LOGGER.log(`Started (${p.shortName}) on port ${p.port} (customURL: ${p.customURL}, requires authentication: ${p.requiresAuthentication})`, p.name + " (" + p.shortName + ")");
                     _REDIS.set(`APP:${p.customURL}`, JSON.stringify({requiresAuth: p.requiresAuthentication}));
-                    proxy.register(p.customURL, "127.0.0.1:" + p.port);
+                    // proxy.register(p.customURL, "127.0.0.1:" + p.port);
+                    proxy.register(_CONF.createURL(p.shortName, true), p.port.toString().indexOf(":") > 0 ? p.port : "127.0.0.1:" + p.port);
                 }
             }
         });
@@ -160,10 +163,10 @@ module.exports = {
     add: (sub, port, requireAuthentication, customURL = "") => {
         if(customURL == "") {
             _REDIS.set(`APP:${sub}`, JSON.stringify({requiresAuth: requireAuthentication}));
-            proxy.register(_CONF.createURL(sub, true), "127.0.0.1:" + port);
+            proxy.register(_CONF.createURL(sub, true), port.toString().indexOf(":") > 0 ? port : "127.0.0.1:" + port);
         } else {
             _REDIS.set(`APP:${customURL}`, JSON.stringify({requiresAuth: requireAuthentication}));
-            proxy.register(customURL, "127.0.0.1:" + port);
+            proxy.register(customURL, port.toString().indexOf(":") > 0 ? port : "127.0.0.1:" + port);
         }
     }
 }

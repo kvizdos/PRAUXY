@@ -1,7 +1,9 @@
 let cachedTokens = [];
+const _PERMISSION = new (require("./permissions"))();
 const _LOGGER = require('../helpers/logging');
 const _DATE = require('../helpers/date');
 const _MongoConfig = require('../helpers/mongo');
+
 const MongoClient = require('mongodb').MongoClient;
 // const url = "mongodb://127.0.0.1:27017/";
 const url = _MongoConfig.url;
@@ -23,6 +25,7 @@ class Authenticator {
     constructor(redis) {
         this.id = Math.floor(Math.random() * 1000)
         this._REDIS = redis;
+
     }
 
     isAdmin(req, res, next = undefined) {
@@ -73,6 +76,9 @@ class Authenticator {
         let groupLevel = tempToken.split(":")[2];
 
         const _this = this;
+
+
+        if(_PERMISSION == undefined) return false;
     
         return new Promise((resolve, reject) => {
             _this._REDIS.get(`APP:${appName}`).then(requiresAuth => {
@@ -82,10 +88,14 @@ class Authenticator {
                 }
                 _this._REDIS.get(`${user}:${token}:${groupLevel}`).then(hasCache => {
                     if(token !== undefined) {
-                        if(hasCache) {
+                        const confirm = () => {
                             _this.confirmAccessLevel(appName, user, groupLevel).then(r => {
                                 resolve(r);
                             })
+                        }
+
+                        if(hasCache) {
+                            confirm()
                         } else {
                             MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
                                 if (err) throw err;
@@ -94,16 +104,15 @@ class Authenticator {
                                 dbo.collection("users").findOne({username: user, token: token}, (err, u) => {
                                     if(err) throw err;
                                     if(u != null) {
-                                        _this._REDIS.set(`${user}:${token}:${groupLevel}`, true);
-
                                         _LOGGER.log(`${user} logged in (${_DATE.pretty()})`, "Authorization")
 
-                                        _this.confirmAccessLevel(appName, user, groupLevel).then(r => {
-                                            resolve(r);
-                                        })
+                                        _this._REDIS.set(`${user}:${token}:${groupLevel}`, true)
+
+                                        confirm();
+                                    } else {
+                                        resolve(false);
                                     }
             
-                                    resolve(false);
                                 })
                             });
                         }
