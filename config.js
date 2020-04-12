@@ -6,7 +6,7 @@ const config = function() {
         pageNotFound: process.env.PAGENOTFOUND || 8084,
         siteLauncher: process.env.SITELAUNCHER || 8085,
         siteLauncherHost: process.env.SITELAUNCHER || 8086,
-        proxy: process.env.PORT || 80
+        proxy: process.env.PORT || 81
     },
     this.email = {
         sgkey: process.env.SGKEY || "insert-key-here"

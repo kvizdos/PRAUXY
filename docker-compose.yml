@@ -1,29 +1,32 @@
-version: '3.4'
+version: "3"
 services:
-  mongo:
-    container_name: homerouter-mongo
-    image: 'mongo:4'
-    build:
-      context: .
-      network: host
-  redis:
-    container_name: homerouter-redis
-    image: 'redis:5'
-    command: redis-server
-    build:
-      context: .
-      network: host
-  homerouter:
-    privileged: true
-    container_name: homerouter
-    restart: on-failure
-    build:
-      context: .
-      network: host
-    volumes:
-      - ./:/usr/src/app
-      - /usr/src/app/node_modules
-    depends_on: 
-      - redis
-      - mongo
-    command: npm start
+ auxy:
+  build: .
+  depends_on:
+  - mongo
+  - redis
+  networks:
+    - auxy-network
+ mongo:
+  image: "mongo"
+  networks:
+    - auxy-network
+ redis:
+  image: "redis"
+  networks:
+    - auxy-network
+ server:
+  image: nginx:mainline-alpine
+  ports:
+    - 80:80
+    - 443:443
+  volumes:
+    - ./nginx-conf:/etc/nginx/conf.d
+  depends_on:
+    - auxy
+  networks:
+    - auxy-network
+
+networks:
+  auxy-network:
+    driver: bridge

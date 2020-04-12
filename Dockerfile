@@ -1,11 +1,13 @@
-FROM node:10
-WORKDIR /usr/src/homerouter
+# Init node on Alpine
+FROM node:alpine as build
 
-COPY package*.json ./
+# Setup workspace
+WORKDIR .
 
-RUN npm install
 COPY . .
 
-CMD ["npm", "run", "start:prod"]
+# Install dependencies
+RUN npm install --save
 
-EXPOSE 80
+# Run
+CMD [ "node", "index.js" ]
