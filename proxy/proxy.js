@@ -132,6 +132,7 @@ const registerSaved = () => {
                     _LOGGER.log(`Started on port ${p.port} (requires authentication: ${p.requiresAuthentication})`, p.name + " (" + p.shortName + ")");
                     _REDIS.set(`APP:${p.shortName}`, JSON.stringify({requiresAuth: p.requiresAuthentication}));
                     // proxy.register(_CONF.createURL(p.shortName, true), "127.0.0.1:" + p.port);
+                    console.log(p.name + ": " + p.port.toString().indexOf(":") > 0 ? p.port : "127.0.0.1:" + p.port);
                     proxy.register(_CONF.createURL(p.shortName, true), p.port.toString().indexOf(":") > 0 ? p.port : "127.0.0.1:" + p.port);
 
                     registered.push(p.shortName)
@@ -139,6 +140,8 @@ const registerSaved = () => {
                     _LOGGER.log(`Started (${p.shortName}) on port ${p.port} (customURL: ${p.customURL}, requires authentication: ${p.requiresAuthentication})`, p.name + " (" + p.shortName + ")");
                     _REDIS.set(`APP:${p.customURL}`, JSON.stringify({requiresAuth: p.requiresAuthentication}));
                     // proxy.register(p.customURL, "127.0.0.1:" + p.port);
+                    console.log(p.name + ": " + p.port.toString().indexOf(":") > 0 ? p.port : "127.0.0.1:" + p.port);
+
                     proxy.register(_CONF.createURL(p.shortName, true), p.port.toString().indexOf(":") > 0 ? p.port : "127.0.0.1:" + p.port);
                 }
             }
