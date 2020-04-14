@@ -8,17 +8,13 @@ const _REDIS = new (require('../helpers/redis'))();
 const express = require('express')
 const app = express()
 
-const fs = require('fs');
-const cheerio = require('cheerio');
-
 app.get("/*", (req, res) => {    
     const regex = new RegExp(_CONF.baseURL.replace(/\./g, '\\.'), 'g');
 
     const isNotCustom = regex.test(req.headers.host);
 
     const sendData = (rootDir) => {
-        const p = req.params[0] || "index.html";
-        res.sendFile(__dirname + `/data/${rootDir}/${p}`, (err) => {
+        res.sendFile(__dirname + `/data/${rootDir}/${req.params[0] || "index.html"}`, (err) => {
             if(err) {
                 res.sendStatus(404);
             }
