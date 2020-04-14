@@ -7,32 +7,58 @@
     <title>Authenticate</title>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="/assets/forms.css">
 
+    <script src="/socket.io/socket.io.js"></script>
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> 
     <script src="/assets/login.js"></script>
+
 </head>
 <body>
     <div id="container">
         <div id="middle">
             <!-- <img src="/assets/logo.gif"> -->        
             <div id="firstStep">
-                <input id="username" placeholder="Username" oninput="confirmInputs(0)" />
-                <input id="password" type="password" placeholder="Password" oninput="confirmInputs(0)" />
-                <input id="login" class="greenGradient" type="submit" value="Login" onclick="login()" disabled>
+                <article class="formItem">
+                    <label>Username</label>
+                    <input id="username" placeholder="admin" oninput="confirmInputs(0)" />
+                </article>
+                <article class="formItem">
+                    <label>Password</label>
+                    <input id="password" type="password" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;" oninput="confirmInputs(0)" />
+                </article>
+                <article class="formItem">
+                    <input id="login" class="greenGradient" type="submit" value="Login" onclick="login()" disabled>
+                </article>
                 <!-- <br>
                 <a href="#">Forgot password?</a> -->
             </div>
 
             <div id="secondStep">
-                <h2>Please enter your 2FA code</h2>
-                <input id="mfa" type="number" placeholder="6-digit code" oninput="confirmInputs(1)" />
-                <input id="mfaContinue" class="greenGradient" type="submit" value="Submit" disabled onclick="confirmMFA()">
+                <section id="secondStepHeader">
+                    <p id="subHeader">Confirm on different device</p>
+                    <p id="verifyNumber">73</p>
+                    <hr>
+                    <small>OR</small>
+                </section>
+
+                <article class="formItem">
+                    <label>TFA Token</label>
+                    <input id="mfa" type="number" placeholder="6-digit code" oninput="confirmInputs(1)" />
+                </article>
+
+                <article class="formItem">
+                    <input id="mfaContinue" class="greenGradient" type="submit" value="Submit" disabled onclick="confirmMFA()">
+                </article>
             </div>
 
             <div id="mfaStep">
                 <h2>Welcome! You must add me to your MFA platform of choice.</h2>
                 <img id="mfaQR">
-                <input id="mfaAddedBtn" class="greenGradient" type="submit" value="Continue" onclick="addedMFA()">
+                <article class="formItem">
+                    <input id="mfaAddedBtn" class="greenGradient" type="submit" value="Continue" onclick="addedMFA()">
+                </article>
             </div>
         </div>
     </div>

@@ -37,6 +37,10 @@ class RedisManager {
             })
         })
     }
+
+    remove(key) {
+        this.client.del(key);
+    }
 }
 
 module.exports = RedisManager;

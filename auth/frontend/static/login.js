@@ -1,4 +1,34 @@
 let firstLogin = false;
+let socket = io();
+
+
+function setcookie(name, value, days)
+{
+  if (days)
+  {
+    var date = new Date();
+    date.setTime(date.getTime()+days*24*60*60*1000); // ) removed
+    var expires = "; expires=" + date.toGMTString(); // + added
+  }
+  else
+    var expires = "";
+  document.cookie = name+"=" + value+expires + ";path=/;domain=home.kentonvizdos.com"; // + and " added
+}
+
+socket.on('login', (data) => {
+    if(data.authenticated) {
+        setcookie("kvToken", data.token + ":" + $("#username").val() + ":" + data.group, 365);
+
+        var url = new URL(window.location.href);
+        var redir = url.searchParams.get("go");
+        if(firstLogin) alert("Welcome to Auxy- you will be redirected to the password configuration page (you can get back at any time by pressing your username in the navigation bar)")
+        window.location.href = window.location.protocol + "//" + (redir !== null ? redir + "." : "") + "home.kentonvizdos.com" + (redir == null && firstLogin ? "/me/settings" : "");
+    }
+})
+
+socket.on('resetTFA', (data) => {
+    $('#verifyNumber').text(data);
+})
 
 const login = () => {
     const username = $("#username").val();
@@ -8,9 +38,11 @@ const login = () => {
 
     $.post(window.location.protocol + "//auth." + window.location.hostname.split(".").splice(1).join(".") + "/login", {
         username: username,
-        password: password
+        password: password,
+        socketid: socket.id
     }, (res) => {
         if(res.authenticated) {
+            $('#verifyNumber').text(res.tfaNum)
             if(!res.showMFA) {
                 $("#firstStep").hide();
                 $("#secondStep").show();
@@ -30,19 +62,6 @@ const addedMFA = () => {
     firstLogin = true;
     $('#mfaStep').hide()
     $("#secondStep").show();
-}
-
-function setcookie(name, value, days)
-{
-  if (days)
-  {
-    var date = new Date();
-    date.setTime(date.getTime()+days*24*60*60*1000); // ) removed
-    var expires = "; expires=" + date.toGMTString(); // + added
-  }
-  else
-    var expires = "";
-  document.cookie = name+"=" + value+expires + ";path=/;domain=home.kentonvizdos.com"; // + and " added
 }
 
 const confirmMFA = () => {

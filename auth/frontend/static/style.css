@@ -12,17 +12,14 @@ body, html {
     justify-content: center;
     align-content: center;
     align-items: center;
-    background-color: rgb(10, 15, 19);
-
 }
 
 #middle {
-    text-align: center;
-    background: radial-gradient(at bottom left, #303aa1 0%, #3c49c5 45%, #3e4bca 80%);
     padding: 25px;
     width: 75vw;
     padding: 30px;
-    box-shadow: 0 0 20px black;
+    box-shadow: 0 0 8px rgb(199, 199, 199);
+    border-radius: 5px;
 }
 
 h2 {
@@ -31,6 +28,42 @@ h2 {
     color: white;
 }
 
+#secondStepHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#secondStepHeader p#subHeader {
+    margin: 0;
+    padding: 0;
+    font-size: 1.25em;
+    text-align: center;
+    color: rgb(63, 106, 224);
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+#secondStepHeader p#verifyNumber {
+    border-radius: 100%;
+    width: fit-content;
+    padding: 10px;
+    background-color: rgb(63, 106, 224);
+    color: white;
+    font-weight: bold;
+}
+
+#secondStepHeader hr {
+    width: 100%;
+    border: 1px solid rgb(130, 159, 238);
+}
+
+#secondStepHeader small {
+    font-size: 1em;
+    color: rgb(173, 173, 173);
+}
+
+/* 
 #middle input {
     font-size: 14pt;
     background-color: white;
@@ -50,36 +83,38 @@ h2 {
 
 #middle input:not(:first-child) {
     margin-top: 15px;
-}
+} */
 
 #secondStep, #mfaStep {
     display: none;
 }
 
-#login {
-    /* background-color: #10c36a !important; */
+.formItem input[type="submit"] {
+    background-color: #28c843 !important;
     cursor: pointer;
+    color: white;
     font-size: 18pt !important;
     border: 0 !important;
+    width: 100%;
+    text-align: center;
+    transition: .2s;
 }
 
 .greenGradient {
-    background: linear-gradient(45deg, #27d673 0%, #0bde74 45%, #0ce277 60%);
     color: white !important;
     cursor: pointer;
 }
 
 #mfaContinue:disabled {
-    background: linear-gradient(45deg, #1c9e55 0%, #08a556 45%, #09a859 60%);
+    background: linear-gradient(45deg, #39c375 0%, #36cf78 45%, #39c375 60%);
     color: rgb(204, 204, 204) !important;
     cursor: initial !important;
 }
 
-#login:disabled {
-    background: linear-gradient(45deg, #1c9e55 0%, #08a556 45%, #09a859 60%);
-    transition: 10s;
-    cursor: initial;
-    color: rgb(204, 204, 204) !important;
+.formItem input[type="submit"]:disabled {
+    background-color: #22973b !important;
+    cursor: not-allowed;
+    color: rgb(211, 211, 211) !important;
 
 }
 

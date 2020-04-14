@@ -1,6 +1,8 @@
 // Install body-parser and Express
 const express = require('express')
 const app = express()
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
 
 const _MongoConfig = require('../helpers/mongo');
 const MongoClient = require('mongodb').MongoClient;
@@ -43,6 +45,7 @@ app.use(function(req, res, next){
   })
 
 app.use('/assets', express.static("./auth/frontend/static"));
+app.use('/assets/forms.css', express.static("./dashboard/frontend/assets/forms.css"));
 
 app.get("/", (req, res) => {
 
@@ -80,6 +83,7 @@ app.get("/verify/*", (req, res) => {
 app.post("/login", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
+    const socketid = req.body.socketid;
 
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
         if (err) throw err;
@@ -95,12 +99,21 @@ app.post("/login", (req, res) => {
                     if(verify) {
 
                         const newToken = bcrypt.genSaltSync(saltRounds);
+                        const tfaNum = Math.floor(Math.random() * 100) + 1;
+
                         _REDIS.set(`AUTHTOKEN:${username}`, newToken, 60);
+                        _REDIS.set(`AUTHTFA:${username}`, `${socketid}:${tfaNum}`, 180);
+
+                        const tfa1 = Math.floor(Math.random() * 3) + 1 == 1 ? tfaNum : Math.floor(Math.random() * 100) + 1;
+                        const tfa2 = tfa1 != tfaNum && Math.floor(Math.random() * 3) + 1 == 1 ? tfaNum : Math.floor(Math.random() * 100) + 1;
+                        const tfa3 = tfa1 != tfaNum && tfa2 != tfaNum ? tfaNum : Math.floor(Math.random() * 100) + 1;
+
+                        module.exports.dashboardSocket.to(username).emit('confirmTfaNum', tfa1, tfa2, tfa3);
                         
                         if(result.loggedIn) {
-                            res.json({authenticated: true, showMFA: false});
+                            res.json({authenticated: true, showMFA: false, tfaNum: tfaNum});
                         } else {
-                            res.json({authenticated: true, showMFA: true, qr: result.qr})
+                            res.json({authenticated: true, showMFA: true, qr: result.qr, tfaNum: tfaNum})
                         }
                         dbo.collection("users").updateOne({username: username}, {$set: {token: newToken}}, (err, res) => {
                             if(err) if(err) _LOGGER.warn(err, "Authorization");
@@ -146,7 +159,7 @@ app.post("/login/mfa", (req, res) => {
                 }
 
                 if(verified) {
-                    _REDIS.set(`AUTHTOKEN:${username}`, "", 1);
+                    _REDIS.remove(`AUTHTOKEN:${username}`);
 
                     res.json({authenticated: true, token: token, group: result.group});
 
@@ -175,8 +188,6 @@ app.post("/users/register", _AUTH.isAdmin, (req, res) => {
     const password = req.body.password || bcrypt.genSaltSync(2).substr(8);
     const email    = req.body.email;
     const group    = req.body.group || 0;
-
-    console.log(password)
 
     if(username == undefined || email == undefined || group == undefined) {
         res.json({status: "fail", reason: "invalid params"})
@@ -349,4 +360,29 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
 
 });
 
-app.listen(_CONF.ports.auth, () => _LOGGER.log(`Started on ${_CONF.ports.auth}`, "Authorization"))
+io.on('connection', (socket) => {})
+
+const resetTFA = (username, socket) => {
+    if(io.sockets.sockets[socket]) {
+        const tfaNum = Math.floor(Math.random() * 100) + 1;
+
+        _REDIS.set(`AUTHTFA:${username}`, `${socket}:${tfaNum}`, 180);
+
+        const tfa1 = Math.floor(Math.random() * 3) + 1 == 1 ? tfaNum : Math.floor(Math.random() * 100) + 1;
+        const tfa2 = tfa1 != tfaNum && Math.floor(Math.random() * 3) + 1 == 1 ? tfaNum : Math.floor(Math.random() * 100) + 1;
+        const tfa3 = tfa1 != tfaNum && tfa2 != tfaNum ? tfaNum : Math.floor(Math.random() * 100) + 1;
+
+        io.to(socket).emit('resetTFA', tfaNum);
+
+        module.exports.dashboardSocket.to(username).emit('confirmTfaNum', tfa1, tfa2, tfa3);
+    } else {
+        console.log("No socket found");
+        _REDIS.remove(`AUTHTFA:${username}`);
+    }
+}
+
+module.exports.dashboardSocket = undefined;
+module.exports.authSocket = io;
+module.exports.resetTFA = resetTFA;
+
+http.listen(_CONF.ports.auth, () => _LOGGER.log(`Started on ${_CONF.ports.auth}`, "Authorization"))

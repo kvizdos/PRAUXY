@@ -9,7 +9,7 @@ var fs = require("fs");
 
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     var dbo = db.db("homerouter");
-    dbo.collection("users").findOne({force: true}, (err, result) => {
+    dbo.collection("users").findOne({}, (err, result) => {
         if (err) throw err;
         
         if(result == null) {

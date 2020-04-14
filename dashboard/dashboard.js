@@ -19,6 +19,8 @@ const _REDIS = new (require('../helpers/redis'))();
 const _AUTH = new (require('../auth/confirmAuth'))(_REDIS);
 const _PM = require('../proxy/proxy');
 const _AUTHMODULE = require("../auth/auth");
+      _AUTHMODULE.dashboardSocket = io;
+
 const _SITELAUNCHER = new (require("../sites/launcher"))();
 
 const _MONITOR = require('../monitoring/monitor')();
@@ -138,8 +140,54 @@ app.get("/*", (req, res) => {
 io.on('connection', (socket) => {
     const date = new Date((+ new Date));
 
-    socket.on('connection', (username) => {
+    socket.on('connection', (username, cb) => {
+        socket.join(username);
+
         socket.broadcast.emit('alert', {msg: username + " connected", time: `${(date.getHours() > 12 ? date.getHours() - 12 : date.getHours())}:${("0" + date.getMinutes()).substr(-2)} a ${date.getHours() > 12 ? "PM" : "AM"}`,type: 'user'})
+        _REDIS.get(`AUTHTFA:${username}`).then((key) => {
+            if(key) {
+                cb(key);
+            }
+        })
+    })
+
+    socket.on('checkTFA', (username, tfa, cb) => {
+        _REDIS.get(`AUTHTFA:${username}`).then((val) => {
+            if(val) {
+                let sendToSocket = val.split(":")[0];
+                let correctTFA = val.split(":")[1];
+                if(correctTFA == tfa) {
+                    
+
+                    MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+                        if (err) throw err;
+                        var dbo = db.db("homerouter");
+                        dbo.collection("users").findOne({username: username}, function(err, result) {
+
+                            _REDIS.get(`AUTHTOKEN:${username}`).then(token => {
+                                if(token) {
+                                    _AUTHMODULE.authSocket.to(sendToSocket).emit('login', {authenticated: true, token: token, group: result.group});
+                                    _REDIS.remove(`AUTHTFA:${username}`);
+                                    cb(true)
+
+                                    dbo.collection("users").updateOne({username: username}, {$set: {loggedIn: true, lastLogin: + (new Date)}}, (err, result) => {                        
+                                        if(err) _LOGGER.warn(err, "Authorization");
+                                        db.close();
+                                    });
+                                } else {
+                                    cb(false)
+                                }
+                            });
+                        });
+                    });
+                } else {
+                    _AUTHMODULE.resetTFA(username, sendToSocket);
+                    cb(false)
+                }
+            } else {
+                cb(false)
+            }
+        })
     })
 })
 

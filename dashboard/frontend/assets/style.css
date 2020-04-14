@@ -300,12 +300,6 @@ button, .niceBtn, input[type="submit"] {
     font-size: 16pt;
 }
 
-#userSettings input {
-    font-size: 14pt;
-    margin: 10px 10px 10px 0px;
-    padding: 4px;
-}
-
 @media only screen and (min-width: 768px) {
     #mainHeader {
         display: flex;

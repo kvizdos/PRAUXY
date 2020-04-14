@@ -87,20 +87,30 @@
             <div id="userSettings" class="page">
                 <h2>Authentication Settings</h2>
                 <hr>
-                <strong>Reset Password</strong>
-                <br>
-                <input name="oldPass" type="password" id="oldPass" placeholder="Current Password" />
-                <br>
-                <input name="newPass" type="password" id="newPass" placeholder="New Password" />
-                <input name="newPassConf" type="password" id="newPassConf" placeholder="Confirm New Password" />
-                <br>
-                <button class="niceBtn" onclick="updateUser('reset password')">Change</button>
+                <article class="formItem">
+                    <label>Current Password</label>
+                    <input name="oldPass" type="password" id="oldPass" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;" />
+                </article>
+                <article class="formItem">
+                    <label>New Password</label>
+                    <input name="newPass" type="password" id="newPass" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;" />
+                </article>
+                <article class="formItem">
+                    <label>Confirm New Password</label>
+                    <input name="newPassConf" type="password" id="newPassConf" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;" />
+                </article>
+                <article class="formItem">
+                    <input type="submit" onclick="updateUser('reset password')" value="Change Password" />
+                </article>
                 <hr>
-                <strong>Change Email</strong>
                 <br>
-                <input name="changeEmail" type="email" id="changeEmail" placeholder="email@blah.com" />
-                <br>
-                <button class="niceBtn" onclick="updateUser('change email')">Change</button>
+                <article class="formItem">
+                    <label>New Email</label>
+                    <input name="changeEmail" type="email" id="changeEmail" placeholder="email@blah.com" />
+                </article>
+                <article class="formItem">
+                    <input type="submit" onclick="updateUser('change email')" value="Change Email" />
+                </article>
             </div>
 
             <div id="userList" class="page">
