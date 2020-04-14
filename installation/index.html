@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Auxy Installation</title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="/assets/forms.css">
+    <script src="https://kit.fontawesome.com/f40d5f26b8.js" crossorigin="anonymous"></script>
+
+    <style>
+       body {
+           margin: 0;
+           padding: 0;
+           height: 100vh;
+       } 
+
+       section.page {
+           height: 100%;
+           display: none;
+           align-items: center;
+           justify-content: center;
+           flex-direction: column;
+           padding: 0;
+           width: unset;
+       }
+
+       section.page.active {
+           display: flex;
+       }
+
+       h1 {
+           font-size: 3em;
+           padding: 0;
+           color: #303aa1;
+       }
+
+       h2 {
+        color: #303aa1;
+       }
+
+       p {
+           padding: 10px;
+           font-size: 1.5em;
+       }
+
+       input {
+           width: 100% !important;
+       }
+    </style>
+
+    <script>
+        const goToPage = (i, requirements = undefined) => {
+            let allowContinue = true;
+            if(requirements) {
+                console.log("confirming")
+                for(let req of requirements) {
+                    console.log(document.getElementById(req).classList)
+                    if(document.getElementById(req).value == "") {
+                        document.getElementById(req).classList.add("required")
+                        allowContinue = false;
+                    } else {
+                        document.getElementById(req).classList.remove("required")
+                    }
+                }
+            }
+
+            if(allowContinue) {
+                document.querySelector('.page.active').classList.remove('active');
+                document.querySelector(`#page${i}`).classList.add('active');
+            }
+        }
+    </script>
+</head>
+<body>
+    <section class="page active" id="page1">
+        <h1>Auxy</h1>
+        <p>Lets get started.</p>
+        <button onclick="goToPage(2)">Start <i class="fas fa-arrow-right"></i></button>
+    </section>
+
+    <section class="page" id="page2">
+        <section id="settings">
+            <article class="formItem">
+                <label>Base URL</label>
+                <label class="tip">Dedicated domain/subdomain to access the web console</label>
+                <input type="text" id="baseurl" placeholder="demo.auxy.app">
+            </article>
+            <article class="formItem">
+                <label>SendGrid API Key</label>
+                <label class="tip">This is required for user registration, etc</label>
+                <input type="password" id="sgkey" placeholder="Sg.xxx">
+            </article>
+
+            <article class="formItem">
+                <button onclick="goToPage(3, ['baseurl', 'sgkey'])">Continue</button>
+            </article>
+        </section>
+    </section>
+
+    <section class="page" id="page3">
+        <section id="userInfo">
+            <article class="formItem">
+                <label>Username</label>
+                <label class="tip">An admin user is always needed.</label>
+                <input value="admin" disabled>
+            </article>
+            <article class="formItem">
+                <label>Password</label>
+                <input type="password" id="adminPass">
+            </article>
+            <article class="formItem">
+                <label>Email</label>
+                <input type="email" id="adminEmail" placeholder="admin@kentonvizdos.com">
+            </article>
+
+            <article class="formItem">
+                <button onclick="goToPage(4, ['adminPass', 'adminEmail'])">Continue</button>
+            </article>
+        </section>
+    </section>
+
+    <section class="page" id="page4">
+        <article class="formItem">
+            <label>LetsEncrypt Subscription Email</label>
+            <label class="tip">This will be used for maintenance emails only. Can be the same as admin email.</label>
+            <input type="email" id="letsEncryptEmail" placeholder="admin@kentonvizdos.com">
+        </article>
+        <article class="formItem">
+            <button onclick="goToPage(4, ['adminPass', 'adminEmail'])">Finalize</button>
+        </article>
+    </section>
+</body>
+</html>

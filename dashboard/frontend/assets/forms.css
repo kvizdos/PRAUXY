@@ -12,6 +12,12 @@
     text-transform: uppercase;
 }
 
+.formItem label.tip {
+    font-size: .8em;
+    color: rgb(174, 182, 206);
+
+}
+
 .formItem input {
     font-size: 1.2em;
     margin: 0;
@@ -22,6 +28,22 @@
     min-width: 100%;
     box-sizing: border-box;
     outline: none;
+    transition: .1s;
+}
+
+.formItem input.required {
+    border: 2px solid rgb(211, 26, 26);
+    transition: .1s;
+}
+
+.formItem input:not(:placeholder-shown).required {
+    border: 2px solid rgb(230, 230, 230) !important;
+    transition: .1s;
+}
+
+.formItem input:focus {
+    border: 2px solid rgb(89, 122, 214);
+    transition: .1s;
 }
 
 .formItem label.optional::after {

@@ -5,10 +5,7 @@ class RedisManager {
     constructor() {
         try {
             // this.client = new redis({host:})
-        this.client = redis.createClient({
-            client: "redis",
-            port: 6379
-        });
+        this.client = redis.createClient();
         } catch(err) {
             _LOGGER.error(err, "Redis");
         }
