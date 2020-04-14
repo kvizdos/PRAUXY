@@ -55,6 +55,7 @@ function parseCookies (request) {
 }
 
 app.use('/assets', express.static("./dashboard/frontend/assets"));
+app.use('/sw.js', express.static(`./dashboard/frontend/sw.js`));
 
 app.get('/api/all', (req, res) => {
     const cookies = parseCookies(req);

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/assets/alerts.css">
     <link rel="stylesheet" href="/assets/forms.css">
     <link rel="stylesheet" href="/assets/tables.css">
+    <link rel="manifest" href="/assets/prauxy.webmanifest">
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <script src="https://kit.fontawesome.com/f40d5f26b8.js" crossorigin="anonymous"></script>
@@ -165,5 +166,23 @@
         <article id="modalBackground" onclick="ModalHandler.close(this)"></article>
 
     </section>
+
+    <script>
+        function registerServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js') //
+                .then(function(reg){
+                    console.log("service worker registered")
+                }).catch(function(err) {
+                console.log(err)
+            });
+        }
+        else {
+            console.log("Could not find serviceWorker in navigator")
+        }
+        }
+
+        registerServiceWorker()
+    </script>
 </body>
 </html>

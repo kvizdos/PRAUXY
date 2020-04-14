@@ -1,0 +1,16 @@
+{
+    "name": "Prauxy",
+    "short_name": "Prauxy",
+    "description": "Prauxy Mobile Version",
+    "icons": [
+        {
+            "src": "icon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "../",
+    "display": "fullscreen",
+    "theme_color": "#303aa1",
+    "background_color": "#303aa1"
+}
