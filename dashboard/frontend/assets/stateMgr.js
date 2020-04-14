@@ -9,8 +9,8 @@ class StateManager {
     ]
 
     constructor() {
-        this.username = getCookieValue("kvToken").split(":")[1];
-        this.group    = getCookieValue("kvToken").split(":")[2];
+        this.username = getCookieValue("prauxyToken").split(":")[1];
+        this.group    = getCookieValue("prauxyToken").split(":")[2];
 
         console.log(`SM Loaded (${this.username} - ${this.group})`)
 

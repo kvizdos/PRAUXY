@@ -1,4 +1,4 @@
-const baseURL = "home.kentonvizdos.com";
+const baseURL = window.location.href.split("/")[2]
 const proto = window.location.protocol + "//";
 
 const ModalHandler = new Modal('modalContainer')
@@ -36,7 +36,7 @@ const renderApps = (apps, first = false) => {
 
 const openSettingsModal = (app) => {
     const currentApp = JSON.parse(localStorage.getItem("applications")).filter(i => i.shortName == app)[0];
-    const isAdmin = getCookieValue("kvToken").split(":")[2] > 1;
+    const isAdmin = getCookieValue("prauxyToken").split(":")[2] > 1;
 
     ModalHandler.setHeader(currentApp.name)
     ModalHandler.setContent(`
@@ -273,7 +273,7 @@ const createNewSite = () => {
 
 
 const renderUsers = (users) => {
-    activeUser = getCookieValue("kvToken").split(":")[1];
+    activeUser = getCookieValue("prauxyToken").split(":")[1];
     
     $('.usernameText').text(activeUser);
     $('tbody#users').empty();

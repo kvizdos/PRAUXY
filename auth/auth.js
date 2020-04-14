@@ -47,7 +47,7 @@ app.use('/assets/forms.css', express.static("./dashboard/frontend/assets/forms.c
 
 app.get("/", (req, res) => {
 
-    _AUTH.authenticate(req.cookies.kvToken).then(authed => {
+    _AUTH.authenticate(req.cookies.prauxyToken).then(authed => {
         if(authed) {
             res.redirect(_CONF.createURL())
         } else {
@@ -59,7 +59,7 @@ app.get("/", (req, res) => {
 app.get("/verify/*", (req, res) => {
     let redirectTo = "/" + req.url.split("/").splice(3).join("/");
 
-    // const verified = tokenCache.filter(c => c == req.cookies.kvToken).length > 0;
+    // const verified = tokenCache.filter(c => c == req.cookies.prauxyToken).length > 0;
 
     // if(verified) {
     //     res.redirect(redirectTo);
@@ -67,7 +67,7 @@ app.get("/verify/*", (req, res) => {
     //     res.redirect(_CONF.createURL("auth"));
     // }
 
-    authenticate(req.cookies.kvToken).then(authed => {
+    authenticate(req.cookies.prauxyToken).then(authed => {
         if(authed) {
             res.redirect(redirectTo);
         } else {

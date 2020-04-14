@@ -31,7 +31,7 @@ class Authenticator {
     isAdmin(req, res, next = undefined) {
         const cookies = parseCookies(req);
 
-        let groupLevel = cookies.kvToken.split(":")[2];
+        let groupLevel = cookies.prauxyToken.split(":")[2];
 
         if(groupLevel < 5) {
             res.status(401).json({error: "You do not have a high enough group to do this."})
@@ -106,7 +106,7 @@ class Authenticator {
                                     if(u != null) {
                                         _LOGGER.log(`${user} logged in (${_DATE.pretty()})`, "Authorization")
 
-                                        _this._REDIS.set(`${user}:${token}:${groupLevel}`, true)
+                                        _this._REDIS.set(`${user}:${token}:${groupLevel}`, true, 60 * 60 * 24 * 3)
 
                                         confirm();
                                     } else {

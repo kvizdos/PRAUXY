@@ -90,7 +90,7 @@ const confirmAuth = (host, url, req) => {
     } else {
         return new Promise((resolve, reject) => { 
             if(mainApp == "unauthed" || mainApp == "auth" || mainApp == "sites") {resolve(true)} else {
-                _AUTH.authenticate(cookies.kvToken, mainApp).then(authed => {
+                _AUTH.authenticate(cookies.prauxyToken, mainApp).then(authed => {
                     if(authed) {
                         resolve(null);
                     } else {
@@ -152,11 +152,6 @@ registerSaved();
 //proxy.register('*', "127.0.0.1:" + _CONF.ports.pageNotFound);
 
 _LOGGER.log(`Started (Redis ${_AUTH.id})`, "Proxy")
-
-// module.exports.add = function(sub, port) {
-//     proxy.register(sub + ".home.kentonvizdos.com", "http://portabeast:" + port);
-
-// };
 
 module.exports = {
     

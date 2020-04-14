@@ -3,7 +3,7 @@ const socket = io({
 });
 
 const checkTFA = (num) => {
-    socket.emit('checkTFA', getCookieValue("kvToken").split(":")[1], num, (success) => {
+    socket.emit('checkTFA', getCookieValue("prauxyToken").split(":")[1], num, (success) => {
         console.log("here");
         if(success) {
             ModalHandler.close();
@@ -13,7 +13,7 @@ const checkTFA = (num) => {
     })
 }
 
-socket.emit("connection", getCookieValue("kvToken").split(":")[1], (num1, num2, num3) => {
+socket.emit("connection", getCookieValue("prauxyToken").split(":")[1], (num1, num2, num3) => {
     if(num1 && num2 && num3) {
         confTFA(num1, num2, num3);
     }

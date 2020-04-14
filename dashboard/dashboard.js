@@ -60,7 +60,7 @@ app.get('/api/all', (req, res) => {
     const cookies = parseCookies(req);
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
         var dbo = db.db("homerouter");
-        dbo.collection("applications").find({ $or: [ { group: { $lte: parseInt(cookies.kvToken.split(":")[2]) } }, { users: { $in: [cookies.kvToken.split(":")[1]] } }]}).toArray(function(err, result) {
+        dbo.collection("applications").find({ $or: [ { group: { $lte: parseInt(cookies.prauxyToken.split(":")[2]) } }, { users: { $in: [cookies.prauxyToken.split(":")[1]] } }]}).toArray(function(err, result) {
             if (err) throw err;
             res.json(result);
             db.close();
@@ -86,7 +86,7 @@ app.post('/api/new', upload.single('icon'), (req, res) => {
     if(!_AUTH.isAdmin(req, res)) { return; }
 
     const cookies = parseCookies(req);
-    const createdGroup = parseInt(cookies.kvToken.split(":")[2]);
+    const createdGroup = parseInt(cookies.prauxyToken.split(":")[2]);
 
     const name = req.body.name;
     const shortName = req.body.short;

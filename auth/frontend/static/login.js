@@ -3,6 +3,8 @@ let socket = io({
     'reconnection': true
 });
 
+const mainDomain = window.location.href.split("/")[2].split(".").splice(1).join(".");
+
 
 function setcookie(name, value, days)
 {
@@ -14,17 +16,17 @@ function setcookie(name, value, days)
   }
   else
     var expires = "";
-  document.cookie = name+"=" + value+expires + ";path=/;domain=home.kentonvizdos.com"; // + and " added
+  document.cookie = name+"=" + value+expires + `;path=/;domain=${mainDomain}`; // + and " added
 }
 
 socket.on('login', (data) => {
     if(data.authenticated) {
-        setcookie("kvToken", data.token + ":" + $("#username").val() + ":" + data.group, 365);
+        setcookie("prauxyToken", data.token + ":" + $("#username").val() + ":" + data.group, 365);
 
         var url = new URL(window.location.href);
         var redir = url.searchParams.get("go");
         if(firstLogin) alert("Welcome to Auxy- you will be redirected to the password configuration page (you can get back at any time by pressing your username in the navigation bar)")
-        window.location.href = window.location.protocol + "//" + (redir !== null ? redir + "." : "") + "home.kentonvizdos.com" + (redir == null && firstLogin ? "/me/settings" : "");
+        window.location.href = window.location.protocol + "//" + (redir !== null ? redir + "." : "") + mainDomain + (redir == null && firstLogin ? "/me/settings" : "");
     }
 })
 
@@ -75,14 +77,14 @@ const confirmMFA = () => {
         mfa: mfa
     }, (res) => {
         if(res.authenticated) {
-            setcookie("kvToken", res.token + ":" + username + ":" + res.group, 365);
+            setcookie("prauxyToken", res.token + ":" + username + ":" + res.group, 365);
 
             var url = new URL(window.location.href);
             var redir = url.searchParams.get("go");
 
             if(firstLogin) alert("Welcome to Auxy- you will be redirected to the password configuration page (you can get back at any time by pressing your username in the navigation bar)")
 
-            window.location.href = window.location.protocol + "//" + (redir !== null ? redir + "." : "") + "home.kentonvizdos.com" + (redir == null && firstLogin ? "/me/settings" : "");
+            window.location.href = window.location.protocol + "//" + (redir !== null ? redir + "." : "") + mainDomain + (redir == null && firstLogin ? "/me/settings" : "");
         } else {
             alert("Incorrect 2FA code");
         }
