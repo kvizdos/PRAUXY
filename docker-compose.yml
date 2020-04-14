@@ -1,20 +1,20 @@
 version: "3"
 services:
- auxy:
+ prauxy:
   build: .
   depends_on:
   - mongo
   - redis
   networks:
-    - auxy-network
+    - prauxy-network
  mongo:
   image: "mongo"
   networks:
-    - auxy-network
+    - prauxy-network
  redis:
   image: "redis"
   networks:
-    - auxy-network
+    - prauxy-network
  server:
   image: nginx:mainline-alpine
   ports:
@@ -23,10 +23,10 @@ services:
   volumes:
     - ./nginx-conf:/etc/nginx/conf.d
   depends_on:
-    - auxy
+    - prauxy
   networks:
-    - auxy-network
+    - prauxy-network
 
 networks:
-  auxy-network:
+  prauxy-network:
     driver: bridge

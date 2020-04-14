@@ -214,7 +214,7 @@ app.post("/users/register", _AUTH.isAdmin, (req, res) => {
                     if (err) throw err;
 
                     _LOGGER.log(`User ${username} created (${group})`)
-                    const resp = _EMAIL.sendEmail(email, "Auxy Login Information", _EMAIL.newUserTemplate({username: username, password: password}));
+                    const resp = _EMAIL.sendEmail(email, "Prauxy Login Information", _EMAIL.newUserTemplate({username: username, password: password}));
                     _LOGGER.log(`User registered (${username})`, "user");
 
                     res.json({status: "complete"});

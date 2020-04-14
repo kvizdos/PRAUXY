@@ -159,7 +159,7 @@ class Email {
             height="100%"
             valign="top"
             bgcolor="">
-            <div><span style="font-size:26px;"><strong>Auxy</strong></span></div>
+            <div><span style="font-size:26px;"><strong>Prauxy</strong></span></div>
 
         </td>
       </tr>
@@ -173,7 +173,7 @@ class Email {
             bgcolor="">
             <div><span style="font-size:16px;">Hello,</span></div>
 
-<div><span style="font-size:16px;">Attached to this email is your initial username and password for your Auxy account, <a href="${_CONF.baseURL}" target="_blank">located here</a>. Please log in and immediately reset it.&nbsp;</span></div>
+<div><span style="font-size:16px;">Attached to this email is your initial username and password for your Prauxy account, <a href="${_CONF.baseURL}" target="_blank">located here</a>. Please log in and immediately reset it.&nbsp;</span></div>
 
 <div>&nbsp;</div>
 
