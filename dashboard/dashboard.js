@@ -146,7 +146,12 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('alert', {msg: username + " connected", time: `${(date.getHours() > 12 ? date.getHours() - 12 : date.getHours())}:${("0" + date.getMinutes()).substr(-2)} a ${date.getHours() > 12 ? "PM" : "AM"}`,type: 'user'})
         _REDIS.get(`AUTHTFA:${username}`).then((key) => {
             if(key) {
-                cb(key);
+                const tfaNum = key.split(":")[1];
+
+                const tfa1 = Math.floor(Math.random() * 3) + 1 == 1 ? tfaNum : Math.floor(Math.random() * 100) + 1;
+                const tfa2 = tfa1 != tfaNum && Math.floor(Math.random() * 3) + 1 == 1 ? tfaNum : Math.floor(Math.random() * 100) + 1;
+                const tfa3 = tfa1 != tfaNum && tfa2 != tfaNum ? tfaNum : Math.floor(Math.random() * 100) + 1;
+                cb(tfa1, tfa2, tfa3);
             }
         })
     })

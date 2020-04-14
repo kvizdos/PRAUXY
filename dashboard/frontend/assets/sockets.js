@@ -1,4 +1,6 @@
-const socket = io();
+const socket = io({
+    'reconnection': true,
+});
 
 const checkTFA = (num) => {
     socket.emit('checkTFA', getCookieValue("kvToken").split(":")[1], num, (success) => {
@@ -11,8 +13,10 @@ const checkTFA = (num) => {
     })
 }
 
-socket.emit("connection", getCookieValue("kvToken").split(":")[1], (activeLoginAttempt) => {
-    console.log("here: " + activeLoginAttempt);
+socket.emit("connection", getCookieValue("kvToken").split(":")[1], (num1, num2, num3) => {
+    if(num1 && num2 && num3) {
+        confTFA(num1, num2, num3);
+    }
 })
 
 socket.on('alert', (data) => {
@@ -24,6 +28,10 @@ socket.on('alert', (data) => {
 })
 
 socket.on('confirmTfaNum', (num1, num2, num3) => {
+    confTFA(num1, num2, num3);
+})
+
+const confTFA = (num1, num2, num3) => {
     ModalHandler.setHeader("Confirm the TFA number you see on the new device");
     ModalHandler.setContent(`
         <style>
@@ -64,4 +72,4 @@ socket.on('confirmTfaNum', (num1, num2, num3) => {
     document.getElementById("tfaNum3").onclick = () => checkTFA(num3)
 
     ModalHandler.open();
-})
+}

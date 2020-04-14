@@ -30,6 +30,7 @@ const _LOGGER = require('../helpers/logging');
 
 const _EMAIL = new (require("../helpers/email")).email();
 
+let activeLogins = [];
 
 // Use req.query to read values!!
 app.use(bodyParser.json());
@@ -107,6 +108,8 @@ app.post("/login", (req, res) => {
                         const tfa1 = Math.floor(Math.random() * 3) + 1 == 1 ? tfaNum : Math.floor(Math.random() * 100) + 1;
                         const tfa2 = tfa1 != tfaNum && Math.floor(Math.random() * 3) + 1 == 1 ? tfaNum : Math.floor(Math.random() * 100) + 1;
                         const tfa3 = tfa1 != tfaNum && tfa2 != tfaNum ? tfaNum : Math.floor(Math.random() * 100) + 1;
+
+                        activeLogins.push({socket: socketid, username: username});
 
                         module.exports.dashboardSocket.to(username).emit('confirmTfaNum', tfa1, tfa2, tfa3);
                         
@@ -360,7 +363,22 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
 
 });
 
-io.on('connection', (socket) => {})
+io.on('connection', (socket) => {
+    socket.on('disconnect', () => {
+        let activeSocket = activeLogins.filter(s => {
+            return s.socket == socket.id
+        })[0];
+
+
+        if(activeSocket) {
+            _REDIS.get(`AUTHTFA:${activeSocket.username}`).then(r => {
+                if(r) {
+                    _REDIS.remove(`AUTHTFA:${activeSocket.username}`);
+                }
+            });
+        }
+    })
+})
 
 const resetTFA = (username, socket) => {
     if(io.sockets.sockets[socket]) {
@@ -375,10 +393,7 @@ const resetTFA = (username, socket) => {
         io.to(socket).emit('resetTFA', tfaNum);
 
         module.exports.dashboardSocket.to(username).emit('confirmTfaNum', tfa1, tfa2, tfa3);
-    } else {
-        console.log("No socket found");
-        _REDIS.remove(`AUTHTFA:${username}`);
-    }
+    } 
 }
 
 module.exports.dashboardSocket = undefined;

@@ -1,5 +1,7 @@
 let firstLogin = false;
-let socket = io();
+let socket = io({
+    'reconnection': true
+});
 
 
 function setcookie(name, value, days)
