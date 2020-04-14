@@ -6,10 +6,7 @@ var io = require('socket.io')(http);
 
 const _MongoConfig = require('../helpers/mongo');
 const MongoClient = require('mongodb').MongoClient;
-// const url = "mongodb://127.0.0.1:27017/";
 const url = _MongoConfig.url;
-
-const request = require('request');
 
 const bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser')
