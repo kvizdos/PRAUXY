@@ -128,6 +128,7 @@ const registerSaved = () => {
             if (err) throw err;
 
             for(p of result) {
+                console.log(p.name +" : " + p.port.toString().indexOf(":"))
                 if(p.customURL == undefined || p.customURL == "") {
                     _LOGGER.log(`Started on port ${p.port} (requires authentication: ${p.requiresAuthentication})`, p.name + " (" + p.shortName + ")");
                     _REDIS.set(`APP:${p.shortName}`, JSON.stringify({requiresAuth: p.requiresAuthentication}));
