@@ -73,7 +73,7 @@ class StateManager {
         document.title = page;
     }
 
-    setListeners = () => {
+    setListeners() {
         window.addEventListener('popstate', (e) => {
             this.setPage(e.state.page)
         });
