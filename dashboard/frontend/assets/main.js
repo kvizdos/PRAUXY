@@ -41,15 +41,20 @@ const openSettingsModal = (app) => {
     ModalHandler.setHeader(currentApp.name)
     ModalHandler.setContent(`
         <article class="thisModalContentTho">
-        <p>Group Level</p>
-        <input ${!isAdmin ? "disabled" : ""} type="number" max="10" min="0" name="grouplvl" id="changeGroupLevel" placeholder="${currentApp.group}" value="${currentApp.group}" auto-complete="off" required>
-        <br>        <br>
-        <p>Whitelisted Users</p>
-        <p class="small">COMMA SEPARATED NAMES! Used if a certain user below the required group level needs limited access without giving all of the permissions</p>
-        <input ${!isAdmin ? "disabled" : ""} type="text" name="changeUsers" id="changeUsers" placeholder="${currentApp.users.join(",") || 'user1, user2'}" value="${currentApp.users.join(",")}" auto-complete="off" required>
+        <article class="formItem">
+            <label>Group Level</label>
+            <input ${!isAdmin ? "disabled" : ""} type="number" max="10" min="0" name="grouplvl" id="changeGroupLevel" placeholder="${currentApp.group}" value="${currentApp.group}" auto-complete="off" required>
+        </article>
+
+        <article class="formItem">
+            <label>Whitelisted Users</label>
+            <p class="small">COMMA SEPARATED NAMES! Used if a certain user below the required group level needs limited access without giving all of the permissions</p>
+            <input ${!isAdmin ? "disabled" : ""} type="text" name="changeUsers" id="changeUsers" placeholder="${currentApp.users.join(",") || 'user1, user2'}" value="${currentApp.users.join(",")}" auto-complete="off" required>
+        </article>
         <br>
         <br>
 
+        <article class="formItem">
         ${isAdmin ? `
         <input type="submit" value="Save" onclick="saveAppUpdates()">
         </article>
@@ -57,6 +62,7 @@ const openSettingsModal = (app) => {
             <p id="modalRegisterStatus"></p>
         </article>
         ` : ''}
+        </article>
     `)
 
     ModalHandler.open();
