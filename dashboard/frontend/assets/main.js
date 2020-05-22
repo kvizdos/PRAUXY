@@ -49,11 +49,9 @@ const openSettingsModal = (app) => {
         <article class="formItem">
             <label>Whitelisted Users</label>
             <p class="small">COMMA SEPARATED NAMES! Used if a certain user below the required group level needs limited access without giving all of the permissions</p>
+            <br>
             <input ${!isAdmin ? "disabled" : ""} type="text" name="changeUsers" id="changeUsers" placeholder="${currentApp.users.join(",") || 'user1, user2'}" value="${currentApp.users.join(",")}" auto-complete="off" required>
         </article>
-        <br>
-        <br>
-
         <article class="formItem">
         ${isAdmin ? `
         <input type="submit" value="Save" onclick="saveAppUpdates()">
