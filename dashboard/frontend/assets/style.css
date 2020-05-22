@@ -64,8 +64,9 @@ body, html {
     transition: .3s transform ease-in-out;
 }
 
-#navbar img {
+#navbar img {    
     width: 50%;
+    align-self: center;
     padding: 25px;
 }
 
@@ -406,10 +407,10 @@ button, .niceBtn, input[type="submit"] {
         background: radial-gradient(at bottom left, #303aa1 0%, #3c49c5 45%, #3e4bca 80%);
         /* radial-gradient(at bottom left, #2dad78 0%, #43b183 45%, #119a61 80%) */
     }
-
+/* 
     #navbar img {
         width: unset;
-    }
+    } */
 
     #navbar #links #closeMenu {
         display: none;
