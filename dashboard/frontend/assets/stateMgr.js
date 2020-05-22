@@ -1,14 +1,13 @@
 class StateManager {
-
-    pages = [
-        {page: "Dashboard", path: "/dash", id: "appContainer", group: 0},
-        {page: "Users", path: "/users", id: "userList", group: 1},
-        {page: "Add User", path: "/users/add", id: "addUser", group: 1},
-        {page: "User Settings", path: "/me/settings", id: "userSettings", group: 0},
-        {page: "Sites", path: "/sites", id: "siteLauncher", group: 1}
-    ]
-
     constructor() {
+        this.pages = [
+            {page: "Dashboard", path: "/dash", id: "appContainer", group: 0},
+            {page: "Users", path: "/users", id: "userList", group: 1},
+            {page: "Add User", path: "/users/add", id: "addUser", group: 1},
+            {page: "User Settings", path: "/me/settings", id: "userSettings", group: 0},
+            {page: "Sites", path: "/sites", id: "siteLauncher", group: 1}
+        ]
+
         this.username = getCookieValue("prauxyToken").split(":")[1];
         this.group    = getCookieValue("prauxyToken").split(":")[2];
 
