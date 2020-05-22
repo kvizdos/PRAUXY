@@ -30,7 +30,7 @@ const renderApps = (apps, first = false) => {
                 <i class="material-icons" onclick="openSettingsModal('${app.shortName}')">settings_applications</i>
             </div>
         </div>
-        `).insertAfter('.customApp.full')
+        `).insertBefore('#addAppBtn')
     }
 }
 
