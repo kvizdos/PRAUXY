@@ -47,11 +47,11 @@ class StateManager {
         this.setPage(this.currentState.page, this.getNavItem(this.currentState.page));
     }
 
-    getNavItem = (page) => {
+    getNavItem(page) {
         return $("#links").children().toArray().find(el => el.innerText == page);
     }
 
-    setPage = (page, el) => {
+    setPage(page, el) {
         // if(page == this.currentState.page) return;
 
         const goTo = this.pages.filter(p => p.page == page)[0];
