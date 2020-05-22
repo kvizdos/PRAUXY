@@ -353,5 +353,5 @@ window.onload = function() {
     getAndCache(`${proto}auth.${baseURL}/users/all`, "users", renderUsers);
     getAndCache(`${proto}sites.${baseURL}/api/all`, "sites", renderSites);
 
-    startCanvas();
+    // startCanvas();
 }
