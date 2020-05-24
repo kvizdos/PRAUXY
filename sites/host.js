@@ -34,7 +34,7 @@ app.get("/*", (req, res) => {
                         <p>Powered by</p>
                         <img src="https://prauxy.app/assets/textlogo-white.svg" />
                     </a>
-                    <p class="prclose" onclick="document.getElementById('prauxy-branding-banner').remove()">&times;</p>
+                    <p class="prclose" onclick="document.getElementById('prauxy-branding-banner').remove()" role="button" aria-pressed="false">&times;</p>
                 </section>
                 `
 
@@ -76,6 +76,7 @@ app.get("/*", (req, res) => {
                     font-size: 24px;
                     margin: 0;
                     padding: 15px;
+                    cursor: pointer;
                 }    
                 </style>
                 `
