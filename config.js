@@ -1,3 +1,6 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const config = function() {
     this.ports = {
         dashboard: process.env.DASHPORT || 8081,
