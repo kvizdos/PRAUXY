@@ -7,11 +7,13 @@ const _PM = require('../proxy/proxy');
 
 const _HOST = require('./host')
 
+/*
 const cors = require('cors')
 const corsOptions = {
     origin: _CONF.createURL('')
 }
 console.log(corsOptions)
+*/
 const bcrypt = require('bcrypt');
 
 const fs = require('fs');
@@ -38,8 +40,9 @@ class SiteLauncher {
         });
 
         app.use(function(req, res, next){
-            res.header('Access-Control-Allow-Origin', _CONF.createURL());
-            res.header('Access-Control-Allow-Headers', 'Content-Type');
+	    //	console.log("allowed from: " + _CONF.createURL());
+            res.header('Access-Control-Allow-Origin', 'https://home.kentonvizdos.com');
+            res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
             res.header('Access-Control-Allow-Methods', 'GET, POST');
             res.header('Access-Control-Allow-Credentials', true)
             next();
