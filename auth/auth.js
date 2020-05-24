@@ -189,6 +189,46 @@ app.post("/users/register", _AUTH.isAdmin, (req, res) => {
     const email    = req.body.email;
     const group    = req.body.group || 0;
 
+    registerUser(username, password, email, group, res);
+
+    // if(username == undefined || email == undefined || group == undefined) {
+    //     res.json({status: "fail", reason: "invalid params"})
+    //     return;
+    // }
+
+    // MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+    //     if (err) throw err;
+    //     var dbo = db.db("homerouter");
+    //     const token = bcrypt.genSaltSync(saltRounds);
+    //     const hash = bcrypt.hashSync(password, saltRounds);
+
+    //     dbo.collection("users").find({username: username}, { projection: { _id: 0, username: 1 } }).toArray((err, result) => {
+    //         if(result.length > 0) {
+    //             res.json({status: "fail", reason: "username exists"})
+    //             return;
+    //         }
+
+    //         const secret = speakeasy.generateSecret({length: 20, name: `HOME Router (${username})`});
+
+    //         QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
+
+    //             dbo.collection("users").insertOne({username: username, password: hash, email: email, token: token, tfa: secret.base32, loggedIn: false, qr: image_data, group: group}, function(err, result) {
+    //                 if (err) throw err;
+
+    //                 _LOGGER.log(`User ${username} created (${group})`)
+    //                 const resp = _EMAIL.sendEmail(email, "Prauxy Login Information", _EMAIL.newUserTemplate({username: username, password: password}));
+    //                 _LOGGER.log(`User registered (${username})`, "user");
+
+    //                 res.json({status: "complete"});
+
+    //                 db.close();
+    //             });
+    //         })
+    //     });
+    // });    
+})
+
+const registerUser = (username, password, email, group, res) => {
     if(username == undefined || email == undefined || group == undefined) {
         res.json({status: "fail", reason: "invalid params"})
         return;
@@ -223,8 +263,8 @@ app.post("/users/register", _AUTH.isAdmin, (req, res) => {
                 });
             })
         });
-    });    
-})
+    });
+}
 
 app.post("/users/update", (req, res) => {
     const type = req.body.type;
@@ -396,5 +436,6 @@ const resetTFA = (username, socket) => {
 module.exports.dashboardSocket = undefined;
 module.exports.authSocket = io;
 module.exports.resetTFA = resetTFA;
+module.exports.registerUser = registerUser;
 
 http.listen(_CONF.ports.auth, () => _LOGGER.log(`Started on ${_CONF.ports.auth}`, "Authorization"))
