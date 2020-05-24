@@ -20,6 +20,15 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
                 }
             }
 
+            if(process.env.USERNAME == undefined || process.env.PASSWORD == undefined || process.env.EMAIL == undefined || process.env.SGKEY == undefined) {
+                console.log(process.env.USERNAME)
+                console.log(process.env.PASSWORD)
+                console.log(process.env.EMAIL)
+                console.log(process.env.SGKEY)
+
+                return;
+            }
+
             _AUTH.registerUser(process.env.USERNAME, process.env.PASSWORD, process.env.EMAIL, 10, resMimic);
 
             // const express = require('express');
