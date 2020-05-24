@@ -50,10 +50,7 @@ app.get("/*", (req, res) => {
                     font-family: 'PT Sans', sans-serif;
                     font-weight: bold;
                     justify-content: space-between;
-                    position: sticky;
-                    top: 0;
-                    left: 0;
-                    width: calc(100vw - 30pxz);
+                    position: relative;
                 }
          
                 #prauxy-branding-banner a {
@@ -66,6 +63,7 @@ app.get("/*", (req, res) => {
                 #prauxy-branding-banner p {
                     margin: 0;
                     margin-top: 4px;
+                    color: white;
                 }
          
                 #prauxy-branding-banner a img {
