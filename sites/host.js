@@ -16,8 +16,7 @@ app.get("/*", (req, res) => {
     const isNotCustom = regex.test(req.headers.host);
 
     const sendData = (rootDir) => {
-        if(req.params[0] != "" && !req.params[0].endsWith("/") && req.params[0].indexOf(".") !== 0) {
-            console.log("here = " + req.params[0]);
+        if(req.params[0] != "" && !req.params[0].endsWith("/") && req.params[0].indexOf(".") !== -1) {
             res.sendFile(__dirname + `/data/${rootDir}/${req.params[0]}`, (err) => {
                 if(err) {
                     res.sendStatus(404);
@@ -25,12 +24,11 @@ app.get("/*", (req, res) => {
             })
         } else {
             try {
-                console.log(__dirname + `/data/${rootDir}/${req.params[0] || "index.html"}`)
                 const html = fs.readFileSync(__dirname + `/data/${rootDir}/${req.params[0].indexOf(".") > 0 ? req.params[0] : req.params[0] + "/index.html"}`);
                 const $ = cheerio.load(html);
                 const banner = `
                 <section id="prauxy-branding-banner">
-                    <a href="https://prauxy.app" target="_blank">
+                    <a href="https://prauxy.app/?utm_source=insertedbanner" target="_blank">
                         <p>Powered by</p>
                         <img src="https://prauxy.app/assets/textlogo-white.svg" />
                     </a>
