@@ -16,7 +16,7 @@ app.get("/*", (req, res) => {
     const isNotCustom = regex.test(req.headers.host);
 
     const sendData = (rootDir) => {
-        if(!req.params[0].endsWith("/") && req.params[0].indexOf(".") !== 0) {
+        if(req.params[0] != "" && !req.params[0].endsWith("/") && req.params[0].indexOf(".") !== 0) {
             console.log("here = " + (req.params[0] != ""));
             res.sendFile(__dirname + `/data/${rootDir}/${req.params[0]}`, (err) => {
                 if(err) {
