@@ -26,7 +26,7 @@ app.get("/*", (req, res) => {
         } else {
             try {
                 console.log(__dirname + `/data/${rootDir}/${req.params[0] || "index.html"}`)
-                const html = fs.readFileSync(__dirname + `/data/${rootDir}/${req.params[0] || "index.html"}`);
+                const html = fs.readFileSync(__dirname + `/data/${rootDir}/${req.params[0] == "/" || req.params[0] == "" ? "index.html" : req.params[0]}`);
                 const $ = cheerio.load(html);
                 const banner = `
                 <section id="prauxy-branding-banner">
