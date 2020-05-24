@@ -75,7 +75,7 @@ app.get("/*", (req, res) => {
                 #prauxy-branding-banner p.prclose {
                     font-size: 24px;
                     margin: 0;
-                    padding: 0;
+                    padding: 15px;
                 }    
                 </style>
                 `
