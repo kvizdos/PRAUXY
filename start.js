@@ -10,7 +10,6 @@ var fs = require("fs");
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     var dbo = db.db("homerouter");
     dbo.collection("users").findOne({}, (err, result) => {
-        const _AUTH = require('./auth/auth');
         if (err) throw err;
         
         if(result == null) {
@@ -20,16 +19,16 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
                 }
             }
 
-            if(process.env.USERNAME == undefined || process.env.PASSWORD == undefined || process.env.EMAIL == undefined || process.env.SGKEY == undefined) {
-                console.log(process.env.USERNAME)
-                console.log(process.env.PASSWORD)
-                console.log(process.env.EMAIL)
+            if(process.env.ADMINEMAIL == undefined || process.env.SGKEY == undefined) {
+                console.log(process.env.ADMINEMAIL)
                 console.log(process.env.SGKEY)
 
                 return;
             }
 
-            _AUTH.registerUser(process.env.USERNAME, process.env.PASSWORD, process.env.EMAIL, 10, resMimic);
+            const _AUTH = require('./auth/auth');
+
+            // _AUTH.registerUser(process.env.USERNAME, process.env.PASSWORD, process.env.EMAIL, 10, resMimic);
 
             // const express = require('express');
             // const app = express();
