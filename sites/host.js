@@ -58,7 +58,6 @@ app.get("/*", (req, res) => {
                     text-decoration: none;
                     color: white;
                     padding: 0;
-                    padding: 15px;
                 }
          
                 #prauxy-branding-banner p {
