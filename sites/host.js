@@ -46,7 +46,6 @@ app.get("/*", (req, res) => {
                     align-items: center;
                     color: white;
                     text-transform: uppercase;
-                    padding: 15px;
                     font-family: 'PT Sans', sans-serif;
                     font-weight: bold;
                     justify-content: space-between;
@@ -58,12 +57,15 @@ app.get("/*", (req, res) => {
                     align-items: center;
                     text-decoration: none;
                     color: white;
+                    padding: 0;
+                    padding: 15px;
                 }
          
                 #prauxy-branding-banner p {
                     margin: 0;
                     margin-top: 4px;
                     color: white;
+                    padding: 15px;
                 }
          
                 #prauxy-branding-banner a img {
