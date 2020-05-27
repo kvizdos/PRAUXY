@@ -39,4 +39,4 @@ jobs:
         redis-version: ${{ matrix.redis-version }}
    
     - run: npm install
-    - run: npm run test
+    - run: jest --forceExit
