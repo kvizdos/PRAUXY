@@ -95,7 +95,7 @@ app.get("/*", (req, res) => {
             sendData(r)
         } else {
             MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, db) {
-                var dbo = db.db("homerouter");
+                var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
                 let query = isNotCustom ? {shortName: req.headers.host.split(".")[0].split("-")[1]} : {customURL: req.headers.host}
                 dbo.collection("sites").findOne(query, (err, result) => {
                     if(err) console.log(err)

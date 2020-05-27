@@ -60,7 +60,7 @@ app.use('/sw.js', express.static(`./dashboard/frontend/sw.js`));
 app.get('/api/all', (req, res) => {
     const cookies = parseCookies(req);
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-        var dbo = db.db("homerouter");
+        var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
         dbo.collection("applications").find({ $or: [ { group: { $lte: parseInt(cookies.prauxyToken.split(":")[2]) } }, { users: { $in: [cookies.prauxyToken.split(":")[1]] } }]}).toArray(function(err, result) {
             if (err) throw err;
             res.json(result);
@@ -72,7 +72,7 @@ app.get('/api/all', (req, res) => {
 app.get('/api/monitors', (req, res) => {
     const type = req.query.type;
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-        var dbo = db.db("homerouter");
+        var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
         switch(type) {
             case "speedtest":
                 dbo.collection("speedtests").find({}).project({_id: 0}).limit(48).toArray(function(err, result) {
@@ -103,7 +103,7 @@ app.post('/api/new', upload.single('icon'), (req, res) => {
     if(req.file) fs.renameSync(req.file.path, file);
 
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-        var dbo = db.db("homerouter");
+        var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
 
         dbo.collection("applications").insertOne(newApp, function(err, result) {
             if (err) throw err;
@@ -123,7 +123,7 @@ app.post('/api/update', _AUTH.isAdmin, (req, res) => {
     const users = req.body.users;
 
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-        var dbo = db.db("homerouter");
+        var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
 
         dbo.collection("applications").updateOne({name: name}, {$set: { group: parseInt(lvl), users: users != "no-users-added" ? users.split(", ") : [] }}, function(err, result) {
             if (err) throw err;
@@ -167,7 +167,7 @@ io.on('connection', (socket) => {
 
                     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
                         if (err) throw err;
-                        var dbo = db.db("homerouter");
+                        var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
                         dbo.collection("users").findOne({username: username}, function(err, result) {
 
                             _REDIS.get(`AUTHTOKEN:${username}`).then(token => {

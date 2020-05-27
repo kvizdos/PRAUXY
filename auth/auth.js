@@ -85,7 +85,7 @@ app.post("/login", (req, res) => {
 
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
         if (err) throw err;
-        var dbo = db.db("homerouter");
+        var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
         dbo.collection("users").findOne({username: username}, function(err, result) {
             if (err) throw err;
 
@@ -108,7 +108,7 @@ app.post("/login", (req, res) => {
 
                         activeLogins.push({socket: socketid, username: username});
 
-                        module.exports.dashboardSocket.to(username).emit('confirmTfaNum', tfa1, tfa2, tfa3);
+                        if(process.env.NODE_ENV != 'test') module.exports.dashboardSocket.to(username).emit('confirmTfaNum', tfa1, tfa2, tfa3);
                         
                         if(result.loggedIn) {
                             res.json({authenticated: true, showMFA: false, tfaNum: tfaNum});
@@ -124,11 +124,11 @@ app.post("/login", (req, res) => {
 
 
                     } else {
-                        res.json({authenticated: false});
+                        res.status(401).json({authenticated: false});
                     }
                 })
             } else {
-                res.json({authenticated: false});
+                res.status(401).json({authenticated: false});
             }
 
         });
@@ -141,7 +141,7 @@ app.post("/login/mfa", (req, res) => {
 
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
         if (err) throw err;
-        var dbo = db.db("homerouter");
+        var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
         dbo.collection("users").findOne({username: username}, (err, result) => {
 
             const secret = result['tfa'];
@@ -154,7 +154,7 @@ app.post("/login/mfa", (req, res) => {
             _REDIS.get(`AUTHTOKEN:${username}`).then(token => {
                 if(token == null) {
                     _LOGGER.error(`Someone attempted to login directly through TFA (${req.headers['x-forwarded-for'] || req.connection.remoteAddress})`, "Authorization")
-                    res.json({authenticated: false})
+                    res.status(401).json({authenticated: false})
                     return;
                 }
 
@@ -171,7 +171,7 @@ app.post("/login/mfa", (req, res) => {
 
                 } else {
                     _LOGGER.warn(`Incorrect TFA code used for ${username} (${mfa})`)
-                    res.json({authenticated: false});
+                    res.status(401).json({authenticated: false});
                     db.close();
                 }
             })
@@ -190,59 +190,23 @@ app.post("/users/register", _AUTH.isAdmin, (req, res) => {
     const group    = req.body.group || 0;
 
     registerUser(username, password, email, group, res);
-
-    // if(username == undefined || email == undefined || group == undefined) {
-    //     res.json({status: "fail", reason: "invalid params"})
-    //     return;
-    // }
-
-    // MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-    //     if (err) throw err;
-    //     var dbo = db.db("homerouter");
-    //     const token = bcrypt.genSaltSync(saltRounds);
-    //     const hash = bcrypt.hashSync(password, saltRounds);
-
-    //     dbo.collection("users").find({username: username}, { projection: { _id: 0, username: 1 } }).toArray((err, result) => {
-    //         if(result.length > 0) {
-    //             res.json({status: "fail", reason: "username exists"})
-    //             return;
-    //         }
-
-    //         const secret = speakeasy.generateSecret({length: 20, name: `HOME Router (${username})`});
-
-    //         QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
-
-    //             dbo.collection("users").insertOne({username: username, password: hash, email: email, token: token, tfa: secret.base32, loggedIn: false, qr: image_data, group: group}, function(err, result) {
-    //                 if (err) throw err;
-
-    //                 _LOGGER.log(`User ${username} created (${group})`)
-    //                 const resp = _EMAIL.sendEmail(email, "Prauxy Login Information", _EMAIL.newUserTemplate({username: username, password: password}));
-    //                 _LOGGER.log(`User registered (${username})`, "user");
-
-    //                 res.json({status: "complete"});
-
-    //                 db.close();
-    //             });
-    //         })
-    //     });
-    // });    
 })
 
 const registerUser = (username, password, email, group, res) => {
-    if(username == undefined || email == undefined || group == undefined) {
-        res.json({status: "fail", reason: "invalid params"})
+    if(username == undefined || password == undefined || email == undefined || group == undefined) {
+        res.status(400).json({status: "fail", reason: "invalid params"})
         return;
     }
 
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
         if (err) throw err;
-        var dbo = db.db("homerouter");
+        var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
         const token = bcrypt.genSaltSync(saltRounds);
         const hash = bcrypt.hashSync(password, saltRounds);
 
         dbo.collection("users").find({username: username}, { projection: { _id: 0, username: 1 } }).toArray((err, result) => {
             if(result.length > 0) {
-                res.json({status: "fail", reason: "username exists"})
+                res.status(409).json({status: "fail", reason: "username exists"})
                 return;
             }
 
@@ -271,7 +235,7 @@ app.post("/users/update", (req, res) => {
 
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
         if (err) throw err;
-        var dbo = db.db("homerouter");
+        var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
         
         switch(type) {
             case "changeemail":
@@ -279,13 +243,13 @@ app.post("/users/update", (req, res) => {
                 var email = req.body.email;
 
                 if(username == undefined || email == undefined) {
-                    res.json({status: "fail", reason: "invalid params"})
+                    res.status(400).json({status: "fail", reason: "invalid params"})
                     return;
                 }
 
                 dbo.collection("users").updateOne({username: username}, {$set: { email: email }}, (err, result) => {
                     if(result.matchedCount == 0) {
-                        res.json({status: "fail", reason: "user does not exist"})
+                        res.status(400).json({status: "fail", reason: "user does not exist"})
                         return;
                     } 
                     res.json({status: "complete"});
@@ -298,7 +262,7 @@ app.post("/users/update", (req, res) => {
                 var newp = req.body.newp;
 
                 if(username == undefined || old == undefined || newp == undefined) {
-                    res.json({status: "fail", reason: "invalid params"})
+                    res.status(400).json({status: "fail", reason: "invalid params"})
                     return;
                 }
 
@@ -312,28 +276,24 @@ app.post("/users/update", (req, res) => {
 
                             if(verify) {
                                 dbo.collection("users").updateOne({username: username}, {$set: { password: hashedNew }}, (err, result) => {                                    
-                                    if(result.result.nModified == 0) {
-                                        res.json({status: "fail", reason: "user does not exist"})
-                                        return;
-                                    } 
                                     res.json({status: "complete"});
                                     return;
                                 });
 
                             } else {
-                                res.json({status: "fail", reason: "old pass not right"});
+                                res.status(400).json({status: "fail", reason: "old pass not right"});
                             }
                         })
                     } else {
-                        res.json({authenticated: false});
+                        res.status(400).json({status: "fail", reason: "user does not exist"});
                     }
                 });
                 break;
             case "delete":
                 if(!_AUTH.isAdmin(req, res)) { return; }
                 dbo.collection("users").deleteOne({username: req.body.username}, (err, result) => {
-                    if(result.n == 0) {
-                        res.json({status: "fail", reason: "invalid user"})
+                    if(result.result.n == 0 || result.result.n == undefined) {
+                        res.status(400).json({status: "fail", reason: "invalid user"})
                         return;
                     }
 
@@ -348,7 +308,7 @@ app.post("/users/update", (req, res) => {
 
 app.get('/users/all', (req, res) => {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-        var dbo = db.db("homerouter");
+        var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
 
         dbo.collection("users").find({}, { projection: { _id: 0, username: 1, loggedIn: 1, lastLogin: 1, email: 1 } }).toArray((err, result) => {
             if (err) throw err;
@@ -361,7 +321,7 @@ app.get('/users/all', (req, res) => {
 
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     if (err) throw err;
-    var dbo = db.db("homerouter");
+    var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
 
     _PERMISSIONS.registerRoutes(app);
     _PERMISSIONS.confirmAlreadyExists();
@@ -438,4 +398,8 @@ module.exports.authSocket = io;
 module.exports.resetTFA = resetTFA;
 module.exports.registerUser = registerUser;
 
-http.listen(_CONF.ports.auth, () => _LOGGER.log(`Started on ${_CONF.ports.auth}`, "Authorization"))
+if(process.env.NODE_ENV != 'test') {
+    http.listen(_CONF.ports.auth, () => _LOGGER.log(`Started on ${_CONF.ports.auth}`, "Authorization"))
+} else {
+    module.exports.http = http;
+}

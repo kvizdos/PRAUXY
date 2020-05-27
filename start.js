@@ -8,17 +8,11 @@ var multer  = require('multer');
 var fs = require("fs");
 
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-    var dbo = db.db("homerouter");
+    var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
     dbo.collection("users").findOne({}, (err, result) => {
         if (err) throw err;
         
         if(result == null) {
-            var resMimic = {
-                json(d) {
-                    console.log(d)
-                }
-            }
-
             if(process.env.ADMINEMAIL == undefined || process.env.SGKEY == undefined) {
                 console.log(process.env.ADMINEMAIL)
                 console.log(process.env.SGKEY)
@@ -26,7 +20,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
                 return;
             }
 
-            const _AUTH = require('./auth/auth');
+            // const _AUTH = require('./auth/auth');
+            const dash = require('./dashboard/dashboard');
 
             // _AUTH.registerUser(process.env.USERNAME, process.env.PASSWORD, process.env.EMAIL, 10, resMimic);
 

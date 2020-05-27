@@ -36,7 +36,7 @@ http.createServer(function (req, res) {
     var goTo = (req.url.slice(1, -1) || "");
     if(goTo = "das") goTo = "";
     
-    res.writeHead(302, {
+    res.status(401).writeHead(302, {
         'Location': _CONF.createURL("auth") + (goTo !== "" ? "?go=" + goTo : "")
       });
     res.end();
@@ -123,7 +123,7 @@ registered.push(...["auth", "unauthed", "home"]);
 const registerSaved = () => {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
         if (err) throw err;
-        var dbo = db.db("homerouter");
+        var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
         dbo.collection("applications").find({}).toArray(function(err, result) {
             if (err) throw err;
 

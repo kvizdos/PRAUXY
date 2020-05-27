@@ -1,5 +1,5 @@
 {
-  "name": "home-router",
+  "name": "prauxy",
   "version": "1.0.0",
   "description": "A NodeJS reverse proxy with full authentication that has support for MFA applications such as Google Authenticator.",
   "main": "dashboard/dashboard.js",
@@ -28,10 +28,16 @@
     "url": "^0.11.0",
     "cheerio": "^1.0.0-rc.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jest": "^26.0.1",
+    "otplib": "^12.0.1",
+    "supertest": "^4.0.2"
+  },
   "scripts": {
     "start": "nodemon dashboard/dashboard.js",
-    "start:prod": "node dashboard/dashboard.js"
+    "start:prod": "node dashboard/dashboard.js",
+    "test": "jest --forceExit",
+    "test-verbose": "jest"
   },
   "repository": {
     "type": "git",

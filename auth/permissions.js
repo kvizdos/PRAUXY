@@ -15,7 +15,7 @@ class PermissionHandler {
         app.get("/groups", (req, res) => {
             MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
                 if (err) throw err;
-                var dbo = db.db("homerouter");
+                var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
                 dbo.collection("groups").find({}).project({"_id": false}).toArray((err, result) => {
                     if(err) throw err;
 
@@ -28,7 +28,7 @@ class PermissionHandler {
     confirmAlreadyExists() {
         MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
             if (err) throw err;
-            var dbo = db.db("homerouter");
+            var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
             dbo.collection("groups").find({}).toArray((err, result) => {
                 if(err) throw err;
                 if(result.length == 0) {
@@ -99,7 +99,7 @@ class PermissionHandler {
         return new Promise(resolve => {
             MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
                 if (err) throw err;
-                var dbo = db.db("homerouter");
+                var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
                 dbo.collection("users").find({username: username}).toArray((err, userInfo) => {
                     if(err) throw err;
 

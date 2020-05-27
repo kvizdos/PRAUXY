@@ -31,9 +31,9 @@ class Authenticator {
     isAdmin(req, res, next = undefined) {
         const cookies = parseCookies(req);
 
-        let groupLevel = cookies.prauxyToken.split(":")[2];
+        let groupLevel = parseInt(cookies.prauxyToken.split(":")[2]);
 
-        if(groupLevel < 5) {
+        if(groupLevel == NaN || groupLevel < 5) {
             res.status(401).json({error: "You do not have a high enough group to do this."})
             return false;
         } else {
@@ -47,7 +47,7 @@ class Authenticator {
         const _this = this;
         return new Promise((resolve, reject) => {
             MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-                var dbo = db.db("homerouter");
+                var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
                 dbo.collection("applications").findOne({shortName: app}, (err, appResult) => {
                     if(appResult != null) {
                         if(appResult.requiresAuthentication) {
@@ -99,7 +99,7 @@ class Authenticator {
                         } else {
                             MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
                                 if (err) throw err;
-                                var dbo = db.db("homerouter");
+                                var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
             
                                 dbo.collection("users").findOne({username: user, token: token}, (err, u) => {
                                     if(err) throw err;

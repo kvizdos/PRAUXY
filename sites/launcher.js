@@ -30,7 +30,7 @@ class SiteLauncher {
     constructor() {
         const _this = this;
         MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, db) {
-            var dbo = db.db("homerouter");
+            var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
             dbo.collection("sites").find({}).toArray((err, results) => {
                 for(let result of results) {
                     _this.registerSite(result.shortName, result.customURL || undefined)
@@ -67,7 +67,7 @@ class SiteLauncher {
 
 
             MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, db) {
-                var dbo = db.db("homerouter");
+                var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
                 dbo.collection("sites").findOne({name: updating}, (err, result) => {
                     if(err) console.log(err)
     
@@ -101,7 +101,7 @@ class SiteLauncher {
 
         app.get("/api/all", (req, res) => {
             MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, db) {
-                var dbo = db.db("homerouter");
+                var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
                 dbo.collection("sites").find({}).project({_id: 0}).toArray((err, results) => {
                     res.json(results)
                 });
@@ -133,7 +133,7 @@ class SiteLauncher {
         }
 
         MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, db) {
-            var dbo = db.db("homerouter");
+            var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
             dbo.collection("sites").findOne({name: name, shortName: short}, (err, result) => {
                 if(err) console.log(err)
 

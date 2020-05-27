@@ -19,7 +19,7 @@ async function readSpeeds() {
     const uploadMbps = Math.floor(speeds.upload.bandwidth / 100000);
 
     MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, db) {
-        var dbo = db.db("homerouter");
+        var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
         _LOGGER.log(`Download: ${downloadMbps} Mbps - Upload: ${uploadMbps}`, "Speedtest")
         dbo.collection("speedtests").insertOne({download: downloadMbps, uploadMbps: uploadMbps, time: (+ new Date)});
     });
