@@ -39,4 +39,5 @@ jobs:
         redis-version: ${{ matrix.redis-version }}
    
     - run: npm install
-    - run: jest --forceExit
+    - run: npm install jest otplib supertest --save-dev
+    - run: npm run test
