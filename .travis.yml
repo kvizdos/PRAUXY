@@ -8,6 +8,9 @@ branches:
 cache:
   directories:
   - node_modules
+services:
+    - mongodb
+    - redis-server
 before_install:
     - npm update
 install:
