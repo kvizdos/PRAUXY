@@ -29,6 +29,7 @@
     "cheerio": "^1.0.0-rc.3"
   },
   "devDependencies": {
+    "coveralls": "^3.1.0",
     "jest": "^26.0.1",
     "otplib": "^12.0.1",
     "supertest": "^4.0.2"
@@ -37,7 +38,8 @@
     "start": "nodemon dashboard/dashboard.js",
     "start:prod": "node dashboard/dashboard.js",
     "test": "jest --forceExit",
-    "test-verbose": "jest"
+    "test-verbose": "jest",
+    "coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
