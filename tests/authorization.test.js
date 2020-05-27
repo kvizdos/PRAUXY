@@ -12,6 +12,7 @@ let otpKey = "";
 
 beforeAll(() => {
     process.env.NODE_ENV = "test";
+    process.env.ADMINEMAIL = "test@prauxy.app"
 
     global.console = {
         log: jest.fn()
@@ -19,33 +20,33 @@ beforeAll(() => {
 
     console.log("Seeding database...")
     // Seed Database
-    MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-        if (err) throw err;
-        var dbo = db.db("prauxy-test");
+    // MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+    //     if (err) throw err;
+    //     var dbo = db.db("prauxy-test");
 
-        dbo.dropDatabase((err, dropResult) => {
-            if(err) throw err;
+    //     dbo.dropDatabase((err, dropResult) => {
+    //         if(err) throw err;
 
-            var dbo = db.db("prauxy-test");
+    //         var dbo = db.db("prauxy-test");
 
-            const saltRounds = 10;
+    //         const saltRounds = 10;
     
-            const token = bcrypt.genSaltSync(saltRounds);
-            const hash = bcrypt.hashSync("password", saltRounds);
+    //         const token = bcrypt.genSaltSync(saltRounds);
+    //         const hash = bcrypt.hashSync("password", saltRounds);
     
-            const secret = speakeasy.generateSecret({length: 20, name: `HOME Router (admin)`});
+    //         const secret = speakeasy.generateSecret({length: 20, name: `HOME Router (admin)`});
     
-            QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
-                otpKey = secret.base32;
-                dbo.collection("users").insertOne({username: "admin", password: hash, email: "testing@prauxy.app", token: token, tfa: secret.base32, loggedIn: true, qr: image_data, group: "Super Users"}, function(err, result) {
-                    if (err) throw err;                    
+    //         QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
+    //             otpKey = secret.base32;
+    //             dbo.collection("users").insertOne({username: "admin", password: hash, email: "testing@prauxy.app", token: token, tfa: secret.base32, loggedIn: true, qr: image_data, group: "Super Users"}, function(err, result) {
+    //                 if (err) throw err;                    
                     
-                    console.log("Database seeded.")
-                    db.close();
-                });
-            })
-        })
-    });
+    //                 console.log("Database seeded.")
+    //                 db.close();
+    //             });
+    //         })
+    //     })
+    // });
 })
 
 const auth = require('../auth/auth').http;

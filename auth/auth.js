@@ -340,7 +340,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
             const secret = speakeasy.generateSecret({length: 20, name: `HOME Router (admin)`});
 
             QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
-                dbo.collection("users").insertOne({email: process.env.ADMINEMAIL, username: "admin", password: hash, token: token, tfa: secret.base32, loggedIn: false, qr: image_data, group: 10, isInGroup: "Super Users"}, function(err, result) {
+                dbo.collection("users").insertOne({email: process.env.ADMINEMAIL, username: "admin", password: hash, token: token, tfa: secret.base32, loggedIn: process.env.NODE_ENV == "test", qr: image_data, group: 10, isInGroup: "Super Users"}, function(err, result) {
                     if (err) throw err;
 
                     _LOGGER.log("Admin registered (admin/admin)", "user");
