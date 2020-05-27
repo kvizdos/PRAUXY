@@ -159,6 +159,7 @@ app.post("/login/mfa", (req, res) => {
                 }
 
                 if(verified) {
+                    _LOGGER.warn(`${username} tried to login`)
                     _REDIS.remove(`AUTHTOKEN:${username}`);
 
                     res.json({authenticated: true, token: token, group: result.group});
@@ -340,6 +341,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
             const secret = speakeasy.generateSecret({length: 20, name: `HOME Router (admin)`});
 
             QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
+                if(process.env.NODE_ENV == "test") global.__PRAUXY_TEST_TFA__ = secret.base32;
                 dbo.collection("users").insertOne({email: process.env.ADMINEMAIL, username: "admin", password: hash, token: token, tfa: secret.base32, loggedIn: process.env.NODE_ENV == "test", qr: image_data, group: 10, isInGroup: "Super Users"}, function(err, result) {
                     if (err) throw err;
 

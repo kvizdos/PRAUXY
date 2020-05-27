@@ -14,39 +14,34 @@ beforeAll(() => {
     process.env.NODE_ENV = "test";
     process.env.ADMINEMAIL = "test@prauxy.app"
 
-    global.console = {
-        log: jest.fn()
-    }
+    // global.console = {
+    //     log: jest.fn()
+    // }
 
-    console.log("Seeding database...")
-    // Seed Database
-    // MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-    //     if (err) throw err;
-    //     var dbo = db.db("prauxy-test");
+    // Reset Database
+    MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db("prauxy-test");
 
-    //     dbo.dropDatabase((err, dropResult) => {
-    //         if(err) throw err;
+        dbo.dropDatabase((err, dropResult) => {
+            const saltRounds = 10;
+            const token = bcrypt.genSaltSync(saltRounds);
+            const hash = bcrypt.hashSync("admin", saltRounds);
 
-    //         var dbo = db.db("prauxy-test");
+            const secret = speakeasy.generateSecret({length: 20, name: `HOME Router (admin)`});
 
-    //         const saltRounds = 10;
-    
-    //         const token = bcrypt.genSaltSync(saltRounds);
-    //         const hash = bcrypt.hashSync("password", saltRounds);
-    
-    //         const secret = speakeasy.generateSecret({length: 20, name: `HOME Router (admin)`});
-    
-    //         QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
-    //             otpKey = secret.base32;
-    //             dbo.collection("users").insertOne({username: "admin", password: hash, email: "testing@prauxy.app", token: token, tfa: secret.base32, loggedIn: true, qr: image_data, group: "Super Users"}, function(err, result) {
-    //                 if (err) throw err;                    
-                    
-    //                 console.log("Database seeded.")
-    //                 db.close();
-    //             });
-    //         })
-    //     })
-    // });
+            QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
+                if(process.env.NODE_ENV == "test") global.__PRAUXY_TEST_TFA__ = secret.base32;
+                dbo.collection("users").insertOne({email: process.env.ADMINEMAIL, username: "admin", password: hash, token: token, tfa: secret.base32, loggedIn: process.env.NODE_ENV == "test", qr: image_data, group: 10, isInGroup: "Super Users"}, function(err, result) {
+                    if (err) throw err;
+
+                    db.close();
+                });
+
+            })
+
+        })
+    });
 })
 
 const auth = require('../auth/auth').http;
@@ -74,7 +69,7 @@ describe("Authorization API", () => {
     it("User successfully logs in", async () => {
         const response = await supertest(auth).post("/login").send({
             username: "admin",
-            password: "password",
+            password: "admin",
             socketid: "test-socket-id"
         });
 
@@ -95,7 +90,7 @@ describe("Authorization API", () => {
     it("Correct MFA token succeeds", async () => {
         const response = await supertest(auth).post("/login/mfa").send({
             username: "admin",
-            mfa: authenticator.generate(otpKey)
+            mfa: authenticator.generate(global.__PRAUXY_TEST_TFA__)
         });
 
         global.__PRAUXY__ = {
