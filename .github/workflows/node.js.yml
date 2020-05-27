@@ -37,7 +37,10 @@ jobs:
       uses: supercharge/redis-github-action@1.1.0
       with:
         redis-version: ${{ matrix.redis-version }}
+        
+    - name: Run Jest
+      uses: stefanoeb/jest-action@1.0.2
    
     - run: npm install
-    - run: npm install jest otplib supertest
     - run: npm run test
+    - run: jest
