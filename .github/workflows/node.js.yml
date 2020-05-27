@@ -17,8 +17,8 @@ jobs:
     strategy:
       matrix:
         node-version: [10.x, 12.x, 14.x]
-        mongodb-version: [4.x, 3.x]
-        redis-version: [6.x]
+        mongodb-version: [4.0, 4.2]
+        redis-version: [6, 5, 4]
 
     steps:
     - uses: actions/checkout@v2
