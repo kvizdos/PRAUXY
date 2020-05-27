@@ -39,5 +39,5 @@ jobs:
         redis-version: ${{ matrix.redis-version }}
    
     - run: npm install
-    - run: npm install jest otplib supertest --save-dev
+    - run: npm install jest otplib supertest
     - run: npm run test
