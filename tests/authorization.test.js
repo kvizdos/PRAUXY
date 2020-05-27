@@ -17,6 +17,7 @@ beforeAll(() => {
         log: jest.fn()
     }
 
+    console.log("Seeding database...")
     // Seed Database
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
         if (err) throw err;
@@ -38,6 +39,8 @@ beforeAll(() => {
                 otpKey = secret.base32;
                 dbo.collection("users").insertOne({username: "admin", password: hash, email: "testing@prauxy.app", token: token, tfa: secret.base32, loggedIn: true, qr: image_data, group: "Super Users"}, function(err, result) {
                     if (err) throw err;                    
+                    
+                    console.log("Database seeded.")
                     db.close();
                 });
             })
