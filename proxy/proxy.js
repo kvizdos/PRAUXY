@@ -36,7 +36,7 @@ http.createServer(function (req, res) {
     var goTo = (req.url.slice(1, -1) || "");
     if(goTo = "das") goTo = "";
     
-    res.status(401).writeHead(302, {
+    res.writeHead(302, {
         'Location': _CONF.createURL("auth") + (goTo !== "" ? "?go=" + goTo : "")
       });
     res.end();

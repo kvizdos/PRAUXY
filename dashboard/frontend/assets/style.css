@@ -304,6 +304,20 @@ button, .niceBtn, input[type="submit"] {
     font-size: 16pt;
 }
 
+.connection {
+    background-color: rgb(75, 119, 240);
+    border-radius: 5px;
+    margin: 10px;
+    font-size: 1.25em;
+    color: white;
+    width: fit-content;
+    padding: 5px;
+}
+
+.connection.activated {
+    display: none;
+}
+
 @media only screen and (min-width: 768px) {
     #mainHeader {
         display: flex;

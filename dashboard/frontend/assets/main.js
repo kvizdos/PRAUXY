@@ -108,6 +108,10 @@ const addAppModal = () => {
             <input type="text" name="port" id="port" placeholder="8080/an_optional_path or 127.0.0.1:8080" required>
         </article>
         <article class="formItem">
+            <label>GitHub Repo URL</label>
+            <input type="text" name="github" id="github" placeholder="https://github.com/kvizdos/PRAUXY" required>
+        </article>
+        <article class="formItem">
             <label class="optional">App Icon</label>
             <input name="icon" id="icon" type="file" accept="image/*">
         </article>
@@ -282,10 +286,12 @@ const renderUsers = (users) => {
     $('.usernameText').text(activeUser);
     $('tbody#users').empty();
 
-    for(const {username, lastLogin, email} of users) {
+    for(const {username, lastLogin, email, connections} of users) {
         if(username == activeUser) {
             $("#changeEmail")[0].value = email;
             $("#changeEmail")[0].placeholder = email;
+            $(".connection#github").toggle(connections.github != undefined && connections.github == false);
+            $(".connection.activated#github").toggle(connections.github != undefined && connections.github == true);
         }
         $('tbody#users').append(`
             <tr>

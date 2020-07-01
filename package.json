@@ -6,7 +6,9 @@
   "dependencies": {
     "@greenlock/manager": "^3.1.0",
     "acme-http-01-standalone": "^3.0.5",
+    "axios": "^0.19.2",
     "bcrypt": "^2.0.1",
+    "cheerio": "^1.0.0-rc.3",
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
@@ -25,10 +27,10 @@
     "socket.io": "^2.3.0",
     "speakeasy": "^2.0.0",
     "speedtest-net": "^2.1.1",
-    "url": "^0.11.0",
-    "cheerio": "^1.0.0-rc.3"
+    "url": "^0.11.0"
   },
   "devDependencies": {
+    "@shelf/jest-mongodb": "^1.1.5",
     "coveralls": "^3.1.0",
     "jest": "^26.0.1",
     "otplib": "^12.0.1",

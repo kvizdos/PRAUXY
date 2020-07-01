@@ -27,7 +27,21 @@ const _LOGGER = require('../helpers/logging');
 
 const _EMAIL = new (require("../helpers/email")).email();
 
+const axios = require("axios");
+
 let activeLogins = [];
+
+function parseCookies (request) {
+    var list = {},
+        rc = request.headers.cookie;
+
+    rc && rc.split(';').forEach(function( cookie ) {
+        var parts = cookie.split('=');
+        list[parts.shift().trim()] = decodeURI(parts.join('='));
+    });
+
+    return list;
+}
 
 // Use req.query to read values!!
 app.use(bodyParser.json());
@@ -53,6 +67,34 @@ app.get("/", (req, res) => {
         } else {
             res.sendFile("./auth/frontend/index.html", {root: "./"})
         }
+    })
+})
+
+app.get("/oauth/github", (req, res) => {
+    const reqToken = req.query.code;
+
+    axios({
+        method: 'post',
+        url: `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_ID}&client_secret=${process.env.GITHUB_SECRET}&code=${reqToken}`,
+        headers: {
+            accept: 'application/json'
+        }
+    }).then(resp => {
+        const accessToken = resp.data.access_token;
+
+        let { prauxyToken } = parseCookies(req);
+
+        prauxyToken = prauxyToken.split(":")[1];
+
+        if(accessToken) {
+            MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+                if (err) throw err;
+                var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
+                dbo.collection("users").updateOne({username: prauxyToken}, {$set: { 'connections.github': { access_token: accessToken } }}, function(err, result) {});
+            });
+        }
+
+        res.redirect(_CONF.createURL() + "/me/settings");
     })
 })
 
@@ -162,7 +204,7 @@ app.post("/login/mfa", (req, res) => {
                     _LOGGER.warn(`${username} tried to login`)
                     _REDIS.remove(`AUTHTOKEN:${username}`);
 
-                    res.json({authenticated: true, token: token, group: result.group});
+                    res.json({authenticated: true, token: token, group: result.group, connections: { github: result.connections != undefined && result.connections.github.access_token != undefined }});
 
                     dbo.collection("users").updateOne({username: username}, {$set: {loggedIn: true, lastLogin: + (new Date)}}, (err, result) => {                        
                         if(err) _LOGGER.warn(err, "Authorization");
@@ -311,8 +353,14 @@ app.get('/users/all', (req, res) => {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
         var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
 
-        dbo.collection("users").find({}, { projection: { _id: 0, username: 1, loggedIn: 1, lastLogin: 1, email: 1 } }).toArray((err, result) => {
+        dbo.collection("users").find({}, { projection: { _id: 0, username: 1, loggedIn: 1, lastLogin: 1, email: 1, connections: 1 } }).toArray((err, result) => {
             if (err) throw err;
+
+            for(let i = 0; i < result.length; i++) {
+                if(result[i].connections != undefined) {
+                    result[i].connections.github = result[i].connections.github != undefined;
+                }
+            }
 
             res.send(result)
             db.close();
