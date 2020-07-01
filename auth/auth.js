@@ -261,7 +261,7 @@ const registerUser = (username, password, email, group, res) => {
                     if (err) throw err;
 
                     _LOGGER.log(`User ${username} created (${group})`)
-                    const resp = _EMAIL.sendEmail(email, "Prauxy Login Information", _EMAIL.newUserTemplate({username: username, password: password}));
+                    if(process.env.NODE_ENV != "test") _EMAIL.sendEmail(email, "Prauxy Login Information", _EMAIL.newUserTemplate({username: username, password: password}));
                     _LOGGER.log(`User registered (${username})`, "user");
 
                     res.json({status: "complete"});

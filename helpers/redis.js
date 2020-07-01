@@ -4,8 +4,7 @@ const _LOGGER = require('./logging')
 class RedisManager {
     constructor() {
         try {
-            // this.client = new redis({host:})
-        this.client = redis.createClient();
+            this.client = redis.createClient();
         } catch(err) {
             _LOGGER.error(err, "Redis");
         }
@@ -16,8 +15,16 @@ class RedisManager {
         this.client.on("connect", () => {
             _LOGGER.log("Connection Created", "Redis")
         })
+    }
 
+    async flushdb() {
+        return new Promise((resolve, reject) => {
+            this.client.flushdb((err, succeeded) => {
+                if(err) throw err;
 
+                resolve(succeeded);
+            });
+        });
     }
 
     set(key, val, expireTime = -1) {

@@ -7,6 +7,7 @@ const { authenticator } = require('otplib');
 const speakeasy = require('speakeasy');
 const bcrypt = require('bcrypt');
 const QRCode = require("qrcode");
+const _REDIS = new (require('../helpers/redis'))();
 
 let otpKey = "";
 
@@ -29,6 +30,8 @@ beforeAll(async done => {
                 dbo.collection("users").insertOne({ email: process.env.ADMINEMAIL, username: "admin", password: hash, token: token, tfa: secret.base32, loggedIn: process.env.NODE_ENV == "test", qr: image_data, group: 10, isInGroup: "Super Users" }, async (err, result) => {
                     if (err) return false;
                     db.close();
+
+                    await _REDIS.flushdb();
                     done();
 
                     return true;
