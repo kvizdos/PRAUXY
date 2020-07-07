@@ -41,7 +41,6 @@ module.exports.tests = (auth) => {
     it("Should route a user to the authentication server if they have the right URL and subdomain but are not logged in", async done => {
         const response = await auth.get("/").set('Host', _CONF.baseURL).redirects(1);
 
-        expect(response.text).not.toBe("Invalid PRAUXY Route");
         expect(response.text).toBe(authHTML)
         expect(response.statusCode).toBe(200);
         done();

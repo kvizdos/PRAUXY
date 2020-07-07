@@ -54,8 +54,6 @@ module.exports.tests = (auth) => {
             port: 9091
         }).set('Host', _CONF.baseURL).redirects(1);  
 
-        expect(response.statusCode).toBe(302);
-
         const retrieveApps = await auth.get("/api/all").set('Cookie', [`prauxyToken=${global.__PRAUXY__.token}:admin:${global.__PRAUXY__.group};`]).set('Host', _CONF.baseURL);   
         expect(retrieveApps.statusCode).toBe(200);
         
@@ -74,8 +72,6 @@ module.exports.tests = (auth) => {
             port: 9092,
             ra: "on"
         }).set('Host', _CONF.baseURL).redirects(1);  
-
-        expect(response.statusCode).toBe(302);
 
         const retrieveApps = await auth.get("/api/all").set('Cookie', [`prauxyToken=${global.__PRAUXY__.token}:admin:${global.__PRAUXY__.group};`]).set('Host', _CONF.baseURL);   
         expect(retrieveApps.statusCode).toBe(200);
@@ -98,8 +94,6 @@ module.exports.tests = (auth) => {
             customurl: "blahblah.tld",
             port: 9093,
         }).set('Host', _CONF.baseURL).redirects(1);  
-
-        expect(response.statusCode).toBe(302);
 
         const retrieveApps = await auth.get("/api/all").set('Cookie', [`prauxyToken=${global.__PRAUXY__.token}:admin:${global.__PRAUXY__.group};`]).set('Host', _CONF.baseURL);   
         expect(retrieveApps.statusCode).toBe(200);
@@ -153,8 +147,6 @@ module.exports.tests = (auth) => {
             short: "noservice",
             port: 9094
         }).set('Host', _CONF.baseURL).redirects(1);  
-
-        expect(response.statusCode).toBe(302);  
 
         const retrieveApps = await auth.get("/api/all").set('Cookie', [`prauxyToken=${global.__PRAUXY_OTHER_ADMIN__.token}:admin2:${global.__PRAUXY_OTHER_ADMIN__.group};`]).set('Host', _CONF.baseURL);   
         expect(retrieveApps.statusCode).toBe(200);
