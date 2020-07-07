@@ -37,9 +37,7 @@ jobs:
         mongodb-version: ${{ matrix.mongodb-version }}
 
     - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1 home.kentonvizdos.com" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 auth.home.kentonvizdos.com" | sudo tee -a /etc/hosts
+      run: sudo echo "127.0.0.1 auth.home.kentonvizdos.com" | sudo tee -a /etc/hosts
 
     - run: npm install
     - run: npm test
