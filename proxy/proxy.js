@@ -145,13 +145,19 @@ const registerSaved = () => {
 
 registerSaved();
 
+proxy.notFound((req, res) => {
+    res.statusCode = 404;
+    res.write("Invalid PRAUXY Route");
+    res.end();
+})
+
 
 //proxy.register('*', "127.0.0.1:" + _CONF.ports.pageNotFound);
 
 _LOGGER.log(`Started (Redis ${_AUTH.id})`, "Proxy")
 
 module.exports = {
-    
+    proxy: proxy,
     add: (sub, port, requireAuthentication, customURL = "") => {
         if(customURL == "") {
             _REDIS.set(`APP:${sub}`, JSON.stringify({requiresAuth: requireAuthentication}));

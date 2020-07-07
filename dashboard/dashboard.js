@@ -4,6 +4,7 @@ const app = express()
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 
+
 var bodyParser = require('body-parser')
 var multer  = require('multer');
 var fs = require("fs");
@@ -20,6 +21,10 @@ const _AUTH = new (require('../auth/confirmAuth'))(_REDIS);
 const _PM = require('../proxy/proxy');
 const _AUTHMODULE = require("../auth/auth");
       _AUTHMODULE.dashboardSocket = io;
+
+module.exports.auth = _AUTHMODULE.http
+module.exports.dash = http;
+module.exports.proxy = _PM;
 
 const _SITELAUNCHER = new (require("../sites/launcher"))();
 
@@ -54,9 +59,19 @@ function parseCookies (request) {
     return list;
 }
 
+function confirmParams(params) {
+    const filtered = params.filter(Boolean);
+    return filtered.length == params.length;
+}
+
 app.use('/assets', express.static("./dashboard/frontend/assets"));
 app.use('/sw.js', express.static(`./dashboard/frontend/sw.js`));
 
+/**
+ * Retrieve all of a users applications
+ * 
+ * @return {Object[]} - All apps
+ */
 app.get('/api/all', (req, res) => {
     const cookies = parseCookies(req);
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
@@ -69,22 +84,13 @@ app.get('/api/all', (req, res) => {
     });
 })
 
-app.get('/api/monitors', (req, res) => {
-    const type = req.query.type;
-    MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-        var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
-        switch(type) {
-            case "speedtest":
-                dbo.collection("speedtests").find({}).project({_id: 0}).limit(48).toArray(function(err, result) {
-                    res.json(result);
-                    db.close();
-                });
-        }
-    });
-});
-
+/**
+ * Generates a new application for a user
+ * 
+ * @param {string} req - name, shortName, file, port, ra, image, customURL
+ */
 app.post('/api/new', upload.single('icon'), (req, res) => {
-    if(!_AUTH.isAdmin(req, res)) { return; }
+    if(!_AUTH.isAdmin(req, res)) { return res.status(401).json({reason: "level not high enough"}); }
 
     const cookies = parseCookies(req);
     const createdGroup = parseInt(cookies.prauxyToken.split(":")[2]);
@@ -99,6 +105,10 @@ app.post('/api/new', upload.single('icon'), (req, res) => {
 
     const newApp = {name: name, image: image, shortName: shortName, isImage: isImage, port: port, requiresAuthentication: requiresAuthentication, customURL: customURL == "" ? "" : customURL, users: [], group: createdGroup};
     var file = __dirname + '/frontend/assets/apps/' + image;
+
+    if(!confirmParams([name, shortName, port])) {
+        return res.status(400).send("invalid params")
+    }
 
     if(req.file) fs.renameSync(req.file.path, file);
 
@@ -198,10 +208,13 @@ io.on('connection', (socket) => {
 })
 
 try {
-    http.listen(_CONF.ports.dashboard, (err) =>{ 
-        if(err) throw err;
-        _LOGGER.log(`Started`, "Dashboard")
-    })
+    // if(process.env.NODE_ENV != "test") {
+        http.listen(_CONF.ports.dashboard, (err) =>{ 
+            if(err) throw err;
+            _LOGGER.log(`Started`, "Dashboard")
+        })
+    // } else {
+    // }
 } catch(err) {
     _LOGGER.error(err, "Dashboard");
 }

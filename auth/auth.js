@@ -196,12 +196,12 @@ app.post("/login/mfa", (req, res) => {
             _REDIS.get(`AUTHTOKEN:${username}`).then(token => {
                 if(token == null) {
                     _LOGGER.error(`Someone attempted to login directly through TFA (${req.headers['x-forwarded-for'] || req.connection.remoteAddress})`, "Authorization")
-                    res.status(401).json({authenticated: false})
+                    res.status(401).json({authenticated: false, reason: "direct tfa"})
                     return;
                 }
 
                 if(verified) {
-                    _LOGGER.warn(`${username} tried to login`)
+                    _LOGGER.warn(`${username} logged in`)
                     _REDIS.remove(`AUTHTOKEN:${username}`);
 
                     res.json({authenticated: true, token: token, group: result.group, connections: { github: result.connections != undefined && result.connections.github.access_token != undefined }});
@@ -214,7 +214,7 @@ app.post("/login/mfa", (req, res) => {
 
                 } else {
                     _LOGGER.warn(`Incorrect TFA code used for ${username} (${mfa})`)
-                    res.status(401).json({authenticated: false});
+                    res.status(401).json({authenticated: false, reason: "incorrect tfa"});
                     db.close();
                 }
             })
@@ -256,6 +256,7 @@ const registerUser = (username, password, email, group, res) => {
             const secret = speakeasy.generateSecret({length: 20, name: `HOME Router (${username})`});
 
             QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
+                if(process.env.NODE_ENV == "test") global.__PRAUXY_TEST_TFA_OTHERS__[username] = secret.base32;
 
                 dbo.collection("users").insertOne({username: username, password: hash, email: email, token: token, tfa: secret.base32, loggedIn: false, qr: image_data, group: group}, function(err, result) {
                     if (err) throw err;
@@ -391,7 +392,6 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
             const secret = speakeasy.generateSecret({length: 20, name: `HOME Router (admin)`});
 
             QRCode.toDataURL(secret.otpauth_url, (err, image_data) => {
-                // if(process.env.NODE_ENV == "test") global.__PRAUXY_TEST_TFA__ = secret.base32;
                 dbo.collection("users").insertOne({email: process.env.ADMINEMAIL, username: "admin", password: hash, token: token, tfa: secret.base32, loggedIn: process.env.NODE_ENV == "test", qr: image_data, group: 10, isInGroup: "Super Users"}, function(err, result) {
                     if (err) throw err;
 
@@ -449,9 +449,10 @@ module.exports.dashboardSocket = undefined;
 module.exports.authSocket = io;
 module.exports.resetTFA = resetTFA;
 module.exports.registerUser = registerUser;
+module.exports.http = http;
 
-if(process.env.NODE_ENV != 'test') {
+// if(process.env.NODE_ENV != 'test') {
     http.listen(_CONF.ports.auth, () => _LOGGER.log(`Started on ${_CONF.ports.auth}`, "Authorization"))
-} else {
-    module.exports.http = http;
-}
+// } else {
+    // module.exports.app = app;
+// }

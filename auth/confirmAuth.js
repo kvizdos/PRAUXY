@@ -33,7 +33,7 @@ class Authenticator {
 
         let groupLevel = parseInt(cookies.prauxyToken.split(":")[2]);
 
-        if(groupLevel == NaN || groupLevel < 5) {
+        if(groupLevel == NaN || groupLevel <= 5) {
             res.status(401).json({error: "You do not have a high enough group to do this."})
             return false;
         } else {
@@ -81,11 +81,15 @@ class Authenticator {
         if(_PERMISSION == undefined) return false;
     
         return new Promise((resolve, reject) => {
+            _LOGGER.log(`${user} is attempting to login (${_DATE.pretty()})`, "Authorization")
+
             _this._REDIS.get(`APP:${appName}`).then(requiresAuth => {
+                console.log(`RA: ${user} ${token} ${groupLevel}` + " " + JSON.stringify(requiresAuth))
                 requiresAuth = JSON.parse(requiresAuth) != null ? JSON.parse(requiresAuth).requiresAuth : true;
                 if(requiresAuth == false) {
                     return resolve(true);
                 }
+
                 _this._REDIS.get(`${user}:${token}:${groupLevel}`).then(hasCache => {
                     if(token !== undefined) {
                         const confirm = () => {
@@ -103,15 +107,24 @@ class Authenticator {
             
                                 dbo.collection("users").findOne({username: user, token: token}, (err, u) => {
                                     if(err) throw err;
-                                    if(u != null) {
-                                        _LOGGER.log(`${user} logged in (${_DATE.pretty()})`, "Authorization")
+                                    dbo.collection("users").findOne({username: user}, (err, u2) => {
+                                        console.log("Start of log for " + user)
+                                        console.log(u2);
+                                        console.log("End log")
 
-                                        _this._REDIS.set(`${user}:${token}:${groupLevel}`, true, 60 * 60 * 24 * 3)
+                                            
+                                        if(u != null) {
+                                            _LOGGER.log(`${user}:${token}:${groupLevel} logged in (${_DATE.pretty()})`, "Authorization")
 
-                                        confirm();
-                                    } else {
-                                        resolve(false);
-                                    }
+                                            _this._REDIS.set(`${user}:${token}:${groupLevel}`, true, 60 * 60 * 24 * 3)
+
+                                            confirm();
+                                        } else {
+                                            _LOGGER.error(`${user} ${token} ${groupLevel} (${u2 != null ? u2.token : "NULL"}) did not log in (${_DATE.pretty()})`, "Authorization")
+
+                                            resolve(false);
+                                        }
+                                    })
             
                                 })
                             });
