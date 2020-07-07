@@ -37,5 +37,10 @@ jobs:
         mongodb-version: ${{ matrix.mongodb-version }}
         mongodb-replica-set: insert-replica-set-name
 
+    - name: Add hosts to /etc/hosts
+      run: |
+        sudo echo "0.0.0.0 home.kentonvizdos.com" | sudo tee -a /etc/hosts
+        sudo echo "0.0.0.0 auth.home.kentonvizdos.com" | sudo tee -a /etc/hosts
+
     - run: npm install
     - run: npm test
