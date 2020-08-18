@@ -51,6 +51,8 @@ function start() {
     });
 }
 
+console.log(process.env.NODE_ENV)
+
 if(process.env.NODE_ENV != "test") start();
 
 module.exports.start = start;

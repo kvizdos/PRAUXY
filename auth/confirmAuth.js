@@ -81,10 +81,7 @@ class Authenticator {
         if(_PERMISSION == undefined) return false;
     
         return new Promise((resolve, reject) => {
-            _LOGGER.log(`${user} is attempting to login (${_DATE.pretty()})`, "Authorization")
-
             _this._REDIS.get(`APP:${appName}`).then(requiresAuth => {
-                console.log(`RA: ${user} ${token} ${groupLevel}` + " " + JSON.stringify(requiresAuth))
                 requiresAuth = JSON.parse(requiresAuth) != null ? JSON.parse(requiresAuth).requiresAuth : true;
                 if(requiresAuth == false) {
                     return resolve(true);
@@ -108,11 +105,6 @@ class Authenticator {
                                 dbo.collection("users").findOne({username: user, token: token}, (err, u) => {
                                     if(err) throw err;
                                     dbo.collection("users").findOne({username: user}, (err, u2) => {
-                                        console.log("Start of log for " + user)
-                                        console.log(u2);
-                                        console.log("End log")
-
-                                            
                                         if(u != null) {
                                             _LOGGER.log(`${user}:${token}:${groupLevel} logged in (${_DATE.pretty()})`, "Authorization")
 

@@ -75,7 +75,8 @@ const confirmMFA = () => {
     $.post(window.location.protocol + "//auth." + window.location.hostname.split(".").splice(1).join(".") + "/login/mfa", {
         username: username,
         mfa: mfa
-    }, (res) => {
+    }).done((res) => {
+        console.log(res);
         if(res.authenticated) {
             setcookie("prauxyToken", res.token + ":" + username + ":" + res.group, 365);
 
@@ -88,6 +89,9 @@ const confirmMFA = () => {
         } else {
             alert("Incorrect 2FA code");
         }
+    })
+    .fail((res) => {
+        alert("Incorrect 2FA code")
     })
 }
 

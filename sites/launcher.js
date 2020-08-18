@@ -41,7 +41,7 @@ class SiteLauncher {
 
         app.use(function(req, res, next){
 	    //	console.log("allowed from: " + _CONF.createURL());
-            res.header('Access-Control-Allow-Origin', 'https://home.kentonvizdos.com');
+            res.header('Access-Control-Allow-Origin', _CONF.createURL());
             res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
             res.header('Access-Control-Allow-Methods', 'GET, POST');
             res.header('Access-Control-Allow-Credentials', true)
