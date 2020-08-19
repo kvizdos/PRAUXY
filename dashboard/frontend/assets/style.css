@@ -320,6 +320,7 @@ button, .niceBtn, input[type="submit"] {
 
 #sitesContainer {
     display: flex;
+    flex-wrap: wrap;
 }
 
 .siteItem {
