@@ -318,7 +318,75 @@ button, .niceBtn, input[type="submit"] {
     display: none;
 }
 
+#sitesContainer {
+    display: flex;
+}
+
+.siteItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 10px;
+    margin-top: 10px;
+    padding: 10px;
+    border: 2px solid rgb(155, 155, 235);
+    border-radius: 5px;
+}
+
+.siteItem #info {
+    margin-right: 35px;
+}
+
+.siteItem #info h2 {
+    padding: 0;
+    margin: 0;
+}
+
+.siteItem #actions button {
+    background-color: unset;
+    padding: unset;
+    color: inherit !important;
+    margin-right: 10px;
+}
+
+.abrule {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.abrule .formItem {
+    padding: 5px;
+}
+
+.customTable {
+    display: flex;
+    flex-direction: column;
+}
+
+.customTable .tableRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 20%);
+}
+
+.customTable .tableRow:nth-child(odd) {
+    background-color: rgb(204, 216, 255);
+}
+
+.customTable p {
+    padding: 8px;
+}
+
 @media only screen and (min-width: 768px) {
+    .customTable .tableItem {
+        flex-direction: row;
+    }
+
+    .abrule {
+        flex-direction: row;
+        align-items: center;
+    }
+    
     #mainHeader {
         display: flex;
         align-items: center;

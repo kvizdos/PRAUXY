@@ -4,6 +4,7 @@ const url = _MongoConfig.url;
 const _LOGGER = require('../helpers/logging');
 const _CONF = require('../config');
 const _PM = require('../proxy/proxy');
+const _REDIS = new (require('../helpers/redis'))();
 
 const _HOST = require('./host')
 
@@ -25,6 +26,18 @@ const express = require('express')
 const app = express()
 
 const crypto = require('crypto')
+
+function generateRandomID(length = 24) {
+    const opts = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456890-".toLowerCase();
+    let id = "";
+
+    for(let i = 0; i < length; i++) {
+        id += opts[Math.floor(Math.random() * opts.length)];
+    }
+
+    return id;
+}
+
 
 class SiteLauncher {
     constructor() {
@@ -99,6 +112,59 @@ class SiteLauncher {
             this.addSite(req, res, req.body.name, req.body.shortName, req.body.repo, req.body.customurl || undefined, req.body.root);
         })
 
+        app.post("/api/ab/add", (req, res) => {
+            const siteShortName = req.body.site,
+                  path = req.body.abPath,
+                  selector = req.body.abSelector,
+                  abA = req.body.abA,
+                  abB = req.body.abB;
+
+            if(siteShortName == undefined || path == undefined || selector == undefined || abA == undefined || abB == undefined) {
+                return res.status(400).json("invalid params")
+            }
+
+            MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, db) {
+                var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
+                dbo.collection("sites").find({shortName: siteShortName}).project({_id: 0}).toArray((err, results) => {
+                    const existingABs = results[0].abRules || {};
+
+                    const selectorAlreadyExists = existingABs[path] != undefined && existingABs[path].find(el => {
+                        return el.selector == selector
+                    });
+
+                    if(selectorAlreadyExists) {
+                        return res.status(409).json("A selector on that path already exists")
+                    }
+
+                    const rules = existingABs[path] != undefined ? existingABs[path] : [];
+
+                    rules.push({
+                        selector: selector,
+                        abA: abA,
+                        abB: abB,
+                        idA: generateRandomID(6),
+                        idB: generateRandomID(6)
+                    })
+
+                    const fullReplacement = { 
+                        abRules: results[0].abRules
+                    }
+
+                    fullReplacement.abRules[path] = rules
+
+                    dbo.collection("sites").updateOne({shortName: siteShortName}, {$set: { abRules: fullReplacement.abRules } }, (err, resu) => {
+                        if(err) throw err;
+
+                        _REDIS.remove(`SITE:${results[0].customURL}`)
+
+                        res.status(200).json("Rule added!")
+
+                    })
+                });
+            
+            });
+        })
+
         app.get("/api/all", (req, res) => {
             MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, db) {
                 var dbo = db.db(process.env.NODE_ENV == 'test' ? "prauxy-test" : "homerouter");
@@ -129,7 +195,8 @@ class SiteLauncher {
             repo: repo,
             root: repo.split("/")[repo.split("/").length - 1] + "/" + rootDir,
             pushSecret: postSecret,
-            customURL: customURL
+            customURL: customURL,
+            abRules: {}
         }
 
         MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, db) {

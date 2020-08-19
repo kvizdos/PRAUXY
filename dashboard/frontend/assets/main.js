@@ -255,9 +255,7 @@ const createNewSite = () => {
     })
     
     makeReq("POST", `${proto}sites.${baseURL}/api/create`, data, (data) => {
-        console.log(data)
         getAndCache(`${proto}sites.${baseURL}/api/all`, "sites", renderSites);
-        console.log()
         if(data.status == "complete") {
             document.getElementById("createNewSiteBtn").value = "Done!"
             document.getElementById("modalRegisterStatus").innerHTML = `
@@ -304,18 +302,121 @@ const renderUsers = (users) => {
 }
 
 const renderSites = (sites) => {    
-    $('tbody#sites').empty();
+    $('#sitesContainer').empty();
 
-    for(const {name, pushSecret, root, customURL, shortName } of sites) {
-        $('tbody#sites').append(`
-            <tr>
-                <td>${name}</td>
-                <td>Static</td>
-                <td>${pushSecret}</td>
-                <td><a href="${customURL == undefined || customURL == "" ? `${proto}site-${shortName}.${baseURL}` : proto + customURL}" target="_blank">Vist</a></td>
-            </tr>
+    for(const site of sites) {
+        const { name, pushSecret, root, customURL, shortName } = site;
+
+        $('#sitesContainer').append(`
+        <section class="siteItem">
+            <article id="info">
+                <h2>${name}</h2>
+                <p>${shortName}</p>
+            </article>
+
+            <article id="actions">
+                <button onclick="openSiteSettings('${shortName}')"><span class="material-icons" id="settings">settings</span></button>
+                <a href="http://${customURL}" target="_blank"><span class="material-icons" id="open">send</span></a>
+            </article>
+        </section>
         `)
     }
+}
+
+const openSiteSettings = (siteShortName) => {
+    const site = JSON.parse(localStorage.getItem("sites")).find(el => el.shortName == siteShortName);
+
+    let ABTestingData = "";
+
+    if(Object.keys(site.abRules).length > 0) {
+        for(let path in site.abRules) {
+            site.abRules[path].forEach(rule => {
+                const dataFor = `${path}-${rule.selector.replace(/[\W]/, "")}`;
+                ABTestingData += `<article class="tableRow">
+                    <p data-for="${dataFor}"}">${path}</p>
+                    <p data-for="${dataFor}">${rule.selector}</p>
+                    <p data-for="${dataFor}">${rule.abA}</p>
+                    <p data-for="${dataFor}">${rule.abB}</p>
+                </article>`
+            })
+        }
+    }
+
+    ModalHandler.setHeader(`Settings for ${site.name}`)
+    ModalHandler.setContent(`
+        <section id="settingsModal">
+            <h2>General Settings</h2>
+            <br>
+            <article class="formItem">
+                <label>Name</label>
+                <input type="text" name="name" id="updateSiteName" placeholder="${site.name}" auto-complete="off" required>
+            </article>
+            <article class="formItem">
+                <label>Custom URL</label>
+                <input type="text" name="name" id="updateSiteName" placeholder="${site.customURL || "No custom URL provided"}" auto-complete="off" required>
+            </article>
+            <br>
+            <h2>A/B Testing</h2>
+            <br>
+            <section class="customTable">
+                ${ABTestingData}
+            </section>
+            <br>
+            <article class="abrule">    
+                <article class="formItem">
+                    <label>URL Path</label>
+                    <input type="text" name="abRulePath" id="abRulePath" placeholder="/signup" auto-complete="off" required>
+                </article>
+                <article class="formItem">
+                    <label>Text element selector</label>
+                    <input type="text" name="abRuleSelector" id="abRuleSelector" placeholder="#joinText" auto-complete="off" required>
+                </article>
+                <article class="formItem">
+                    <label>Replacement A</label>
+                    <input type="text" name="abRuleA" id="abRuleA" placeholder="Join us" auto-complete="off" required>
+                </article>
+                <article class="formItem">
+                    <label>Replacement B</label>
+                    <input type="text" name="abRuleB" id="abRuleB" placeholder="Sign up" auto-complete="off" required>
+                </article>
+                
+                <article class="formItem">
+                    <input type="submit" value="Add" onclick="addABTest('${site.shortName}')">
+                </article>
+            </article>
+        </section>
+    `)
+
+    ModalHandler.open();
+}
+
+const addABTest = (siteShortName) => {
+    const site       = siteShortName;
+    const abPath     = document.querySelector('input[name=abRulePath]').value;
+    const abSelector = document.querySelector('input[name=abRuleSelector]').value;
+    const abA        = document.querySelector('input[name=abRuleA]').value;
+    const abB        = document.querySelector('input[name=abRuleB]').value;
+
+    makeReq("POST", `${proto}sites.${baseURL}/api/ab/add`, `site=${site}&abPath=${abPath}&abSelector=${abSelector}&abA=${abA}&abB=${abB}`, (resp) => {
+        alert(resp)
+        const sites = JSON.parse(localStorage.getItem("sites"));
+
+        const siteIndex = sites.findIndex(i => i.shortName == site);
+
+        sites[siteIndex].abRules[abPath] = []
+
+        sites[siteIndex].abRules[abPath].push({
+            selector: abSelector,
+            abA: abA,
+            abB: abB
+        })
+
+        localStorage.setItem("sites", JSON.stringify(sites));
+
+        openSiteSettings(site);
+    }, (resp) => {
+        alert(resp)
+    })
 }
 
 const toggleMenu = (el) => {
