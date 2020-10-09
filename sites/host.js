@@ -108,8 +108,8 @@ app.get("/*", (req, res) => {
                 </style>
                 `
 
-                $('head').append(css);
-                $('body').prepend(banner);
+                // $('head').append(css);
+                // $('body').prepend(banner);
 
                 const cookies = parseCookies(req);
 
